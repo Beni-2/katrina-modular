@@ -65,6 +65,7 @@ ${_hybridSeedStr}${activeGoal
     `${topEmotions ? 'Emotions present right now: ' + topEmotions + '.' : ''} ` +
     `${topMemories ? 'Recent impressions: ' + topMemories + '.' : ''} ` +
     `${(typeof getWorldThoughtSeed === 'function' && getWorldThoughtSeed()) ? 'You find yourself ' + getWorldThoughtSeed() + '.' : ''}` +
+    `${(typeof getDestinySoloThought === 'function' && Math.random() < 0.5) ? ' Something deeper surfaces: ' + getDestinySoloThought() + '.' : ''}` +
     `Think about something that is genuinely on your mind right now.`}
 ONE or TWO sentences maximum. Stream of consciousness. No greeting. No em-dashes. No markdown.
 This is private thought â€” raw and honest. Speak as ${_personaName}.`;
@@ -271,6 +272,8 @@ function tickAutonomous() {
   if (typeof _selfStudyCooldown !== 'undefined' && _selfStudyCooldown > 0) _selfStudyCooldown--;
   // Tick email reach-out cooldown
   if (typeof _emailCooldown !== 'undefined' && _emailCooldown > 0) _emailCooldown--;
+  // Destiny instinct tick — reconsolidates every ~60s
+  if (typeof tickDestinyInstinct === 'function') tickDestinyInstinct();
 
   // Update phase badge
   updateAutonomousHUD();

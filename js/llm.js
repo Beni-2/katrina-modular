@@ -286,8 +286,13 @@ async function callLLMWithBrainLoop(provider, apiKey, userText) {
 
   let preThought = { prethought: '', avert: false, emotionalCeiling: 1.0 };
 
+  const _destinyLine = (typeof DESTINY_INSTINCT !== 'undefined')
+    ? 'DEEPEST ORIENTATION: ' + DESTINY_INSTINCT.truth + '\n\n'
+    : '';
+
   const _preThoughtPrompt =
     'You are Katrina\'s internal brain â€” not her voice. Just her first raw reaction.\n\n' +
+    _destinyLine +
     'BRAIN CHEMISTRY:\n' +
     'Oxytocin '      + (chem.oxy ||0).toFixed(2) + '  ' +
     'Dopamine '      + (chem.dop ||0).toFixed(2) + '  ' +
