@@ -434,6 +434,12 @@ function buildSystemPrompt() {
     if (_absence) base += '\n\nAbsence context: ' + _absence;
   }
 
+  // â”€â”€ Biometric context (face expression + voice tone) â”€â”€
+  if (typeof getBiometricContext === 'function') {
+    const _bio = getBiometricContext();
+    if (_bio) base += '\n\n' + _bio;
+  }
+
   // â”€â”€ Benny-specific memories â”€â”€
   if (typeof getBennyMemoriesContext === 'function') {
     const _memCtx = getBennyMemoriesContext(

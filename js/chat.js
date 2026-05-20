@@ -684,6 +684,14 @@ function toggleMic() {
     const transcript = e.results[0][0].transcript;
     document.getElementById('chat-input').value = transcript;
     stopMic();
+    // Analyze voice tone from audio if available
+    if (typeof analyzeVoiceTone === 'function' && e.results[0][0].confidence) {
+      // Use MediaRecorder blob if available, else skip gracefully
+      if (window._lastMicBlob) {
+        analyzeVoiceTone(window._lastMicBlob).catch(function(){});
+        window._lastMicBlob = null;
+      }
+    }
     // auto-send after brief delay
     setTimeout(() => processUserInputWithEngagement(transcript), 300);
   };
@@ -803,8 +811,10 @@ async function toggleCamera() {
       camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user', width:320, height:240 }, audio:false });
       const vid = document.getElementById('cam-video');
       if (vid) { vid.srcObject = camStream; vid.play(); }
-      if (btn) { btn.textContent = 'ðŸ“· ON'; btn.classList.add('active-cam'); }
+      if (btn) { btn.textContent = 'ðŸ”· ON'; btn.classList.add('active-cam'); }
       setIdStatus('ready', 'CAMERA READY');
+      // Start expression scanning via face-api.js
+      if (typeof onCameraStarted === 'function') onCameraStarted();
       document.getElementById('btn-scan').disabled    = false;
       document.getElementById('id-snap-btn').disabled = false;
     } catch(e) {
@@ -816,6 +826,7 @@ async function toggleCamera() {
 
 function stopCamera() {
   stopScan();
+  if (typeof onCameraStopped === 'function') onCameraStopped();
   if (camStream) { camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
   const vid = document.getElementById('cam-video');
   if (vid) vid.srcObject = null;
