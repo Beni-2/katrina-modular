@@ -415,10 +415,14 @@ function buildSystemPrompt() {
   // â”€â”€ Build base from persona prefix â”€â”€
   let base = buildPersonaPromptPrefix(persona);
 
-  // â”€â”€ Last conversation memory â”€â”€
+  // â”€â”€ Absence-aware conversation memory â”€â”€
   if (typeof getLastConversationContext === 'function') {
     const _lastConvo = getLastConversationContext();
     if (_lastConvo) base += '\n\nConversation memory: ' + _lastConvo;
+  }
+  if (typeof buildAbsenceContext === 'function') {
+    const _absence = buildAbsenceContext();
+    if (_absence) base += '\n\nAbsence context: ' + _absence;
   }
 
   // â”€â”€ Real-world context (date/time, weather, news) â”€â”€

@@ -373,6 +373,17 @@ document.addEventListener('keydown',  () => resetEngagement(), {passive:true});
 document.addEventListener('click',    () => resetEngagement(), {passive:true});
 document.addEventListener('touchstart',()=> resetEngagement(), {passive:true});
 
+// Save chemistry + chat when tab closes — mood persists to next session
+window.addEventListener('beforeunload', () => {
+  if (typeof saveChemState     === 'function') saveChemState();
+  if (typeof saveChatHistory   === 'function') saveChatHistory();
+});
+
+// Auto-save chemistry every 5 minutes while page is open
+setInterval(() => {
+  if (typeof saveChemState === 'function') saveChemState();
+}, 5 * 60 * 1000);
+
 window.onload = function() {
   // Load voices asynchronously
   if (window.speechSynthesis) {

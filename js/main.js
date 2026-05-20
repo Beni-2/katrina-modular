@@ -229,6 +229,7 @@ function saveAllKatrinaState() {
   saveTemporalMemory();
   saveNarrativeMemory();
   saveChatHistory();
+  saveChemState();
   consolidateDayNarrative();
 }
 
@@ -239,6 +240,8 @@ function loadAllKatrinaState() {
   loadTemporalMemory();
   loadNarrativeMemory();
   loadChatHistory();
+  loadChemState();       // restore mood from last session
+  applyAbsenceEffect();  // shift chemistry based on how long Benny was away
   // Rebuild evolved profile incorporating loaded data
   buildEvolvedProfile();
 }

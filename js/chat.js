@@ -1,5 +1,15 @@
 ﻿
+// Tracks whether this is the first message of the session
+let _firstMessageThisSession = true;
+
 async function processUserInput(text) {
+  // â”€â”€ Reunion cascade â€” fires once on the first message after an absence â”€â”€
+  if (_firstMessageThisSession) {
+    _firstMessageThisSession = false;
+    if (typeof applyReunionCascade === 'function') applyReunionCascade();
+    if (typeof saveChemState === 'function') setTimeout(saveChemState, 2000);
+  }
+
   // â”€â”€ Always show user message FIRST in chat trail â”€â”€
   appendMsg('user', text);
   chatHistory.push({role:'user', content:text});
