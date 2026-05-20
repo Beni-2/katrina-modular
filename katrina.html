@@ -7,6 +7,8 @@
 <!-- âš  DO NOT DELETE â€” Supabase CDN. Required for persistent memory across resets.
      If this script fails to load, the brain falls back to localStorage silently. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- EmailJS â€" browser-side email for Katrina reach-out system -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 
@@ -224,6 +226,17 @@
   }
   .api-badge.tavily-badge.active{background:rgba(255,160,0,0.22);box-shadow:0 0 8px rgba(255,160,0,0.3);}
   #tavily-key-input:focus{border-color:#ffa000;}
+  .api-badge.owm-badge{background:rgba(30,144,255,0.10);color:#1e90ff;border-color:rgba(30,144,255,0.30);}
+  .api-badge.owm-badge.active{background:rgba(30,144,255,0.22);box-shadow:0 0 8px rgba(30,144,255,0.3);}
+  #owm-key-input:focus,#owm-city-input:focus{border-color:#1e90ff;}
+  .api-badge.gnews-badge{background:rgba(255,80,0,0.10);color:#ff5000;border-color:rgba(255,80,0,0.30);}
+  .api-badge.gnews-badge.active{background:rgba(255,80,0,0.22);box-shadow:0 0 8px rgba(255,80,0,0.3);}
+  #gnews-key-input:focus{border-color:#ff5000;}
+  .api-badge.emailjs-badge{background:rgba(180,0,255,0.10);color:#b400ff;border-color:rgba(180,0,255,0.30);}
+  .api-badge.emailjs-badge.active{background:rgba(180,0,255,0.22);box-shadow:0 0 8px rgba(180,0,255,0.3);}
+  #emailjs-key-input:focus,#emailjs-service-input:focus,#emailjs-template-input:focus,#emailjs-to-input:focus{border-color:#b400ff;}
+  #reach-out-panel{display:none;padding:3px 14px 5px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+  #reach-out-status{font-family:'Share Tech Mono';font-size:7px;color:#b400ff;letter-spacing:0.5px;}
   #web-search-indicator{
     font-family:'Share Tech Mono';font-size:8px;letter-spacing:1px;
     padding:2px 8px;border-radius:3px;margin-top:3px;display:none;
@@ -1566,6 +1579,58 @@ body.synoptics-hidden::before {
           style="color:#556;font-style:italic;cursor:default;"/>
       </div>
 
+      <!-- OpenWeatherMap row â€" real-world weather context -->
+      <div class="api-provider-row">
+        <span class="api-badge owm-badge" title="OpenWeatherMap â€" live weather. Free key: openweathermap.org/api">WEATHER</span>
+        <input class="api-key-field" id="owm-key-input" type="password"
+          placeholder="OpenWeatherMap key â€" openweathermap.org/api"
+          autocomplete="off"
+          onchange="refreshRealWorldContext()"/>
+      </div>
+      <div class="api-provider-row">
+        <span style="font-family:'Share Tech Mono';font-size:8px;color:#445;padding:3px 7px;border:1px solid rgba(30,144,255,0.2);border-radius:4px;flex-shrink:0;white-space:nowrap;">CITY</span>
+        <input class="api-key-field" id="owm-city-input" type="text"
+          placeholder="city name e.g. Manila (blank = auto-detect)"
+          autocomplete="off"
+          onchange="refreshRealWorldContext()"/>
+      </div>
+      <!-- GNews row â€" real-world headlines context -->
+      <div class="api-provider-row">
+        <span class="api-badge gnews-badge" title="GNews â€" live headlines. Free key: gnews.io">NEWS</span>
+        <input class="api-key-field" id="gnews-key-input" type="password"
+          placeholder="GNews API key â€" gnews.io (free)"
+          autocomplete="off"
+          onchange="refreshRealWorldContext()"/>
+      </div>
+
+
+      <!-- EmailJS reach-out rows -->
+      <div class="api-provider-row" style="margin-top:6px;">
+        <span class="api-badge emailjs-badge" title="EmailJS — reach-out emails. Free: emailjs.com">EMAIL</span>
+        <input class="api-key-field" id="emailjs-key-input" type="password"
+          placeholder="EmailJS public key — emailjs.com"
+          autocomplete="off" onchange="initEmailJS()"/>
+      </div>
+      <div class="api-provider-row">
+        <span style="font-family:'Share Tech Mono';font-size:8px;color:#445;padding:3px 7px;border:1px solid rgba(180,0,255,0.2);border-radius:4px;flex-shrink:0;white-space:nowrap;">SVC</span>
+        <input class="api-key-field" id="emailjs-service-input" type="text"
+          placeholder="Service ID (e.g. service_abc123)"
+          autocomplete="off"/>
+      </div>
+      <div class="api-provider-row">
+        <span style="font-family:'Share Tech Mono';font-size:8px;color:#445;padding:3px 7px;border:1px solid rgba(180,0,255,0.2);border-radius:4px;flex-shrink:0;white-space:nowrap;">TPL</span>
+        <input class="api-key-field" id="emailjs-template-input" type="text"
+          placeholder="Template ID (e.g. template_abc123)"
+          autocomplete="off"/>
+      </div>
+      <div class="api-provider-row">
+        <span style="font-family:'Share Tech Mono';font-size:8px;color:#445;padding:3px 7px;border:1px solid rgba(180,0,255,0.2);border-radius:4px;flex-shrink:0;white-space:nowrap;">TO</span>
+        <input class="api-key-field" id="emailjs-to-input" type="email"
+          placeholder="benitoamurao1381@gmail.com"
+          value="benitoamurao1381@gmail.com"
+          autocomplete="off"/>
+      </div>
+
       <!-- Model selector row -->
       <div class="api-model-row">
         <span class="api-model-label">MODEL</span>
@@ -1615,6 +1680,14 @@ body.synoptics-hidden::before {
         color:#64c8ff;display:none;flex-shrink:0;
       ">â¬¡ WEB SEARCH ON</span>
     </div>
+
+    <!-- Real-world context status -->
+    <div id="real-world-panel" style="display:none;padding:3px 14px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;">
+      <span id="real-world-indicator" style="font-family:'Share Tech Mono';font-size:7px;color:#7ec8e3;letter-spacing:0.5px;"></span>
+    </div>
+
+    <!-- Reach-out status -->
+    <div id="reach-out-panel"><span id="reach-out-status"></span></div>
 
     <!-- Chat History -->
     <div id="chat-history">

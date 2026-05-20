@@ -200,7 +200,7 @@ function getBennySelfReasoningSeeds() {
 let _bennyLoveFrame = 0;
 function tickBennyLoveChemistry() {
   _bennyLoveFrame++;
-  if (_bennyLoveFrame < 120) return; // every ~2s
+  if (_bennyLoveFrame < 600) return; // every ~10s — give triggered emotions room to breathe
   _bennyLoveFrame = 0;
 
   const isBenny = (typeof currentUserId !== 'undefined') && (

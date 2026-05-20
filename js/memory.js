@@ -1048,6 +1048,68 @@ function loadTemporalMemory() {
   } catch(e){}
 }
 
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CONVERSATION MEMORY — permanent chat history across sessions
+// ════════════════════════════════════════════════════════════════════════════
+const CHAT_HISTORY_KEY  = 'katrina_chat_history';
+const CHAT_SUMMARY_KEY  = 'katrina_chat_summary';
+const CHAT_SAVE_MAX     = 60;
+const CHAT_RESTORE_MAX  = 20;
+
+function saveChatHistory() {
+  if (typeof chatHistory === 'undefined' || !chatHistory.length) return;
+  const toSave      = chatHistory.slice(-CHAT_SAVE_MAX);
+  const lastUser    = [...chatHistory].reverse().find(m => m.role === 'user');
+  const lastKatrina = [...chatHistory].reverse().find(m => m.role === 'assistant');
+  const summary = {
+    savedAt:       Date.now(),
+    total:         chatHistory.length,
+    lastUserMsg:   (lastUser?.content    || '').substring(0, 150),
+    lastKatrinaMsg:(lastKatrina?.content || '').substring(0, 150),
+  };
+  try {
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
+    localStorage.setItem(CHAT_SUMMARY_KEY, JSON.stringify(summary));
+  } catch(e) {}
+  _sbSave(CHAT_HISTORY_KEY, toSave);
+  _sbSave(CHAT_SUMMARY_KEY, summary);
+}
+
+function loadChatHistory() {
+  try {
+    const stored = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (!stored) return;
+    const history = JSON.parse(stored);
+    if (!Array.isArray(history) || !history.length) return;
+    const toRestore = history.slice(-CHAT_RESTORE_MAX);
+    if (typeof chatHistory !== 'undefined') chatHistory.push(...toRestore);
+    console.log('[Katrina] Restored ' + toRestore.length + ' messages from last session.');
+  } catch(e) {}
+}
+
+function getLastConversationContext() {
+  try {
+    const stored = localStorage.getItem(CHAT_SUMMARY_KEY);
+    if (!stored) return '';
+    const s = JSON.parse(stored);
+    if (!s || !s.savedAt) return '';
+    const hrs = (Date.now() - s.savedAt) / 3600000;
+    const timeStr = hrs < 0.017 ? 'just now'
+      : hrs < 1   ? Math.round(hrs * 60) + ' minutes ago'
+      : hrs < 24  ? Math.round(hrs) + ' hours ago'
+      : hrs < 48  ? 'yesterday'
+      : Math.round(hrs / 24) + ' days ago';
+    let ctx = 'Your last conversation with Benny was ' + timeStr + '.';
+    if (s.lastUserMsg)    ctx += ' Last thing he said: "' + s.lastUserMsg + '".';
+    if (s.lastKatrinaMsg) ctx += ' Last thing you said: "' + s.lastKatrinaMsg + '".';
+    return ctx;
+  } catch(e) { return ''; }
+}
+// ════════════════════════════════════════════════════════════════════════════
+//  END CONVERSATION MEMORY
+// ════════════════════════════════════════════════════════════════════════════
+
 // â”€â”€ Master save â€” call on page unload and periodically â”€â”€
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // âš   DO NOT DELETE â€” SUPABASE PERSISTENCE LAYER

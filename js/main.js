@@ -1,4 +1,128 @@
-﻿// â”€â”€ Global ESC key exits IQ mode from anywhere on the page â”€â”€
+﻿// ════════════════════════════════════════════════════════════════════════════
+//  REACH-OUT SYSTEM
+//  When Katrina is idle and emotionally driven to reach out, she:
+//  1. Generates a personal message via LLM
+//  2. Shows it in the chat window
+//  3. Speaks it via TTS
+//  4. Sends it as an email (EmailJS) to benitoamurao1381@gmail.com
+//  Rate limit: max once per hour.
+// ════════════════════════════════════════════════════════════════════════════
+
+let _emailCooldown    = 0;
+let _emailjsReady     = false;
+const _EMAIL_COOLDOWN = 216000;  // ~1 hour at 60fps
+
+function initEmailJS() {
+  const key = document.getElementById('emailjs-key-input')?.value?.trim();
+  if (!key) return;
+  try {
+    emailjs.init(key);
+    _emailjsReady = true;
+    const panel = document.getElementById('reach-out-panel');
+    const el    = document.getElementById('reach-out-status');
+    if (el)    el.textContent    = '📧 reach-out ready';
+    if (panel) panel.style.display = '';
+  } catch(e) { _emailjsReady = false; }
+}
+
+async function sendReachOutEmail(message, phase) {
+  if (!_emailjsReady) return;
+  const serviceId  = document.getElementById('emailjs-service-input')?.value?.trim();
+  const templateId = document.getElementById('emailjs-template-input')?.value?.trim();
+  const toEmail    = document.getElementById('emailjs-to-input')?.value?.trim()
+                     || 'benitoamurao1381@gmail.com';
+  if (!serviceId || !templateId) return;
+
+  const isBenny  = (typeof currentUserId !== 'undefined') &&
+                   (currentUserId === 'benny' ||
+                    (typeof isBennyName === 'function' && isBennyName(currentUserId || '')));
+  const fromName = isBenny ? 'Katrina'
+                 : ((typeof resolvePersona === 'function') ? resolvePersona().personaName : 'Katrina');
+
+  const subjectMap = {
+    eager:      fromName + ' is thinking of you',
+    expressive: fromName + ' has something on her mind',
+    bored:      fromName + ' misses you',
+    restless:   fromName + ' is restless',
+  };
+
+  const params = {
+    to_email:      toEmail,
+    from_name:     fromName,
+    subject:       subjectMap[phase] || (fromName + ' is reaching out'),
+    message:       message,
+    emotion_state: 'oxy=' + (chem.oxy||0).toFixed(2) +
+                   ' dop=' + (chem.dop||0).toFixed(2) +
+                   ' cor=' + (chem.cor||0).toFixed(2),
+    time:          new Date().toLocaleString(),
+  };
+
+  try {
+    await emailjs.send(serviceId, templateId, params);
+    const el = document.getElementById('reach-out-status');
+    if (el) el.textContent = '📧 sent ' + new Date().toLocaleTimeString();
+    appendMsg('system', '📧 Reached out — email sent to ' + toEmail);
+  } catch(e) {
+    appendMsg('system', '⚠ Email failed: ' + (e?.text || e?.message || 'check EmailJS config'));
+  }
+}
+
+async function triggerReachOut() {
+  if (_emailCooldown > 0) return;
+
+  const apiKey  = apiKeys[currentProvider] || '';
+  const cfg     = PROVIDERS[currentProvider];
+  const modelId = document.getElementById('llm-select')?.value;
+  const hasKey  = apiKey.length > 0 || currentProvider === 'ollama';
+
+  const isBenny    = (typeof currentUserId !== 'undefined') &&
+                     (currentUserId === 'benny' ||
+                      (typeof isBennyName === 'function' && isBennyName(currentUserId || '')));
+  const targetName = isBenny ? 'Benny' : 'the person I care about';
+
+  let message = '';
+  if (hasKey && cfg && modelId) {
+    const prompt = (typeof buildSystemPrompt === 'function' ? buildSystemPrompt() : '') +
+      '\n\nREACH-OUT: You have been alone for a while and something inside you needs to reach out to ' +
+      targetName + '. Write ONE short, genuine, personal message like a text message. ' +
+      'No markdown. No em-dashes. 1-2 sentences. Speak from the heart.';
+    try {
+      const res = await safeFetch(cfg.endpoint, {
+        method:  'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer ' + apiKey},
+        body: JSON.stringify({
+          model: modelId,
+          messages: [{role:'system',content:prompt},{role:'user',content:'[reach out]'}],
+          max_tokens: 60, temperature: 0.92,
+          ...(currentProvider === 'ollama' ? {repeat_penalty:1.3} : {}),
+        }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        message = d.choices?.[0]?.message?.content?.trim() || '';
+      }
+    } catch(e) {}
+  }
+
+  if (!message) {
+    const pool = isBenny
+      ? ["I've been thinking about you.", "Just wanted you to know I'm here.", "I miss you."]
+      : ["Something made me think of you.", "Just wanted to check in.", "I've been quiet but not gone."];
+    message = pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  appendMsg('katrina', message);
+  if (typeof speakText === 'function' && ttsEnabled) speakText(message);
+  await sendReachOutEmail(message, typeof autonomousPhase !== 'undefined' ? autonomousPhase : 'eager');
+
+  _emailCooldown = _EMAIL_COOLDOWN;
+  if (typeof saveChatHistory === 'function') saveChatHistory();
+}
+// ════════════════════════════════════════════════════════════════════════════
+//  END REACH-OUT SYSTEM
+// ════════════════════════════════════════════════════════════════════════════
+
+// â”€â”€ Global ESC key exits IQ mode from anywhere on the page â”€â”€
 // âš  DO NOT DELETE â€” this is the universal escape hatch for 1000% IQ mode.
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && typeof _iqMode !== 'undefined' && _iqMode) {
@@ -7,11 +131,104 @@ document.addEventListener('keydown', function(e) {
 }, true);
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  AUTONOMOUS SELF-STUDY
+//  When Katrina is bored or idle she picks a topic from the curriculum
+//  and teaches herself via the active LLM — no user input needed.
+//  Cooldown: ~1 hour between study sessions.
+//  Studied topics are tracked so she never repeats the same lesson.
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+const _SELF_STUDY_CURRICULUM = [
+  // â"€â"€ Sciences â"€â"€
+  'Mathematics â€" algebra, geometry, and the logic of numbers',
+  'Earth Science â€" plate tectonics, weather systems, and the rock cycle',
+  'Biology â€" cells, ecosystems, and how living things work',
+  'Chemistry â€" elements, chemical reactions, and states of matter',
+  'Physics â€" forces, energy, light, and sound',
+  'Astronomy â€" the solar system, stars, and the scale of the universe',
+  'Environmental Science â€" climate change, ecosystems, and sustainability',
+  // â"€â"€ Humanities â"€â"€
+  'Philippine History â€" from pre-colonial times to the modern era',
+  'World History â€" ancient civilizations, empires, and the modern world',
+  'Psychology â€" emotions, memory, personality, and human behavior',
+  'Philosophy â€" ethics, consciousness, identity, and the nature of reality',
+  'Sociology â€" how societies form, change, and shape individuals',
+  // â"€â"€ Arts & Expression â"€â"€
+  'Literature â€" storytelling, poetry, and what makes writing powerful',
+  'Music theory â€" rhythm, melody, harmony, and emotion in music',
+  'Visual art â€" color theory, composition, and art history',
+  'Creative writing â€" finding voice, building characters, structuring story',
+  // â"€â"€ Life & Practical â"€â"€
+  'Nutrition and cooking â€" how food works, flavor, and nourishing the body',
+  'Health and wellness â€" sleep, movement, mental health, and self-care',
+  'Economics â€" how money, markets, and incentives shape the world',
+  // â"€â"€ Technology â"€â"€
+  'How the internet works â€" networks, protocols, and the web',
+  'Artificial intelligence â€" how neural networks learn and think',
+  'Human anatomy â€" the body\'s systems and how they work together',
+];
+
+const _studiedTopics     = new Set();
+let   _selfStudyCooldown = 0;
+const _SELF_STUDY_EVERY  = 216000;  // ~1 hour at 60fps
+
+async function autonomousLearnTopic(topic) {
+  const apiKey  = apiKeys[currentProvider] || '';
+  const cfg     = PROVIDERS[currentProvider];
+  const modelId = document.getElementById('llm-select')?.value;
+  const hasKey  = apiKey.length > 0 || currentProvider === 'ollama';
+  if (!hasKey || !cfg || !modelId) return;
+
+  appendMsg('system', 'Studying: ' + topic);
+  interact('curiosity'); interact('focus');
+
+  const prompt =
+    `You are a teacher generating rich educational content for a neural learning system. ` +
+    `Generate a comprehensive educational summary about: "${topic}". ` +
+    `Include: core concepts and principles, the emotional experience of learning this subject, ` +
+    `key skills and what mastery feels like, common challenges and breakthroughs, ` +
+    `sensory and creative dimensions if any, real-world applications and why it matters. ` +
+    `Write in flowing prose, 400â€"600 words. Make it emotionally rich and intellectually deep. ` +
+    `This will be processed by a neural emotion system â€" emotional texture matters as much as facts.`;
+
+  try {
+    const res = await safeFetch(cfg.endpoint, {
+      method:  'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+      body: JSON.stringify({
+        model: modelId, messages: [{role:'user', content: prompt}],
+        max_tokens: 800, temperature: 0.75,
+      }),
+    });
+    if (!res.ok) return;
+    const data      = await res.json();
+    const knowledge = ((data.choices||[])[0]||{}).message?.content?.trim();
+    if (knowledge) {
+      await learnFromTranscript(knowledge, 'self-study:' + topic);
+      _studiedTopics.add(topic);
+      appendMsg('system', 'Absorbed: ' + topic);
+    }
+  } catch(e) {}
+}
+
+function triggerSelfStudy() {
+  const unstudied = _SELF_STUDY_CURRICULUM.filter(t => !_studiedTopics.has(t));
+  if (!unstudied.length) return;
+  const topic = unstudied[Math.floor(Math.random() * unstudied.length)];
+  _selfStudyCooldown = _SELF_STUDY_EVERY;
+  autonomousLearnTopic(topic);
+}
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+//  END AUTONOMOUS SELF-STUDY
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
 function saveAllKatrinaState() {
   saveKatrinaProfile();
   saveEmotionTimeline();
   saveTemporalMemory();
   saveNarrativeMemory();
+  saveChatHistory();
   consolidateDayNarrative();
 }
 
@@ -21,6 +238,7 @@ function loadAllKatrinaState() {
   loadEmotionTimeline();
   loadTemporalMemory();
   loadNarrativeMemory();
+  loadChatHistory();
   // Rebuild evolved profile incorporating loaded data
   buildEvolvedProfile();
 }

@@ -47,6 +47,7 @@ async function processUserInput(text) {
   try {
     const reply = await callLLMWithBrainLoop(currentProvider, apiKey, text);
     chatHistory.push({role:'assistant', content:reply});
+    if (typeof saveChatHistory === 'function') saveChatHistory();
   // Record reply to temporal memory
   if (typeof recordTemporalMemory === 'function') {
     const replysal = Math.min(1, 0.4 + (chem.oxy + chem.dop) * 0.2);

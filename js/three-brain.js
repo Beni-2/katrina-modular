@@ -1408,6 +1408,8 @@ function interact(type) {
   }
   // Clamp all chem values
   for(const k of Object.keys(chem)) chem[k]=Math.max(0,Math.min(1,chem[k]));
+  // Track last manually triggered emotion for system prompt injection
+  window._lastTriggeredEmotion = { type, ts: Date.now() };
 }
 
 

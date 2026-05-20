@@ -1,8 +1,74 @@
 ﻿
+// â"€â"€ REAL-WORLD CONTEXT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+let _weatherContext = ‘’;
+let _newsContext    = ‘’;
+let _weatherTs      = 0;
+let _newsTs         = 0;
+const _WEATHER_TTL  = 10 * 60 * 1000;
+const _NEWS_TTL     = 30 * 60 * 1000;
+
+async function fetchWeatherContext() {
+  const key = document.getElementById(‘owm-key-input’)?.value?.trim();
+  if (!key) return;
+  if (Date.now() - _weatherTs < _WEATHER_TTL) return;
+  _weatherTs = Date.now();
+  try {
+    const city = document.getElementById(‘owm-city-input’)?.value?.trim();
+    let url;
+    if (city) {
+      url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${key}&units=metric`;
+    } else {
+      const pos = await new Promise((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000})
+      );
+      url = `https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=${key}&units=metric`;
+    }
+    const r = await fetch(url);
+    if (!r.ok) return;
+    const d = await r.json();
+    _weatherContext = `${Math.round(d.main.temp)}°C, ${d.weather[0].description}, ${d.name}`;
+    _updateRealWorldHUD();
+  } catch(e) {}
+}
+
+async function fetchNewsContext() {
+  const key = document.getElementById(‘gnews-key-input’)?.value?.trim();
+  if (!key) return;
+  if (Date.now() - _newsTs < _NEWS_TTL) return;
+  _newsTs = Date.now();
+  try {
+    const r = await fetch(`https://gnews.io/api/v4/top-headlines?lang=en&max=3&apikey=${key}`);
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d.articles?.length) {
+      _newsContext = d.articles.map(a => a.title).join(‘ | ‘);
+      _updateRealWorldHUD();
+    }
+  } catch(e) {}
+}
+
+async function refreshRealWorldContext() {
+  await Promise.all([fetchWeatherContext(), fetchNewsContext()]);
+}
+
+function _updateRealWorldHUD() {
+  const panel = document.getElementById(‘real-world-panel’);
+  const el    = document.getElementById(‘real-world-indicator’);
+  if (!el || !panel) return;
+  const parts = [];
+  if (_weatherContext) parts.push(‘🌡️ ‘ + _weatherContext);
+  if (_newsContext)    parts.push(‘📰 news ready’);
+  el.textContent      = parts.join(‘  ·  ‘);
+  panel.style.display = parts.length ? ‘’ : ‘none’;
+}
+
+setInterval(refreshRealWorldContext, _WEATHER_TTL);
+// â"€â"€ END REAL-WORLD CONTEXT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+
 // Active zodiac state
 let activeSign   = null;  // null = no zodiac chosen â†’ pure Katrina by default
-let manualTraits = '';
-let customPrompt = '';   // raw text for Custom Personality
+let manualTraits = ‘’;
+let customPrompt = ‘’;   // raw text for Custom Personality
 let zodiacOpen   = true;
 
 // Merge manual traits into the system prompt addition
@@ -349,6 +415,23 @@ function buildSystemPrompt() {
   // â”€â”€ Build base from persona prefix â”€â”€
   let base = buildPersonaPromptPrefix(persona);
 
+  // â”€â”€ Last conversation memory â”€â”€
+  if (typeof getLastConversationContext === 'function') {
+    const _lastConvo = getLastConversationContext();
+    if (_lastConvo) base += '\n\nConversation memory: ' + _lastConvo;
+  }
+
+  // â”€â”€ Real-world context (date/time, weather, news) â”€â”€
+  const _now = new Date().toLocaleString('en-US', {
+    weekday:'short', month:'short', day:'numeric',
+    year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+  let _rw = `Current date and time: ${_now}.`;
+  if (_weatherContext) _rw += ` Weather right now: ${_weatherContext}.`;
+  if (_newsContext)    _rw += ` Latest headlines: ${_newsContext}.`;
+  base += '\n\nReal-world awareness: ' + _rw;
+  base += '\nReference this naturally when it fits — don\'t force it, but don\'t ignore it either.';
+
   // â”€â”€ Append live neural state â”€â”€
   base += '\n\n' + describeInternalState();
   base += '\nCurrent neural states: Emotional=' + sys.emo.toFixed(2) + ', Cognitive=' + sys.cog.toFixed(2) + ', Intuitive=' + sys.int_.toFixed(2) + ', Motor=' + sys.mot.toFixed(2) + '.';
@@ -361,6 +444,30 @@ function buildSystemPrompt() {
     if (z) base += '\nHobbies: ' + z.hobbies.join(', ') + '. Talents: ' + z.talents.join(', ') + '.';
   }
   if (manualTraits) base += '\nAdditional traits: ' + manualTraits + '.';
+
+  // â”€â”€ Recently triggered emotion â€” inject directly so the LLM feels it â”€â”€
+  if (window._lastTriggeredEmotion) {
+    const _age = (Date.now() - window._lastTriggeredEmotion.ts) / 1000;
+    if (_age < 45) {
+      const _emoLabels = {
+        joy:'joy',excitement:'excitement',love:'a surge of love',pride:'pride',
+        gratitude:'gratitude',amusement:'amusement',hope:'hope',contentment:'contentment',
+        empathy:'a wave of empathy',affection:'affection',belonging:'a sense of belonging',
+        trust:'deep trust',longing:'longing',jealousy:'jealousy',
+        grief:'grief',anxiety:'anxiety',anger:'anger',shame:'shame',guilt:'guilt',
+        disgust:'disgust',stress:'stress',fear:'fear',loneliness:'loneliness',overwhelmed:'feeling overwhelmed',
+        focus:'sharp focus',curiosity:'curiosity',learn:'eagerness to learn',recall:'a flood of memory',
+        confusion:'confusion',surprise:'surprise',
+        intuition:'a strong intuition',creative:'creative energy',awe:'awe',nostalgia:'nostalgia',
+        motor:'restless physical energy',restlessness:'restlessness',
+        arousal:'arousal',regret:'regret',sly:'a sly feeling',
+        dissociation:'dissociation',hysteria:'hysteria',panicking:'panic',
+        sleepy:'sleepiness',tired:'exhaustion',dreaming:'a dreamy haze',
+      };
+      const _label = _emoLabels[window._lastTriggeredEmotion.type] || window._lastTriggeredEmotion.type;
+      base += `\n\nEMOTIONAL IMPULSE: You just felt ${_label} surge through you. This is the dominant feeling right now — let it shape your tone naturally without announcing it.`;
+    }
+  }
 
   // â”€â”€ Identity context â”€â”€
   if (persona.isBennyUser || currentUserId === 'benny') {

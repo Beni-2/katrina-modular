@@ -253,6 +253,11 @@ function tickAutonomous() {
   // Always run element-based neural drift
   autonomousNeuralDrift();
 
+  // Tick self-study cooldown
+  if (typeof _selfStudyCooldown !== 'undefined' && _selfStudyCooldown > 0) _selfStudyCooldown--;
+  // Tick email reach-out cooldown
+  if (typeof _emailCooldown !== 'undefined' && _emailCooldown > 0) _emailCooldown--;
+
   // Update phase badge
   updateAutonomousHUD();
 
@@ -267,10 +272,24 @@ function tickAutonomous() {
     autoMsgCooldown = Math.floor(newPhase === 'expressive' ? 180 : 240);
     if (newPhase === 'expressive' || newPhase === 'eager') {
       generateInnerMonologue();
+      // Reach out via email+audio when emotionally driven and cooldown clear
+      if (typeof triggerReachOut === 'function' &&
+          typeof _emailCooldown !== 'undefined' && _emailCooldown <= 0 &&
+          Math.random() < 0.40) {
+        triggerReachOut();
+      }
     } else if (newPhase === 'bored' && Math.random() < 0.4) {
-      // Sometimes suggest a goal when genuinely bored
-      if (!activeGoal && Math.random() < 0.3) suggestDailyGoal();
-      else generateInnerMonologue();
+      // Bored: study something, suggest a goal, or think out loud
+      const canStudy = typeof triggerSelfStudy === 'function' &&
+                       typeof _selfStudyCooldown !== 'undefined' &&
+                       _selfStudyCooldown <= 0;
+      if (canStudy && Math.random() < 0.45) {
+        triggerSelfStudy();
+      } else if (!activeGoal && Math.random() < 0.3) {
+        suggestDailyGoal();
+      } else {
+        generateInnerMonologue();
+      }
     } else if (newPhase === 'restless' && Math.random() < 0.3) {
       generateInnerMonologue();
     }
