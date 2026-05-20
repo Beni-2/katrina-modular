@@ -230,10 +230,11 @@ function saveAllKatrinaState() {
   saveNarrativeMemory();
   saveChatHistory();
   saveChemState();
+  if (typeof saveBennyMemories === 'function') saveBennyMemories();
   consolidateDayNarrative();
 }
 
-// â”€â”€ Master load â€” call on boot after neurons initialized â”€â”€
+// â”€â”€ Master load â”€â”€
 function loadAllKatrinaState() {
   loadKatrinaProfile();
   loadEmotionTimeline();
@@ -242,8 +243,9 @@ function loadAllKatrinaState() {
   loadChatHistory();
   loadChemState();
   applyAbsenceEffect();
-  if (typeof loadWorldConfig         === 'function') loadWorldConfig();
-  if (typeof applyRelationshipBoost  === 'function') applyRelationshipBoost();
+  if (typeof loadWorldConfig        === 'function') loadWorldConfig();
+  if (typeof loadBennyMemories      === 'function') loadBennyMemories();
+  if (typeof applyRelationshipBoost === 'function') applyRelationshipBoost();
   buildEvolvedProfile();
 }
 

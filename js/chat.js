@@ -13,6 +13,12 @@ async function processUserInput(text) {
   // â”€â”€ Always show user message FIRST in chat trail â”€â”€
   appendMsg('user', text);
   chatHistory.push({role:'user', content:text});
+  // â”€â”€ Extract and store Benny memories from this message (async, non-blocking) â”€â”€
+  if (typeof extractBennyMemory === 'function') {
+    extractBennyMemory(text).then(function(ex) {
+      if (ex && typeof addBennyMemory === 'function') addBennyMemory(ex, text);
+    }).catch(function(){});
+  }
   // â”€â”€ Web search: if enabled and message needs live data, fetch before LLM â”€â”€
   let _webContext = '';
   if (typeof needsWebSearch === 'function' && needsWebSearch(text)) {

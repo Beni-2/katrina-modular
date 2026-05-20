@@ -434,6 +434,14 @@ function buildSystemPrompt() {
     if (_absence) base += '\n\nAbsence context: ' + _absence;
   }
 
+  // â”€â”€ Benny-specific memories â”€â”€
+  if (typeof getBennyMemoriesContext === 'function') {
+    const _memCtx = getBennyMemoriesContext(
+      chatHistory.slice(-4).map(function(m){ return m.content; }).join(' ')
+    );
+    if (_memCtx) base += '\n\n' + _memCtx;
+  }
+
   // â”€â”€ Sandbox world context (her home + nearby places) â”€â”€
   if (typeof getWorldContext === 'function') {
     const _world = getWorldContext();
