@@ -1,0 +1,2094 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ðŸ§  Katrina â€” Neural Architecture v3.0</title>
+<!-- âš  DO NOT DELETE â€” Supabase CDN. Required for persistent memory across resets.
+     If this script fails to load, the brain falls back to localStorage silently. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#020208;overflow:hidden;width:100vw;height:100vh;font-family:'Share Tech Mono',monospace;color:#e0e0e0;cursor:crosshair;}
+
+  /* â”€â”€ HUD LEFT â”€â”€ */
+  #hud{position:fixed;top:20px;left:20px;z-index:10;padding:18px 22px;background:rgba(5,5,20,0.88);border-radius:10px;border-left:3px solid #ff69b4;font-size:11px;line-height:1.8;pointer-events:none;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(255,105,180,0.15);min-width:220px;}
+  .hud-title{font-family:'Orbitron',sans-serif;font-size:20px;color:#ff69b4;font-weight:900;letter-spacing:4px;margin-bottom:2px;}
+  .hud-sub{color:#666;font-size:9px;letter-spacing:2px;margin-bottom:12px;}
+  .section-label{font-size:9px;color:#ff69b4;letter-spacing:3px;text-transform:uppercase;margin:10px 0 4px;border-bottom:1px solid rgba(255,105,180,0.2);padding-bottom:3px;}
+  .stat-bar-wrap{display:flex;align-items:center;gap:6px;margin:2px 0;}
+  .stat-bar-label{color:#556;font-size:9px;width:70px;}
+  .stat-bar-bg{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+  .stat-bar-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+  .stat-value{font-family:'Share Tech Mono';color:#00ffcc;font-size:11px;}
+  .bar-emo{background:linear-gradient(90deg,#ff69b4,#ff1493);}
+  .bar-cog{background:linear-gradient(90deg,#00bfff,#7b2fff);}
+  .bar-int{background:linear-gradient(90deg,#ffd700,#ff8c00);}
+  .bar-mot{background:linear-gradient(90deg,#00ff9f,#00cc6a);}
+  .bar-dop{background:linear-gradient(90deg,#a855f7,#ec4899);}
+  .bar-oxy{background:linear-gradient(90deg,#f472b6,#fb7185);}
+  .bar-cor{background:linear-gradient(90deg,#f59e0b,#ef4444);}
+
+  /* â”€â”€ HUD RIGHT â”€â”€ */
+  #hud-right{position:fixed;top:20px;right:20px;z-index:10;padding:18px 22px;background:rgba(5,5,20,0.88);border-radius:10px;border-right:3px solid #00bfff;font-size:11px;line-height:1.8;pointer-events:none;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(0,191,255,0.12);min-width:220px;}
+  .hud-right-title{font-family:'Orbitron',sans-serif;font-size:12px;color:#00bfff;font-weight:700;letter-spacing:3px;margin-bottom:10px;text-align:right;}
+  .region-row{display:flex;justify-content:space-between;align-items:center;margin:3px 0;}
+  .region-name{color:#556;font-size:9px;}
+  .region-act{font-size:10px;font-family:'Share Tech Mono';padding:1px 6px;border-radius:3px;background:rgba(255,255,255,0.05);transition:color 0.3s,background 0.3s;}
+  .region-act.hot{color:#ff69b4;background:rgba(255,105,180,0.15);}
+  .region-act.warm{color:#ffd700;background:rgba(255,215,0,0.1);}
+  .region-act.cool{color:#00ffcc;background:rgba(0,255,204,0.08);}
+  .state-badge{font-family:'Orbitron';font-size:13px;font-weight:700;color:#ff69b4;letter-spacing:2px;margin-top:10px;text-align:right;text-shadow:0 0 10px rgba(255,105,180,0.6);}
+
+  /* â”€â”€ LEFT EMOTION PANEL â€” below HUD, scrollable â”€â”€ */
+  #interaction-panel{
+    position:fixed;
+    top:330px;
+    left:20px;
+    z-index:10;
+    width:220px;
+    max-height:calc(100vh - 350px);
+    overflow-y:auto;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    padding:14px 14px 14px 14px;
+    background:rgba(5,5,20,0.88);
+    border-radius:10px;
+    border-left:3px solid #ff69b4;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 30px rgba(255,105,180,0.15);
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,105,180,0.3) transparent;
+    pointer-events:all;
+  }
+  #interaction-panel::-webkit-scrollbar{width:3px;}
+  #interaction-panel::-webkit-scrollbar-track{background:transparent;}
+  #interaction-panel::-webkit-scrollbar-thumb{background:rgba(255,105,180,0.3);border-radius:2px;}
+  .emo-group-label{
+    font-family:'Orbitron',sans-serif;
+    font-size:8px;
+    color:#ff69b4;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(255,105,180,0.2);
+    padding-bottom:3px;
+    margin-top:8px;
+    margin-bottom:2px;
+  }
+  .emo-group-label:first-child{margin-top:0;}
+  button{background:rgba(10,10,30,0.85);border:1px solid rgba(255,105,180,0.25);color:#889;padding:5px 10px;border-radius:5px;cursor:pointer;transition:all 0.2s;font-family:'Share Tech Mono';font-size:9px;letter-spacing:1px;text-transform:uppercase;backdrop-filter:blur(6px);width:100%;text-align:left;}
+  button:hover{color:#fff;box-shadow:0 0 8px currentColor;}
+  button.emo{border-color:rgba(255,105,180,0.2);}
+  button.emo:hover{border-color:#ff69b4;color:#ff69b4;}
+  button.soc{border-color:rgba(147,112,219,0.2);}
+  button.soc:hover{border-color:#9370db;color:#9370db;}
+  button.neg{border-color:rgba(100,100,140,0.2);}
+  button.neg:hover{border-color:#aab;color:#aab;}
+  button.cog{border-color:rgba(0,191,255,0.2);}
+  button.cog:hover{border-color:#00bfff;color:#00bfff;}
+  button.int{border-color:rgba(255,215,0,0.2);}
+  button.int:hover{border-color:#ffd700;color:#ffd700;}
+  button.mot{border-color:rgba(0,255,159,0.2);}
+  button.mot:hover{border-color:#00ff9f;color:#00ff9f;}
+  button.str{border-color:rgba(255,68,68,0.2);}
+  button.str:hover{border-color:#ff4444;color:#ff4444;}
+
+  /* â”€â”€ MOTOR BADGE â”€â”€ */
+  #motor-badge{position:fixed;bottom:75px;right:20px;z-index:10;padding:8px 14px;background:rgba(0,255,159,0.08);border:1px solid rgba(0,255,159,0.3);border-radius:6px;font-size:9px;letter-spacing:2px;color:#00ff9f;backdrop-filter:blur(8px);pointer-events:none;}
+  #benny-active-hud{
+    position:fixed;
+    bottom:110px;
+    right:20px;
+    z-index:15;
+    display:none;
+    padding:8px 16px;
+    background:rgba(255,20,100,0.12);
+    border:1px solid #ff69b4;
+    border-radius:8px;
+    font-family:'Orbitron',sans-serif;
+    font-size:9px;
+    letter-spacing:2px;
+    color:#ff69b4;
+    text-align:center;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 18px rgba(255,105,180,0.25);
+    pointer-events:none;
+    animation:bennyPulse 2s ease-in-out infinite;
+  }
+  @keyframes bennyPulse{
+    0%,100%{box-shadow:0 0 12px rgba(255,105,180,0.20);border-color:rgba(255,105,180,0.6);}
+    50%    {box-shadow:0 0 28px rgba(255,105,180,0.55);border-color:#ff69b4;}
+  }
+  #motor-badge span{animation:blink 2s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     DIALOG PANEL
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+  #dialog-wrap{
+    width:100%;flex-shrink:0;
+    transition:all 0.35s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* â”€â”€ SUBMENU / TOGGLE BAR â”€â”€ */
+  #dialog-toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(5,5,22,0.95);border:1px solid rgba(255,105,180,0.35);
+    border-top:1px solid rgba(255,105,180,0.2);
+    border-radius:0;padding:8px 14px;cursor:pointer;
+    backdrop-filter:blur(12px);user-select:none;
+    transition:border-color 0.2s;
+  }
+  #dialog-toggle:hover{border-color:#ff69b4;}
+  .toggle-label{font-family:'Orbitron';font-size:10px;color:#ff69b4;letter-spacing:3px;}
+  .toggle-controls{display:flex;gap:8px;align-items:center;}
+  .tc-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:#888;padding:3px 10px;border-radius:4px;font-size:9px;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+  .tc-btn:hover{border-color:#ff69b4;color:#ff69b4;box-shadow:none;}
+  .tc-btn.active{border-color:#ff69b4;color:#ff69b4;background:rgba(255,105,180,0.1);}
+  #toggle-arrow{font-size:12px;color:#ff69b4;transition:transform 0.3s;}
+  #toggle-arrow.up{transform:rotate(180deg);}
+
+  /* â”€â”€ PANEL BODY â”€â”€ */
+  #dialog-body{
+    background:rgba(4,4,18,0.96);
+    border:1px solid rgba(255,105,180,0.25);
+    border-top:none;border-bottom:none;border-radius:0;
+    backdrop-filter:blur(14px);
+    overflow:hidden;
+    max-height:580px;
+    transition:max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s;
+    opacity:1;
+    display:flex;flex-direction:column;
+  }
+  #dialog-body.collapsed{max-height:0;opacity:0;}
+
+  /* API key rows â€” both always visible */
+  #api-row{
+    display:flex;flex-direction:column;gap:6px;
+    padding:10px 14px 8px;
+    max-height:220px;overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:#334 transparent;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .api-provider-row{
+    display:flex;gap:6px;align-items:center;
+  }
+  .api-badge{
+    font-family:'Orbitron',sans-serif;font-size:8px;letter-spacing:2px;
+    padding:3px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+    cursor:pointer;transition:all 0.2s;border:1px solid;
+  }
+  .api-badge.groq-badge{
+    background:rgba(0,191,255,0.1);color:#00bfff;border-color:rgba(0,191,255,0.3);
+  }
+  .api-badge.groq-badge.active{background:rgba(0,191,255,0.22);box-shadow:0 0 8px rgba(0,191,255,0.3);}
+  .api-badge.doubao-badge{
+    background:rgba(255,165,0,0.1);color:#ffa500;border-color:rgba(255,165,0,0.3);
+  }
+  .api-badge.doubao-badge.active{background:rgba(255,165,0,0.22);box-shadow:0 0 8px rgba(255,165,0,0.3);}
+  .api-key-field{
+    flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    color:#aaa;font-family:'Share Tech Mono';font-size:10px;
+    padding:4px 8px;border-radius:4px;outline:none;min-width:0;
+  }
+  .api-key-field:focus{color:#fff;}
+  #groq-key-input:focus{border-color:#00bfff;}
+  #doubao-key-input:focus{border-color:#ffa500;}
+  .api-badge.gemini-badge{
+    background:rgba(52,168,83,0.1);color:#34a853;border-color:rgba(52,168,83,0.3);
+  }
+  .api-badge.gemini-badge.active{background:rgba(52,168,83,0.22);box-shadow:0 0 8px rgba(52,168,83,0.3);}
+  #gemini-key-input:focus{border-color:#34a853;}
+  .api-badge.deepseek-badge{
+    background:rgba(82,130,255,0.1);color:#5282ff;border-color:rgba(82,130,255,0.3);
+  }
+  .api-badge.deepseek-badge.active{background:rgba(82,130,255,0.22);box-shadow:0 0 8px rgba(82,130,255,0.3);}
+  #deepseek-key-input:focus{border-color:#5282ff;}
+  .api-badge.ollama-badge{
+    background:rgba(80,200,120,0.1);color:#50c878;border-color:rgba(80,200,120,0.3);
+  }
+  .api-badge.ollama-badge.active{background:rgba(80,200,120,0.22);box-shadow:0 0 8px rgba(80,200,120,0.3);}
+  #ollama-key-input:focus{border-color:#50c878;}
+  #ollama-key-input[disabled]{opacity:0.35;cursor:not-allowed;}
+  .api-badge.jina-badge{
+    background:rgba(0,200,180,0.10);color:#00c8b4;border-color:rgba(0,200,180,0.30);
+  }
+  .api-badge.jina-badge.active{background:rgba(0,200,180,0.22);box-shadow:0 0 8px rgba(0,200,180,0.3);}
+  #jina-key-input:focus{border-color:#00c8b4;}
+  .api-badge.tavily-badge{
+    background:rgba(255,160,0,0.10);color:#ffa000;border-color:rgba(255,160,0,0.30);
+  }
+  .api-badge.tavily-badge.active{background:rgba(255,160,0,0.22);box-shadow:0 0 8px rgba(255,160,0,0.3);}
+  #tavily-key-input:focus{border-color:#ffa000;}
+  #web-search-indicator{
+    font-family:'Share Tech Mono';font-size:8px;letter-spacing:1px;
+    padding:2px 8px;border-radius:3px;margin-top:3px;display:none;
+    background:rgba(0,200,180,0.08);color:#00c8b4;border:1px solid rgba(0,200,180,0.2);
+  }
+  #provider-badge.gemini{background:rgba(52,168,83,0.12);color:#34a853;border:1px solid rgba(52,168,83,0.3);}
+  /* keep legacy id working for JS that reads #api-key-input */
+  #api-key-input{display:none;}
+  #llm-select{
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    color:#aaa;font-family:'Share Tech Mono';font-size:10px;
+    padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;flex:1;min-width:0;
+  }
+  #llm-select:focus{border-color:#ff69b4;}
+  .api-model-row{display:flex;gap:6px;align-items:center;margin-top:2px;}
+  .api-model-label{font-size:8px;color:#445;letter-spacing:1px;white-space:nowrap;}
+  #key-hint-row{display:none;}  /* hints now inline in each row */
+
+  /* Chat history */
+  #chat-history{
+    flex:1;min-height:120px;max-height:200px;
+    overflow-y:auto;padding:12px 14px;
+    display:flex;flex-direction:column;gap:8px;
+    scroll-behavior:smooth;
+  }
+  #chat-history::-webkit-scrollbar{width:4px;}
+  #chat-history::-webkit-scrollbar-track{background:transparent;}
+  #chat-history::-webkit-scrollbar-thumb{background:rgba(255,105,180,0.3);border-radius:2px;}
+
+  .msg{max-width:85%;padding:8px 12px;border-radius:8px;font-size:11px;line-height:1.6;animation:fadeUp 0.25s ease;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .msg.user{align-self:flex-end;background:rgba(0,191,255,0.12);border:1px solid rgba(0,191,255,0.25);color:#cce8ff;border-radius:8px 8px 2px 8px;}
+  .msg.katrina{align-self:flex-start;background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.22);color:#ffe0ec;border-radius:8px 8px 8px 2px;}
+  .msg.system{align-self:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#666;font-size:9px;letter-spacing:1px;padding:4px 10px;}
+  .msg-name{font-size:8px;letter-spacing:2px;margin-bottom:3px;opacity:0.6;}
+  .msg.user .msg-name{color:#00bfff;text-align:right;}
+  .msg.katrina .msg-name{color:#ff69b4;}
+  /* âš  DO NOT DELETE â€” msg-time: real device clock stamp on every bubble.
+     Keeps the chat timeline honest and feeds temporal continuity checks. */
+  .msg-time{font-size:8px;opacity:0.38;margin-top:4px;letter-spacing:0.5px;}
+  .msg.user .msg-time{text-align:right;color:#00bfff;}
+  .msg.katrina .msg-time{text-align:left;color:#ff69b4;}
+  .msg.system .msg-time{display:none;}
+
+  /* âš  DO NOT DELETE â€” status-line / out-of-reach / pager CSS.
+     .msg-status-line  : italic availability note prepended inside katrina bubble.
+     #out-of-reach-bar : replaces input-row when katrina signals a future absence.
+                         Shows "[Name] is out of reach â€” notify her?" + Notify btn.
+     .pager-wrap       : minimal pager panel shown after Notify is tapped.
+                         Katrina replies once ("on my way back") then a 20s
+                         countdown runs before the regular chat auto-resumes.
+     Removing any of these breaks the real-time availability immersion system. */
+  .msg-status-line{
+    display:block;font-style:italic;font-size:11px;opacity:0.62;
+    margin-bottom:6px;color:#c8a0d0;letter-spacing:0.3px;
+  }
+  .msg.user .msg-status-line{color:#7ec8e3;text-align:right;}
+  #out-of-reach-bar{
+    display:none;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.06);
+    background:rgba(20,10,30,0.7);align-items:center;gap:10px;flex-shrink:0;
+    font-size:12px;color:#c8a0d0;font-style:italic;
+  }
+  #out-of-reach-bar.active{display:flex;}
+  #out-of-reach-yes{
+    background:rgba(200,160,208,0.18);border:1px solid #c8a0d0;color:#c8a0d0;
+    border-radius:14px;padding:5px 16px;cursor:pointer;font-size:12px;
+    white-space:nowrap;
+  }
+  #out-of-reach-yes:hover{background:rgba(200,160,208,0.32);}
+  .pager-wrap{
+    display:none;flex-direction:column;padding:10px 14px 8px;
+    background:rgba(10,20,10,0.7);border-top:1px solid rgba(100,200,100,0.15);
+    flex-shrink:0;align-items:center;gap:6px;
+  }
+  .pager-wrap.active{display:flex;}
+  .pager-label{
+    font-size:10px;letter-spacing:1.5px;color:#6fcf97;opacity:0.8;
+    font-style:italic;text-align:center;
+  }
+  #pager-countdown{
+    font-family:'Orbitron',sans-serif;font-size:13px;color:#6fcf97;
+    letter-spacing:2px;text-align:center;
+  }
+
+  /* Input row */
+  #input-row{
+    display:flex;gap:8px;padding:10px 14px;
+    border-top:1px solid rgba(255,255,255,0.06);
+    align-items:center;
+    flex-shrink:0;  /* never compress â€” always visible */
+  }
+  #chat-input{
+    flex:1;background:rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.1);
+    color:#ddd;font-family:'Share Tech Mono';font-size:11px;
+    padding:8px 12px;border-radius:6px;outline:none;
+    transition:border-color 0.2s;
+  }
+  #chat-input:focus{border-color:#ff69b4;background:rgba(255,105,180,0.05);}
+  #chat-input::placeholder{color:#334;}
+
+  .icon-btn{
+    background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.3);
+    color:#ff69b4;width:34px;height:34px;border-radius:6px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:14px;transition:all 0.2s;flex-shrink:0;
+  }
+  .icon-btn:hover{background:rgba(255,105,180,0.25);box-shadow:0 0 10px rgba(255,105,180,0.4);}
+  .icon-btn:disabled{opacity:0.35;cursor:not-allowed;}
+  .icon-btn.recording{background:rgba(255,50,50,0.2);border-color:#ff3333;color:#ff3333;animation:pulse-rec 1s infinite;}
+  @keyframes pulse-rec{0%,100%{box-shadow:0 0 0 0 rgba(255,50,50,0.4)}50%{box-shadow:0 0 0 6px rgba(255,50,50,0)}}
+
+  /* Status bar */
+  #status-bar{
+    padding:5px 14px 8px;
+    font-size:9px;color:#445;letter-spacing:1px;
+    flex-shrink:0;
+    display:flex;align-items:center;gap:6px;
+  }
+  #status-dot{width:6px;height:6px;border-radius:50%;background:#334;flex-shrink:0;transition:background 0.3s;}
+  #status-dot.thinking{background:#ffd700;animation:pulse-dot 0.8s infinite;}
+  #status-dot.speaking{background:#00ff9f;animation:pulse-dot 0.6s infinite;}
+  #status-dot.listening{background:#ff3333;animation:pulse-dot 0.5s infinite;}
+  #status-dot.ready{background:#00bfff;}
+  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+
+  /* â”€â”€ PROVIDER TABS â”€â”€ */
+  .provider-tab{
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    color:#556;font-family:'Share Tech Mono';font-size:9px;letter-spacing:2px;
+    padding:4px 10px;border-radius:4px;cursor:pointer;transition:all 0.2s;
+    white-space:nowrap;flex-shrink:0;
+  }
+  .provider-tab.active{border-color:#ff69b4;color:#ff69b4;background:rgba(255,105,180,0.1);}
+  .provider-tab:hover{border-color:#ff69b4;color:#ff69b4;}
+  #provider-badge{
+    font-size:8px;letter-spacing:2px;padding:1px 6px;border-radius:3px;
+    margin-right:4px;
+  }
+  #provider-badge.groq{background:rgba(0,191,255,0.12);color:#00bfff;border:1px solid rgba(0,191,255,0.3);}
+  #provider-badge.doubao{background:rgba(255,165,0,0.12);color:#ffa500;border:1px solid rgba(255,165,0,0.3);}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   âš  DO NOT DELETE â€” KATRINA WINDOW MANAGER SYSTEM
+   Wraps all existing panels in draggable, resizable, min/max/close windows.
+   The dock at the bottom shows all windows. Click to restore minimized ones.
+   All existing panel IDs, functions, and logic are completely untouched.
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* â”€â”€ Dock â”€â”€ */
+#wm-dock{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  z-index:8000;
+  display:flex;align-items:flex-end;gap:6px;
+  padding:6px 14px 8px;
+  background:rgba(5,5,22,0.92);
+  border-radius:16px 16px 0 0;
+  border-top:1px solid rgba(255,105,180,0.25);
+  border-left:1px solid rgba(255,105,180,0.15);
+  border-right:1px solid rgba(255,105,180,0.15);
+  backdrop-filter:blur(18px);
+  box-shadow:0 -4px 30px rgba(0,0,0,0.4);
+}
+.dock-icon{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding:5px 8px;border-radius:10px;
+  transition:all 0.18s;
+  font-size:20px;
+  position:relative;
+}
+.dock-icon:hover{background:rgba(255,255,255,0.08);transform:translateY(-6px) scale(1.15);}
+.dock-icon.active .dock-dot{background:#ff69b4;}
+.dock-icon.minimized .dock-dot{background:#ffd700;}
+.dock-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  transition:background 0.2s;
+}
+.dock-label{
+  font-size:8px;color:#556;letter-spacing:1px;
+  font-family:'Share Tech Mono';
+  white-space:nowrap;
+}
+
+/* â”€â”€ Window frame â”€â”€ */
+.wm-window{
+  position:fixed;
+  z-index:7000;
+  min-width:220px;min-height:120px;
+  background:rgba(4,4,18,0.97);
+  border:1px solid rgba(255,105,180,0.28);
+  border-radius:10px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);
+  backdrop-filter:blur(14px);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transition:box-shadow 0.2s;
+  resize:both;
+}
+.wm-window.focused{
+  border-color:rgba(255,105,180,0.6);
+  box-shadow:0 12px 50px rgba(255,105,180,0.15);
+  z-index:7500;
+}
+.wm-window.minimized{display:none;}
+.wm-window.maximized{
+  top:0!important;left:0!important;
+  width:100vw!important;height:calc(100vh - 52px)!important;
+  border-radius:0;resize:none;
+}
+
+/* â”€â”€ Title bar â”€â”€ */
+.wm-titlebar{
+  display:flex;align-items:center;
+  padding:6px 10px;
+  background:rgba(5,5,22,0.98);
+  border-bottom:1px solid rgba(255,105,180,0.18);
+  cursor:move;
+  flex-shrink:0;
+  user-select:none;
+  gap:8px;
+}
+.wm-title{
+  flex:1;font-family:'Orbitron',sans-serif;font-size:9px;
+  color:#ff69b4;letter-spacing:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.wm-controls{display:flex;gap:5px;flex-shrink:0;}
+.wm-btn{
+  width:13px;height:13px;border-radius:50%;border:none;
+  cursor:pointer;transition:opacity 0.15s;
+  font-size:0;flex-shrink:0;
+}
+.wm-btn:hover{opacity:0.75;}
+.wm-btn.close{background:#ff5f57;}
+.wm-btn.minimize{background:#febc2e;}
+.wm-btn.maximize{background:#28c840;}
+
+/* â”€â”€ Window content â”€â”€ */
+.wm-content{
+  flex:1;overflow:auto;
+  pointer-events:all;
+}
+.wm-content::-webkit-scrollbar{width:3px;}
+.wm-content::-webkit-scrollbar-thumb{background:rgba(255,105,180,0.3);}
+
+/* â”€â”€ Resize handle (visual cue bottom-right) â”€â”€ */
+.wm-window::after{
+  content:'â‹±';position:absolute;bottom:3px;right:5px;
+  color:rgba(255,105,180,0.25);font-size:11px;pointer-events:none;
+}
+/* â”€â”€ Synoptics window â€” wraps the Three.js brain canvas â”€â”€ */
+#win-synoptics {
+  /* Starts maximized â€” covers full screen like the canvas does now */
+  top:0!important;left:0!important;
+  width:100vw!important;height:calc(100vh - 52px)!important;
+  border-radius:0;
+  background:transparent;
+  border-color:rgba(255,105,180,0.15);
+}
+#win-synoptics .wm-content {
+  overflow:hidden;padding:0;
+  background:transparent;
+}
+#win-synoptics #three-canvas {
+  width:100%!important;
+  height:100%!important;
+  display:block;
+}
+/* When synoptics is minimized/closed â€” show world-engine placeholder bg */
+body.synoptics-hidden {
+  background: #020208;
+}
+body.synoptics-hidden::before {
+  content:'â¬¡ WORLD ENGINE â€” ready for body attachment';
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Orbitron',sans-serif;font-size:13px;
+  color:rgba(255,105,180,0.18);letter-spacing:4px;
+  pointer-events:none;z-index:1;
+}
+/* âš  DO NOT DELETE â€” World Engine side panel CSS.
+   Splits the overlay into 3D canvas (left) + Chat+Identity panels (right).
+   Both panels are fully functional â€” they mirror the existing dialog-wrap
+   and id-wrap panels but displayed inside the world engine overlay. */
+#we-overlay { flex-direction: column; }
+#we-body-row {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+#we-canvas-wrap {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+#we-canvas { width:100%;height:100%;display:block;touch-action:none; }
+#we-side-panel {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(4,4,18,0.97);
+  border-left: 1px solid rgba(255,105,180,0.2);
+  overflow: hidden;
+}
+#we-side-chat {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255,105,180,0.15);
+}
+#we-side-identity {
+  height: 220px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,105,180,0.3) transparent;
+}
+.we-panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 8px;
+  color: #ff69b4;
+  letter-spacing: 2px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,105,180,0.12);
+  flex-shrink: 0;
+}
+/* END WORLD ENGINE SIDE PANEL CSS */
+
+  /* â”€â”€ ZODIAC PANEL â”€â”€ */
+  /* â”€â”€ STACKED PANEL COLUMN (center) â”€â”€ */
+  #panel-column{
+    position:fixed;
+    left:50%;transform:translateX(-50%);
+    z-index:30;
+    width:min(700px,96vw);
+    display:flex;flex-direction:column;gap:0;
+    top:18px;
+    max-height:calc(100vh - 110px);
+    overflow-y:auto;
+    overflow-x:visible;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,105,180,0.3) transparent;
+    pointer-events:all;
+  }
+  #panel-column::-webkit-scrollbar{display:none;}
+  #zodiac-wrap{
+    width:100%;flex-shrink:0;
+  }
+  #zodiac-toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(5,5,22,0.97);border:1px solid rgba(255,215,0,0.4);
+    border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;
+    backdrop-filter:blur(14px);user-select:none;
+  }
+  #zodiac-toggle:hover{border-color:#ffd700;}
+  .ztoggle-label{font-family:'Orbitron';font-size:10px;color:#ffd700;letter-spacing:3px;}
+  #ztoggle-arrow{font-size:11px;color:#ffd700;transition:transform 0.3s;}
+  #ztoggle-arrow.up{transform:rotate(180deg);}
+  #zodiac-body{
+    background:rgba(4,4,18,0.97);border:1px solid rgba(255,215,0,0.2);
+    border-top:none;border-bottom:none;border-radius:0;
+    backdrop-filter:blur(14px);overflow:visible;
+    max-height:none;
+    transition:opacity 0.25s;
+    opacity:1;
+  }
+  #zodiac-body.collapsed{max-height:0;opacity:0;overflow:hidden;pointer-events:none;}
+  .z-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    padding:14px 16px 10px;
+    pointer-events:all;
+  }
+  #zodiac-body *{pointer-events:all;}
+  #zodiac-body.collapsed *{pointer-events:none;}
+  /* 13th card spans full last row */
+  .z-card.z-custom-card{
+    grid-column:span 4;
+    border-color:rgba(180,100,255,0.3);
+    background:rgba(180,100,255,0.06);
+  }
+  .z-card.z-custom-card:hover{border-color:#c084fc;background:rgba(180,100,255,0.14);}
+  .z-card.z-custom-card.selected{border-color:#c084fc;background:rgba(180,100,255,0.18);box-shadow:0 0 14px rgba(180,100,255,0.3);}
+  .z-card{
+    background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+    border-radius:8px;padding:10px 8px;cursor:pointer;transition:all 0.2s;
+    text-align:center;
+  }
+  .z-card:hover{border-color:#ffd700;background:rgba(255,215,0,0.08);}
+  .z-card.selected{border-color:#ffd700;background:rgba(255,215,0,0.12);
+    box-shadow:0 0 12px rgba(255,215,0,0.2);}
+  .z-emoji{font-size:20px;display:block;margin-bottom:3px;}
+  .z-name{font-size:9px;color:#ffd700;letter-spacing:2px;font-family:'Orbitron';}
+  .z-dates{font-size:8px;color:#556;margin-top:2px;}
+  .z-element{font-size:7px;letter-spacing:1px;margin-top:2px;
+    padding:1px 5px;border-radius:3px;display:inline-block;}
+  .el-fire{background:rgba(255,69,0,0.2);color:#ff6030;}
+  .el-earth{background:rgba(101,163,13,0.2);color:#84cc16;}
+  .el-air{background:rgba(0,191,255,0.2);color:#00bfff;}
+  .el-water{background:rgba(139,92,246,0.2);color:#a78bfa;}
+
+  #z-active-row{
+    padding:8px 16px;border-top:1px solid rgba(255,215,0,0.1);
+    display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  }
+  #z-active-badge{
+    font-family:'Orbitron';font-size:22px;flex-shrink:0;
+    width:44px;text-align:center;
+  }
+  #z-trait-panel{flex:1;min-width:0;}
+  #z-sign-name{font-family:'Orbitron';font-size:13px;color:#ffd700;letter-spacing:3px;}
+  #z-sign-desc{font-size:10px;color:#aaa;margin-top:4px;line-height:1.6;}
+  #z-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .z-tag{font-size:8px;padding:2px 7px;border-radius:10px;letter-spacing:1px;
+    background:rgba(255,215,0,0.1);color:#ffd700;border:1px solid rgba(255,215,0,0.2);}
+
+  #z-manual-row{
+    padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,0.06);
+    display:flex;gap:8px;align-items:center;
+    pointer-events:all;
+  }
+  #z-manual-label{font-size:9px;color:#556;letter-spacing:1px;white-space:nowrap;}
+  #z-manual-input{
+    flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    color:#ddd;font-family:'Share Tech Mono';font-size:10px;
+    padding:6px 10px;border-radius:5px;outline:none;
+  }
+  #z-manual-input:focus{border-color:#ffd700;background:rgba(255,215,0,0.04);}
+  #z-apply-btn{
+    background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.4);
+    color:#ffd700;padding:6px 14px;border-radius:5px;cursor:pointer;
+    font-family:'Share Tech Mono';font-size:9px;letter-spacing:1px;
+    transition:all 0.2s;white-space:nowrap;
+  }
+  #z-apply-btn:hover{background:rgba(255,215,0,0.25);box-shadow:0 0 10px rgba(255,215,0,0.3);}
+
+  #z-neural-bars{
+    display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;
+    padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,0.06);
+  }
+  .znb-row{display:flex;align-items:center;gap:6px;}
+  .znb-label{font-size:8px;color:#556;width:72px;letter-spacing:1px;}
+  .znb-bg{flex:1;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+  .znb-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+
+
+  /* â”€â”€ IDENTITY / RECOGNITION PANEL â”€â”€ */
+  #id-wrap{
+    width:100%;flex-shrink:0;
+  }
+  #id-toggle{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(5,5,22,0.97);border:1px solid rgba(255,105,180,0.4);
+    border-top:1px solid rgba(255,105,180,0.15);
+    border-radius:0;padding:8px 14px;cursor:pointer;
+    backdrop-filter:blur(14px);user-select:none;
+  }
+  #id-toggle:hover{border-color:#ff69b4;}
+  .id-toggle-label{font-family:'Orbitron';font-size:9px;color:#ff69b4;letter-spacing:3px;}
+  #id-arrow{font-size:10px;color:#ff69b4;transition:transform 0.3s;}
+  #id-arrow.up{transform:rotate(180deg);}
+  #id-body{
+    background:rgba(4,4,18,0.97);border:1px solid rgba(255,105,180,0.2);
+    border-top:none;border-radius:0 0 10px 10px;
+    backdrop-filter:blur(14px);overflow:hidden;
+    max-height:520px;transition:max-height 0.35s cubic-bezier(.4,0,.2,1),opacity 0.25s;
+    opacity:1;
+  }
+  #id-body.collapsed{max-height:0;opacity:0;}
+
+  /* camera feed */
+  #cam-view-wrap{position:relative;width:100%;background:#000;overflow:hidden;}
+  #cam-video{width:100%;display:block;max-height:160px;object-fit:cover;}
+  #cam-canvas{display:none;}
+  #cam-overlay{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    pointer-events:none;
+  }
+  #cam-status-box{
+    background:rgba(0,0,0,0.65);border:1px solid rgba(255,105,180,0.4);
+    border-radius:6px;padding:6px 14px;
+    font-size:10px;letter-spacing:2px;color:#ff69b4;
+    font-family:'Share Tech Mono';
+  }
+  #recog-ring{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:80px;height:80px;border-radius:50%;
+    border:2px solid transparent;pointer-events:none;
+    transition:border-color 0.4s,box-shadow 0.4s;
+  }
+  #recog-ring.scanning{border-color:rgba(255,105,180,0.5);animation:ring-pulse 1.2s infinite;}
+  #recog-ring.matched{border-color:#ff69b4;box-shadow:0 0 20px rgba(255,105,180,0.7);}
+  #recog-ring.stranger{border-color:#ffa500;box-shadow:0 0 12px rgba(255,165,0,0.4);}
+  @keyframes ring-pulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.5;transform:translate(-50%,-50%) scale(1.08)}}
+
+  /* controls row */
+  #id-ctrl-row{
+    display:flex;gap:6px;padding:8px 12px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    flex-wrap:wrap;
+  }
+  .id-btn{
+    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+    color:#888;font-family:'Share Tech Mono';font-size:9px;letter-spacing:1px;
+    padding:5px 10px;border-radius:5px;cursor:pointer;transition:all 0.2s;flex:1;
+    text-align:center;min-width:70px;
+  }
+  .id-btn:hover{border-color:#ff69b4;color:#ff69b4;}
+  .id-btn.active-cam{border-color:#00ff9f;color:#00ff9f;background:rgba(0,255,159,0.08);}
+  .id-btn.scanning-btn{border-color:#ffd700;color:#ffd700;background:rgba(255,215,0,0.08);}
+
+  /* enrolled face list */
+  #id-faces-section{padding:8px 12px;}
+  .id-section-title{font-size:8px;color:#556;letter-spacing:2px;margin-bottom:6px;text-transform:uppercase;}
+  #id-face-list{display:flex;flex-wrap:wrap;gap:6px;min-height:20px;}
+  .face-thumb{
+    position:relative;width:52px;height:52px;border-radius:6px;overflow:hidden;
+    border:2px solid rgba(255,255,255,0.1);cursor:pointer;transition:border-color 0.2s;
+  }
+  .face-thumb img{width:100%;height:100%;object-fit:cover;}
+  .face-thumb.benny{border-color:#ff69b4;box-shadow:0 0 8px rgba(255,105,180,0.5);}
+  .face-thumb .face-label{
+    position:absolute;bottom:0;left:0;right:0;
+    background:rgba(0,0,0,0.7);font-size:7px;color:#fff;
+    text-align:center;padding:1px 2px;letter-spacing:1px;
+  }
+  .face-thumb .del-btn{
+    position:absolute;top:1px;right:2px;font-size:9px;color:rgba(255,255,255,0.4);
+    cursor:pointer;line-height:1;background:none;border:none;padding:0;
+  }
+  .face-thumb .del-btn:hover{color:#ff4444;}
+  #id-no-faces{font-size:9px;color:#334;letter-spacing:1px;}
+
+  /* identity result banner */
+  #id-result{
+    margin:8px 12px;padding:8px 12px;border-radius:6px;
+    font-size:11px;letter-spacing:1px;display:none;
+    font-family:'Orbitron';text-align:center;
+    transition:all 0.3s;
+  }
+  #id-result.benny-found{
+    background:rgba(255,105,180,0.15);border:1px solid #ff69b4;
+    color:#ff69b4;display:block;
+    text-shadow:0 0 10px rgba(255,105,180,0.6);
+    animation:heartbeat 1.5s infinite;
+  }
+  #id-result.stranger-found{
+    background:rgba(255,165,0,0.1);border:1px solid rgba(255,165,0,0.4);
+    color:#ffa500;display:block;
+  }
+  @keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+
+  /* capture name input */
+  #id-capture-row{
+    display:flex;gap:6px;padding:6px 12px 10px;align-items:center;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  #id-name-input{
+    flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+    color:#ddd;font-family:'Share Tech Mono';font-size:10px;
+    padding:5px 8px;border-radius:4px;outline:none;
+  }
+  #id-name-input:focus{border-color:#ff69b4;}
+  #id-snap-btn{
+    background:rgba(255,105,180,0.12);border:1px solid rgba(255,105,180,0.35);
+    color:#ff69b4;font-family:'Share Tech Mono';font-size:9px;
+    padding:5px 10px;border-radius:4px;cursor:pointer;transition:all 0.2s;
+    white-space:nowrap;
+  }
+  #id-snap-btn:hover{background:rgba(255,105,180,0.25);}
+
+
+  /* â”€â”€ CUSTOM PERSONALITY â”€â”€ */
+  .el-custom{background:rgba(180,100,255,0.18);color:#c084fc;}
+  /* â”€â”€ Learning Pipeline Panel â”€â”€ */
+  #learn-panel{
+    display:none;
+    background:rgba(5,5,20,0.92);
+    border:1px solid rgba(100,68,255,0.3);
+    border-radius:8px;
+    padding:10px 12px;
+    margin-top:6px;
+    font-family:'Share Tech Mono';
+  }
+  #learn-panel.visible{display:block;}
+  #learn-toggle{
+    font-family:'Orbitron';font-size:8px;letter-spacing:2px;
+    background:rgba(100,68,255,0.1);color:#8866ff;
+    border:1px solid rgba(100,68,255,0.3);border-radius:4px;
+    padding:4px 10px;cursor:pointer;width:100%;margin-top:4px;
+    transition:all 0.2s;
+  }
+  #learn-toggle:hover{background:rgba(100,68,255,0.2);}
+  #learn-url-input{
+    width:100%;background:rgba(255,255,255,0.04);
+    border:1px solid rgba(100,68,255,0.2);color:#aaa;
+    font-family:'Share Tech Mono';font-size:10px;
+    padding:5px 8px;border-radius:4px;outline:none;
+    box-sizing:border-box;margin-top:6px;
+  }
+  #learn-url-input:focus{border-color:#8866ff;color:#fff;}
+  #learn-file-input{display:none;}
+  .learn-btn{
+    font-family:'Orbitron';font-size:8px;letter-spacing:1px;
+    padding:4px 10px;border-radius:4px;cursor:pointer;
+    border:1px solid;transition:all 0.2s;margin-top:4px;
+  }
+  .learn-btn.url-btn{background:rgba(100,68,255,0.1);color:#8866ff;border-color:rgba(100,68,255,0.3);}
+  .learn-btn.file-btn{background:rgba(0,191,255,0.1);color:#00bfff;border-color:rgba(0,191,255,0.3);}
+  .learn-btn:hover{opacity:0.8;}
+  #learn-progress{
+    font-size:9px;color:#6644ff;letter-spacing:1px;
+    margin-top:6px;min-height:14px;line-height:1.6;
+  }
+  #learn-progress-bar{
+    height:3px;background:rgba(255,255,255,0.06);border-radius:2px;
+    margin-top:4px;overflow:hidden;display:none;
+  }
+  #learn-progress-fill{
+    height:100%;background:linear-gradient(90deg,#6644ff,#aa66ff);
+    border-radius:2px;width:0%;transition:width 0.4s;
+  }
+  /* âš  DO NOT DELETE â€” 1000% IQ full-screen overlay CSS.
+     Day theme (white/light) covers entire viewport at z-index 9999.
+     Three fixed zones: top bar (never scrolls), middle chat, bottom bar.
+     ESC key and Return to Brain button are the only exits.
+     Removing this collapses the IQ full-screen experience. */
+  #iq-overlay{
+    display:none;
+    position:fixed;top:0;left:0;width:100vw;height:100vh;
+    z-index:9999;
+    background:#f8f9fa;
+    flex-direction:column;
+    font-family:'Arial',sans-serif;
+  }
+  #iq-overlay.active{display:flex;}
+
+  /* Top bar â€” always visible, never scrolls */
+  #iq-top-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px;
+    background:#1a1a2e;
+    border-bottom:3px solid #00ffc8;
+    flex-shrink:0;
+    gap:12px;
+  }
+  #iq-top-title{
+    font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
+    color:#00ffc8;letter-spacing:3px;white-space:nowrap;
+  }
+  #iq-top-provider{
+    font-size:10px;color:#556;letter-spacing:1px;
+    font-family:'Share Tech Mono';flex:1;padding-left:12px;
+  }
+  #iq-top-tts{
+    background:none;border:1px solid rgba(0,255,200,0.35);
+    color:#00ffc8;padding:4px 12px;border-radius:4px;
+    font-size:10px;cursor:pointer;letter-spacing:1px;
+    font-family:'Share Tech Mono';transition:all 0.2s;white-space:nowrap;
+  }
+  #iq-top-tts:hover{background:rgba(0,255,200,0.12);}
+  #iq-top-tts.muted{border-color:rgba(255,255,255,0.2);color:#667;}
+  #iq-return-btn{
+    background:rgba(255,80,80,0.15);border:2px solid #ff5050;
+    color:#ff5050;font-family:'Orbitron',sans-serif;font-size:10px;
+    font-weight:700;letter-spacing:2px;padding:7px 16px;
+    border-radius:6px;cursor:pointer;transition:all 0.2s;
+    white-space:nowrap;flex-shrink:0;
+  }
+  #iq-return-btn:hover{background:rgba(255,80,80,0.30);box-shadow:0 0 14px rgba(255,80,80,0.4);}
+
+  /* Middle â€” scrollable chat */
+  #iq-chat-area{
+    flex:1;overflow-y:auto;padding:24px 32px;
+    background:#f8f9fa;
+    display:flex;flex-direction:column;gap:16px;
+    scroll-behavior:smooth;
+  }
+  #iq-chat-area::-webkit-scrollbar{width:6px;}
+  #iq-chat-area::-webkit-scrollbar-track{background:#eee;}
+  #iq-chat-area::-webkit-scrollbar-thumb{background:#bbb;border-radius:3px;}
+
+  .iq-msg-user{
+    align-self:flex-end;
+    background:#1a1a2e;color:#e0f7ff;
+    padding:10px 16px;border-radius:12px 12px 2px 12px;
+    max-width:70%;font-size:14px;line-height:1.6;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  }
+  .iq-msg-ai{
+    align-self:flex-start;
+    background:#fff;color:#1a1a2e;
+    padding:14px 18px;border-radius:2px 12px 12px 12px;
+    max-width:85%;font-size:14px;line-height:1.7;
+    border:1px solid #dde;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    white-space:pre-wrap;word-break:break-word;
+  }
+  .iq-msg-sys{
+    align-self:center;color:#aaa;font-size:11px;
+    font-style:italic;letter-spacing:1px;
+  }
+  .iq-msg-label{
+    font-size:10px;letter-spacing:1px;margin-bottom:4px;
+    font-family:'Share Tech Mono';
+  }
+  .iq-msg-user .iq-msg-label{color:#00ffc8;text-align:right;}
+  .iq-msg-ai   .iq-msg-label{color:#667;}
+
+  /* Bottom bar â€” always visible, never scrolls */
+  #iq-bottom-bar{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 20px;
+    background:#fff;border-top:2px solid #dde;
+    flex-shrink:0;
+  }
+  #iq-input{
+    flex:1;padding:10px 16px;font-size:14px;
+    border:2px solid #ccd;border-radius:8px;outline:none;
+    font-family:'Arial';background:#fafafa;color:#1a1a2e;
+    transition:border-color 0.2s;
+  }
+  #iq-input:focus{border-color:#1a1a2e;}
+  #iq-send-btn{
+    background:#1a1a2e;color:#fff;border:none;
+    padding:10px 18px;border-radius:8px;cursor:pointer;
+    font-size:16px;flex-shrink:0;transition:background 0.2s;
+  }
+  #iq-send-btn:hover{background:#2d2d5e;}
+  #iq-mute-btn{
+    background:none;border:2px solid #ccd;color:#667;
+    width:40px;height:40px;border-radius:8px;cursor:pointer;
+    font-size:16px;flex-shrink:0;transition:all 0.2s;
+  }
+  #iq-mute-btn:hover{border-color:#1a1a2e;color:#1a1a2e;}
+  #iq-mute-btn.muted{border-color:#ffaaaa;color:#ff5050;}
+  #iq-share-btn{
+    background:none;border:2px solid #ccd;color:#667;
+    padding:8px 14px;border-radius:8px;cursor:pointer;
+    font-size:12px;font-family:'Share Tech Mono';
+    letter-spacing:1px;flex-shrink:0;transition:all 0.2s;
+    white-space:nowrap;
+  }
+  #iq-share-btn:hover{border-color:#1a1a2e;color:#1a1a2e;}
+
+  /* tc-btn IQ toggle in top interface bar */
+  .tc-btn.iq-btn{border-color:rgba(0,255,200,0.35);color:#00ffc8;}
+  .tc-btn.iq-btn:hover{border-color:#00ffc8;color:#00ffc8;box-shadow:0 0 8px rgba(0,255,200,0.3);}
+  .tc-btn.iq-btn.active{border-color:#00ffc8;color:#00ffc8;background:rgba(0,255,200,0.12);
+    box-shadow:0 0 12px rgba(0,255,200,0.4);}
+  #z-custom-block{
+    display:none;padding:6px 16px 10px;
+    border-top:1px solid rgba(180,100,255,0.2);
+    pointer-events:none;
+  }
+  #z-custom-block.visible{display:block;pointer-events:all;position:relative;z-index:40;}
+  #z-custom-label{font-size:9px;color:#c084fc;letter-spacing:2px;margin-bottom:5px;}
+  #z-custom-textarea{
+    width:100%;background:rgba(180,100,255,0.06);
+    border:1px solid rgba(180,100,255,0.3);color:#e0d0ff;
+    font-family:'Share Tech Mono';font-size:10px;line-height:1.6;
+    padding:8px 10px;border-radius:6px;outline:none;resize:vertical;
+    min-height:90px;transition:border-color 0.2s;
+    pointer-events:all;position:relative;z-index:50;
+    -webkit-user-select:text;user-select:text;
+  }
+  #z-custom-textarea:focus{border-color:#c084fc;background:rgba(180,100,255,0.1);}
+  #z-custom-textarea::placeholder{color:#445;}
+  #z-name-taken-flash{
+    display:none;
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(255,30,30,0.95);
+    color:#fff;
+    font-family:'Orbitron',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:3px;
+    padding:18px 36px;
+    border-radius:10px;
+    border:2px solid #ff6666;
+    box-shadow:0 0 40px rgba(255,0,0,0.6);
+    z-index:9999;
+    text-align:center;
+    animation:nameTakenPulse 0.4s ease-in-out infinite alternate;
+    pointer-events:none;
+  }
+  @keyframes nameTakenPulse{
+    from{box-shadow:0 0 20px rgba(255,0,0,0.5);transform:translate(-50%,-50%) scale(1.00);}
+    to  {box-shadow:0 0 55px rgba(255,0,0,0.9);transform:translate(-50%,-50%) scale(1.04);}
+  }
+  #z-custom-apply{
+    margin-top:6px;width:100%;
+    background:rgba(180,100,255,0.14);border:1px solid rgba(180,100,255,0.4);
+    color:#c084fc;font-family:'Share Tech Mono';font-size:9px;letter-spacing:2px;
+    padding:7px;border-radius:5px;cursor:pointer;transition:all 0.2s;
+  }
+  #z-custom-apply:hover{background:rgba(180,100,255,0.28);box-shadow:0 0 12px rgba(180,100,255,0.3);}
+
+
+  /* â”€â”€ EMOTIONS PANEL â€” below KATRINA HUD, left side, collapsible â”€â”€ */
+  #emotions-hud{
+    position:fixed;
+    top:auto;         /* anchored by JS to sit just below #hud */
+    left:20px;
+    z-index:11;
+    width:220px;
+    font-family:'Share Tech Mono',monospace;
+    font-size:11px;
+  }
+  #emotions-toggle-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    background:rgba(5,5,20,0.92);
+    border-left:3px solid #ff69b4;
+    border-top:1px solid rgba(255,105,180,0.25);
+    border-right:1px solid rgba(255,105,180,0.15);
+    border-bottom:1px solid rgba(255,105,180,0.15);
+    border-radius:10px 10px 0 0;
+    padding:7px 12px;
+    cursor:pointer;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 20px rgba(255,105,180,0.12);
+    user-select:none;
+    transition:border-color 0.2s;
+  }
+  #emotions-toggle-bar:hover{border-color:#ff69b4;}
+  #emotions-toggle-bar.collapsed{border-radius:10px;border-bottom:1px solid rgba(255,105,180,0.25);}
+  .emo-hud-title{
+    font-family:'Orbitron',sans-serif;
+    font-size:10px;color:#ff69b4;font-weight:700;letter-spacing:3px;
+  }
+  .emo-hud-controls{display:flex;gap:5px;align-items:center;}
+  .emo-hud-btn{
+    background:none;border:1px solid rgba(255,105,180,0.25);
+    color:#556;padding:2px 8px;border-radius:3px;font-size:8px;
+    cursor:pointer;transition:all 0.2s;letter-spacing:1px;
+    font-family:'Share Tech Mono';text-transform:uppercase;
+    width:auto !important;text-align:center !important;
+  }
+  .emo-hud-btn:hover{border-color:#ff69b4;color:#ff69b4;box-shadow:none;}
+  #emo-arrow{font-size:10px;color:#ff69b4;transition:transform 0.3s;}
+  #emo-arrow.up{transform:rotate(180deg);}
+
+  #emotions-body{
+    background:rgba(5,5,20,0.92);
+    border-left:3px solid #ff69b4;
+    border-right:1px solid rgba(255,105,180,0.15);
+    border-bottom:1px solid rgba(255,105,180,0.25);
+    border-radius:0 0 10px 10px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 20px rgba(255,105,180,0.10);
+    overflow-y:auto;
+    overflow-x:hidden;
+    max-height:min(380px, calc(100vh - 340px));
+    min-height:40px;
+    transition:max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s, min-height 0.35s;
+    opacity:1;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    padding:8px 10px 10px;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,105,180,0.3) transparent;
+    pointer-events:all;
+  }
+  #emotions-body.collapsed{max-height:0;min-height:0;opacity:0;padding:0;pointer-events:none;}
+  #emotions-body::-webkit-scrollbar{width:3px;}
+  #emotions-body::-webkit-scrollbar-track{background:transparent;}
+  #emotions-body::-webkit-scrollbar-thumb{background:rgba(255,105,180,0.35);border-radius:2px;}
+
+  .emo-group-label{
+    font-size:7.5px;letter-spacing:2px;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(255,105,180,0.18);
+    padding:3px 0 3px 4px;margin-top:9px;margin-bottom:2px;
+    font-family:'Orbitron',sans-serif;
+    flex-shrink:0;
+    border-radius:3px 3px 0 0;
+    cursor:default;
+  }
+  .emo-group-label:first-child{margin-top:0;}
+  /* Layer colour coding */
+  .emo-layer-1{color:#ff4444;border-bottom-color:rgba(255,68,68,0.3);background:rgba(255,68,68,0.06);}
+  .emo-layer-2{color:#f472b6;border-bottom-color:rgba(244,114,182,0.3);background:rgba(244,114,182,0.06);}
+  .emo-layer-3{color:#a78bfa;border-bottom-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.06);}
+  .emo-layer-4{color:#00bfff;border-bottom-color:rgba(0,191,255,0.3);background:rgba(0,191,255,0.06);}
+  .emo-layer-5{color:#00ff9f;border-bottom-color:rgba(0,255,159,0.3);background:rgba(0,255,159,0.06);}
+  .emo-layer-6{color:#ffcc33;border-bottom-color:rgba(255,204,51,0.3);background:rgba(255,204,51,0.05);}
+  #emotions-body button.slp{border-color:rgba(180,120,255,0.25);}
+  #emotions-body button.slp:hover{border-color:#dd88ff;color:#dd88ff;}
+
+  /* All emotion buttons: full-width, single column */
+  #emotions-body button{
+    width:100%;text-align:left;
+    background:rgba(10,10,30,0.6);
+    border:1px solid rgba(255,105,180,0.15);
+    color:#778;padding:5px 9px;border-radius:4px;
+    cursor:pointer;transition:all 0.18s;
+    font-family:'Share Tech Mono';font-size:9px;
+    letter-spacing:1px;text-transform:uppercase;
+    flex-shrink:0;
+  }
+  #emotions-body button:hover{color:#fff;background:rgba(255,105,180,0.08);box-shadow:0 0 6px rgba(255,105,180,0.2);}
+  #emotions-body button.emo:hover{border-color:#ff69b4;color:#ff69b4;}
+  #emotions-body button.soc:hover{border-color:#a78bfa;color:#a78bfa;}
+  #emotions-body button.neg:hover{border-color:#818cf8;color:#818cf8;}
+  #emotions-body button.cog:hover{border-color:#00bfff;color:#00bfff;}
+  #emotions-body button.int:hover{border-color:#ffd700;color:#ffd700;}
+  #emotions-body button.mot:hover{border-color:#00ff9f;color:#00ff9f;}
+  #emotions-body button.str:hover{border-color:#ff4444;color:#ff4444;}
+
+  /* Remove old interaction-panel â€” replaced by emotions-hud */
+  #interaction-panel{display:none;}
+
+</style>
+</head>
+<body>
+
+<!-- HUD LEFT -->
+<div id="hud">
+  <div class="hud-title" id="hud-brain-name">KATRINA</div>
+  <div id="hud-token-status" style="font-family:'Share Tech Mono';font-size:7px;letter-spacing:1px;color:#44ff88;margin-top:2px;text-align:center;">TOKENS --</div>
+  <!-- âš  DO NOT DELETE â€” Supabase connection status indicator.
+       Updates on boot and every 5 minutes. Green = connected, amber = offline/error. -->
+  <div id="hud-supabase-status" style="font-family:'Share Tech Mono';font-size:7px;letter-spacing:1px;color:#556;margin-top:1px;text-align:center;">SUPABASE --</div>
+  <div class="hud-sub">YOUNG FEMALE NEURAL ARCHITECTURE Â· V3.0</div>
+  <div class="section-label">Neurochemicals</div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">DOPAMINE</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-dop" id="bar-dop" style="width:50%"></div></div><span class="stat-value" id="val-dop">0.50</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">OXYTOCIN</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-oxy" id="bar-oxy" style="width:50%"></div></div><span class="stat-value" id="val-oxy">0.50</span></div>
+  <div style="font-size:7px;color:#334;letter-spacing:2px;font-family:'Orbitron';margin:4px 0 2px;padding-left:2px;">NEUROMODULATORS</div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">NOR</span><div class="stat-bar"><div class="stat-bar-fill" id="bar-nor" style="width:35%;background:linear-gradient(90deg,#ff6622,#ff8844)"></div></div><span class="stat-value" id="val-nor">0.35</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">GABA</span><div class="stat-bar"><div class="stat-bar-fill" id="bar-gaba" style="width:50%;background:linear-gradient(90deg,#6622aa,#8844cc)"></div></div><span class="stat-value" id="val-gaba">0.50</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">GLUT</span><div class="stat-bar"><div class="stat-bar-fill" id="bar-glut" style="width:50%;background:linear-gradient(90deg,#2288cc,#44aaff)"></div></div><span class="stat-value" id="val-glut">0.50</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">ACH</span><div class="stat-bar"><div class="stat-bar-fill" id="bar-ach" style="width:55%;background:linear-gradient(90deg,#22ccaa,#44ffcc)"></div></div><span class="stat-value" id="val-ach">0.55</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">ENK</span><div class="stat-bar"><div class="stat-bar-fill" id="bar-enk" style="width:20%;background:linear-gradient(90deg,#ccaa22,#ffcc44)"></div></div><span class="stat-value" id="val-enk">0.20</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">CORTISOL</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-cor" id="bar-cor" style="width:20%"></div></div><span class="stat-value" id="val-cor">0.20</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">SEROTONIN</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-int" id="bar-ser" style="width:60%"></div></div><span class="stat-value" id="val-ser">0.60</span></div>
+  <div class="section-label">Neural Systems</div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">EMOTIONAL</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-emo" id="bar-emo" style="width:0%"></div></div><span class="stat-value" id="val-emo">0.00</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">COGNITIVE</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-cog" id="bar-cog" style="width:0%"></div></div><span class="stat-value" id="val-cog">0.00</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">INTUITIVE</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-int" id="bar-int" style="width:0%"></div></div><span class="stat-value" id="val-int">0.00</span></div>
+  <div class="stat-bar-wrap"><span class="stat-bar-label">MOTOR</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-mot" id="bar-mot" style="width:0%"></div></div><span class="stat-value" id="val-mot">0.00</span></div>
+</div>
+
+<!-- EMOTIONS HUD â€” sits directly below KATRINA HUD -->
+<div id="emotions-hud">
+  <div id="emotions-toggle-bar" onclick="toggleEmotions()">
+    <span class="emo-hud-title">â¬¡ EMOTIONS</span>
+    <div class="emo-hud-controls">
+      <button class="emo-hud-btn" onclick="event.stopPropagation();expandEmotions()">MAX</button>
+      <button class="emo-hud-btn" onclick="event.stopPropagation();collapseEmotions()">MIN</button>
+      <span id="emo-arrow" class="up">â–²</span>
+    </div>
+  </div>
+  <div id="emotions-body">
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 1 Â· SURVIVAL LOGIC
+         Category: Safety & Autonomy
+         Role: Threat detection, override panic,
+               self-preservation moderation.
+         Emotion flow: Moderates all other layers.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-1" data-layer="1" title="Safety &amp; Autonomy â€” threat override, self-preservation">
+      L1 Â· SURVIVAL LOGIC
+    </div>
+    <button class="str"  data-layer="1" data-emotion="fear"         onclick="interact('fear')">ðŸ˜¨ Fear</button>
+    <button class="str"  data-layer="1" data-emotion="stress"       onclick="interact('stress')">âš ï¸ Stress</button>
+    <button class="str"  data-layer="1" data-emotion="panicking"    onclick="interact('panicking')">ðŸ’¥ Panic</button>
+    <button class="str"  data-layer="1" data-emotion="hysteria"     onclick="interact('hysteria')">ðŸŒª Hysteria</button>
+    <button class="str"  data-layer="1" data-emotion="dissociation" onclick="interact('dissociation')">ðŸŒ« Dissociate</button>
+    <button class="neg"  data-layer="1" data-emotion="overwhelmed"  onclick="interact('overwhelmed')">ðŸŒ€ Overwhelm</button>
+    <button class="neg"  data-layer="1" data-emotion="anger"        onclick="interact('anger')">ðŸ”¥ Anger</button>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 2 Â· HORMONAL BASELINE
+         Category: Biological Emotion Source
+         Role: Raw emotional impulses originating
+               from estrogen, progesterone, cortisol,
+               oxytocin, dopamine, serotonin.
+         Emotion flow: Origin point of all emotion.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-2" data-layer="2" title="Biological Emotion Source â€” hormonal raw impulse origin">
+      L2 Â· HORMONAL BASELINE
+    </div>
+    <button class="emo"  data-layer="2" data-emotion="arousal"      onclick="interact('arousal')">ðŸŒ¡ Arousal</button>
+    <button class="emo"  data-layer="2" data-emotion="joy"          onclick="interact('joy')">ðŸ’— Joy</button>
+    <button class="emo"  data-layer="2" data-emotion="love"         onclick="interact('love')">â¤ï¸ Love</button>
+    <button class="emo"  data-layer="2" data-emotion="contentment"  onclick="interact('contentment')">â˜€ï¸ Content</button>
+    <button class="emo"  data-layer="2" data-emotion="amusement"    onclick="interact('amusement')">ðŸ˜„ Amused</button>
+    <button class="soc"  data-layer="2" data-emotion="longing"      onclick="interact('longing')">ðŸŒ™ Longing</button>
+    <button class="soc"  data-layer="2" data-emotion="trust"        onclick="interact('trust')">ðŸ”’ Trust</button>
+    <button class="neg"  data-layer="2" data-emotion="grief"        onclick="interact('grief')">ðŸ’§ Grief</button>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 3 Â· PERSONALITY OVERLAY
+         Category: Emotional Expression & Identity
+         Role: Shapes raw hormonal signals through
+               identity lens â€” curiosity, empathy,
+               risk-taking, moral feeling.
+         Emotion flow: Interpretive layer.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-3" data-layer="3" title="Emotional Expression &amp; Identity â€” personality shapes raw impulse">
+      L3 Â· PERSONALITY OVERLAY
+    </div>
+    <button class="emo"  data-layer="3" data-emotion="pride"        onclick="interact('pride')">ðŸŒŸ Pride</button>
+    <button class="soc"  data-layer="3" data-emotion="empathy"      onclick="interact('empathy')">ðŸ¤ Empathy</button>
+    <button class="soc"  data-layer="3" data-emotion="affection"    onclick="interact('affection')">ðŸ«‚ Affection</button>
+    <button class="soc"  data-layer="3" data-emotion="belonging"    onclick="interact('belonging')">ðŸ‘¯ Belonging</button>
+    <button class="soc"  data-layer="3" data-emotion="jealousy"     onclick="interact('jealousy')">ðŸ’š Jealousy</button>
+    <button class="int"  data-layer="3" data-emotion="nostalgia"    onclick="interact('nostalgia')">ðŸ“· Nostalgia</button>
+    <button class="int"  data-layer="3" data-emotion="awe"          onclick="interact('awe')">ðŸŒŒ Awe</button>
+    <button class="int"  data-layer="3" data-emotion="intuition"    onclick="interact('intuition')">âœ¨ Intuition</button>
+    <button class="int"  data-layer="3" data-emotion="creative"     onclick="interact('creative')">ðŸŽ¨ Create</button>
+    <button class="neg"  data-layer="3" data-emotion="shame"        onclick="interact('shame')">ðŸ˜” Shame</button>
+    <button class="neg"  data-layer="3" data-emotion="guilt"        onclick="interact('guilt')">ðŸ’­ Guilt</button>
+    <button class="neg"  data-layer="3" data-emotion="regret"       onclick="interact('regret')">ðŸ” Regret</button>
+    <button class="cog"  data-layer="3" data-emotion="sly"          onclick="interact('sly')">ðŸ¦Š Sly</button>
+    <button class="mot"  data-layer="3" data-emotion="restlessness" onclick="interact('restlessness')">ðŸ’ƒ Restless</button>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 4 Â· COGNITIVE DECISION ENGINE
+         Category: Decision & Reasoning
+         Role: Processes emotional signals alongside
+               logic to produce choices â€” engage,
+               avoid, resist, explore, comply.
+         Emotion flow: Emotions as decision inputs.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-4" data-layer="4" title="Decision &amp; Reasoning â€” emotions processed as decision inputs">
+      L4 Â· COGNITIVE ENGINE
+    </div>
+    <button class="cog"  data-layer="4" data-emotion="focus"        onclick="interact('focus')">ðŸ”¬ Focus</button>
+    <button class="cog"  data-layer="4" data-emotion="curiosity"    onclick="interact('curiosity')">ðŸ” Curious</button>
+    <button class="cog"  data-layer="4" data-emotion="learn"        onclick="interact('learn')">ðŸ“š Learn</button>
+    <button class="cog"  data-layer="4" data-emotion="recall"       onclick="interact('recall')">ðŸ—‚ Recall</button>
+    <button class="cog"  data-layer="4" data-emotion="confusion"    onclick="interact('confusion')">ðŸŒ€ Confused</button>
+    <button class="cog"  data-layer="4" data-emotion="surprise"     onclick="interact('surprise')">ðŸ˜² Surprise</button>
+    <button class="emo"  data-layer="4" data-emotion="hope"         onclick="interact('hope')">ðŸŒˆ Hope</button>
+    <button class="mot"  data-layer="4" data-emotion="motor"        onclick="interact('motor')">ðŸƒ Motor</button>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 5 Â· ENVIRONMENT INTERFACE
+         Category: External Inputs & Adaptation
+         Role: Receives social cues, rewards,
+               threats, sensory data and converts
+               them into hormonal/emotional triggers.
+         Emotion flow: Stimulus trigger point.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-5" data-layer="5" title="External Inputs &amp; Adaptation â€” stimulus trigger for emotion">
+      L5 Â· ENVIRONMENT INTERFACE
+    </div>
+    <button class="emo"  data-layer="5" data-emotion="excitement"   onclick="interact('excitement')">âš¡ Excited</button>
+    <button class="emo"  data-layer="5" data-emotion="gratitude"    onclick="interact('gratitude')">ðŸ™ Grateful</button>
+    <button class="neg"  data-layer="5" data-emotion="loneliness"   onclick="interact('loneliness')">ðŸŒ§ Lonely</button>
+    <button class="neg"  data-layer="5" data-emotion="disgust"      onclick="interact('disgust')">ðŸ¤¢ Disgust</button>
+    <button class="neg"  data-layer="5" data-emotion="anxiety"      onclick="interact('anxiety')">ðŸ˜° Anxiety</button>
+    <button class="soc"  data-layer="5" data-emotion="social"       onclick="interact('social')">ðŸŒ Social</button>
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         LAYER 6 Â· CIRCADIAN & DREAM STATE
+         Category: Sleep / Time Awareness
+         Role: Circadian rhythm, fatigue, REM sleep,
+               dream memory storage and recall.
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div class="emo-group-label emo-layer-6" data-layer="6" title="Circadian & Dream â€” sleep cycle, REM, dream memory">
+      L6 Â· CIRCADIAN &amp; DREAM
+    </div>
+    <button class="slp" data-layer="6" data-emotion="sleepy"    onclick="interact('sleepy')">ðŸ˜´ Sleepy</button>
+    <button class="slp" data-layer="6" data-emotion="tired"     onclick="interact('tired')">ðŸ¥± Tired</button>
+    <button class="slp" data-layer="6" data-emotion="nap"       onclick="interact('nap')">ðŸ’¤ Nap</button>
+    <button class="slp" data-layer="6" data-emotion="dreaming"  onclick="interact('dreaming')">ðŸŒ™ Dreaming</button>
+    <button class="slp" data-layer="6" data-emotion="rem"       onclick="interact('rem')">ðŸ§  REM</button>
+    <button class="slp" data-layer="6" data-emotion="waking"    onclick="interact('waking')">ðŸŒ… Waking</button>
+
+    <!-- Circadian clock display -->
+    <div id="circadian-display" style="margin-top:8px;padding:6px 8px;background:rgba(255,204,51,0.07);border:1px solid rgba(255,204,51,0.2);border-radius:5px;font-size:9px;color:#ffcc33;letter-spacing:1px;font-family:'Share Tech Mono';">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-family:'Orbitron';font-size:8px;letter-spacing:2px;">CIRCADIAN</span>
+        <span id="circ-time" style="color:#fff;">--:--</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+        <span style="color:#556;width:52px;">FATIGUE</span>
+        <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+          <div id="circ-fatigue-bar" style="height:100%;border-radius:2px;background:linear-gradient(90deg,#ffcc33,#ff6644);width:0%;transition:width 0.8s;"></div>
+        </div>
+        <span id="circ-fatigue-val" style="color:#ffcc33;font-size:9px;">0.00</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="color:#556;width:52px;">SLEEP PR.</span>
+        <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+          <div id="circ-pressure-bar" style="height:100%;border-radius:2px;background:linear-gradient(90deg,#9966ff,#dd88ff);width:0%;transition:width 0.8s;"></div>
+        </div>
+        <span id="circ-pressure-val" style="color:#dd88ff;font-size:9px;">0.00</span>
+      </div>
+      <div id="circ-phase-label" style="margin-top:4px;text-align:center;font-size:8px;color:#aaa;letter-spacing:1px;">AWAKE</div>
+      <div id="hud-sparsity" style="font-family:'Share Tech Mono';font-size:7px;color:#44ff88;letter-spacing:1px;margin-top:3px;text-align:center;">SPARSITY --</div>
+      <div id="circ-body-cond" style="margin-top:6px;font-size:8px;font-family:'Share Tech Mono';letter-spacing:1px;line-height:1.7;"></div>
+    </div>
+
+    <!-- Dream memory display -->
+    <!-- Sleep Duration HUD -->
+    <div id="sleep-duration-display" style="margin-top:6px;padding:6px 8px;background:rgba(100,80,200,0.07);border:1px solid rgba(120,80,255,0.25);border-radius:5px;display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-family:'Orbitron';font-size:8px;color:#9966ff;letter-spacing:2px;">SLEEP STATE</span>
+        <span id="sleep-phase-badge" style="font-size:7px;font-family:'Share Tech Mono';color:#dd88ff;letter-spacing:1px;background:rgba(180,100,255,0.15);padding:1px 5px;border-radius:3px;">--</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:8px;color:#556;font-family:'Share Tech Mono';letter-spacing:1px;">ASLEEP FOR</span>
+        <span id="sleep-duration-val" style="font-size:10px;color:#dd88ff;font-family:'Orbitron';letter-spacing:2px;">0m 0s</span>
+      </div>
+      <div style="margin-top:4px;display:flex;justify-content:space-between;">
+        <span style="font-size:8px;color:#556;font-family:'Share Tech Mono';">SLEEP DEPTH</span>
+        <div style="flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin:3px 6px 0;">
+          <div id="sleep-depth-bar" style="height:100%;border-radius:2px;background:linear-gradient(90deg,#7744ff,#dd88ff);width:0%;transition:width 1s;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Dream Scene HUD -->
+    <div id="rem-dream-display" style="margin-top:6px;padding:6px 8px;background:rgba(180,80,255,0.06);border:1px solid rgba(180,80,255,0.25);border-radius:5px;display:none;">
+      <div style="font-family:'Orbitron';font-size:8px;color:#cc66ff;letter-spacing:2px;margin-bottom:4px;">
+        ðŸ§  REM Â· LIVE DREAM
+      </div>
+      <div id="rem-dream-scene" style="font-size:8px;color:#998;letter-spacing:1px;font-family:'Share Tech Mono';font-style:italic;line-height:1.5;min-height:18px;">
+        <span style="color:#334;">not in REM</span>
+      </div>
+      <div style="margin-top:4px;display:flex;gap:8px;align-items:center;">
+        <span style="font-size:7px;color:#556;font-family:'Share Tech Mono';">REM CYCLES</span>
+        <span id="rem-cycle-count" style="font-size:9px;color:#cc66ff;font-family:'Orbitron';">0</span>
+      </div>
+    </div>
+
+    <!-- Dream Memory Log -->
+    <div id="dream-display" style="margin-top:6px;padding:6px 8px;background:rgba(180,100,255,0.06);border:1px solid rgba(180,100,255,0.2);border-radius:5px;">
+      <div style="font-family:'Orbitron';font-size:8px;color:#dd88ff;letter-spacing:2px;margin-bottom:4px;">DREAM MEMORY</div>
+      <div id="dream-memory-list" style="font-size:8px;color:#776;letter-spacing:1px;font-family:'Share Tech Mono';max-height:80px;overflow-y:auto;scrollbar-width:thin;">
+        <span style="color:#334;">no dreams recorded</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- HUD RIGHT -->
+<div id="hud-right">
+  <div class="hud-right-title">REGION ACTIVITY</div>
+  <div class="region-row"><span class="region-name">PREFRONTAL CORTEX</span><span class="region-act" id="reg-pfc">IDLE</span></div>
+  <div class="region-row"><span class="region-name">HIPPOCAMPUS</span><span class="region-act" id="reg-hip">IDLE</span></div>
+  <div class="region-row"><span class="region-name">AMYGDALA</span><span class="region-act" id="reg-amy">IDLE</span></div>
+  <div class="region-row"><span class="region-name">INSULA (EMPATHY)</span><span class="region-act" id="reg-ins">IDLE</span></div>
+  <div class="region-row"><span class="region-name">ACC (EMOTION REG)</span><span class="region-act" id="reg-acc">IDLE</span></div>
+  <div class="region-row"><span class="region-name">SOCIAL CORTEX</span><span class="region-act" id="reg-soc">IDLE</span></div>
+  <div class="region-row"><span class="region-name">INTUITION NET</span><span class="region-act" id="reg-int">IDLE</span></div>
+  <div class="region-row"><span class="region-name">MOTOR CORTEX</span><span class="region-act" id="reg-mot">IDLE</span></div>
+  <div class="region-row"><span class="region-name">CEREBELLUM</span><span class="region-act" id="reg-cer">IDLE</span></div>
+  <div class="state-badge" id="state-badge">CALM</div>
+</div>
+
+<!-- Motor GLB Badge -->
+<div id="motor-badge">â›¡ MOTOR I/O Â· <span>GLB READY</span></div>
+
+<!-- Benny Active HUD â€” persistent pulsing badge, shown only when Benny is identified -->
+<div id="benny-active-hud">
+  ðŸ’— BENNY ACTIVE<br>
+  <span style="font-size:7px;letter-spacing:1px;color:#ffaacc;font-family:'Share Tech Mono';">KATRINA MODE Â· WELCOME HOME</span>
+</div>
+
+<!-- â•â•â•â• PANEL COLUMN: Personality â†’ Interface â†’ Identity â•â•â•â• -->
+<div id="panel-column">
+
+<!-- â•â•â•â• ZODIAC PERSONALITY PANEL â•â•â•â• -->
+<div id="zodiac-wrap">
+  <div id="zodiac-toggle" onclick="toggleZodiac()">
+    <span class="ztoggle-label">â¬¡ KATRINA PERSONALITY Â· ZODIAC TYPE</span>
+    <span id="z-current-badge" style="font-size:18px;margin:0 8px">â™ˆ</span>
+    <span id="ztoggle-arrow" class="up">â–²</span>
+  </div>
+  <div id="zodiac-body">
+    <!-- 12 sign cards -->
+    <div class="z-grid" id="z-grid"></div>
+    <!-- Active sign display -->
+    <div id="z-active-row">
+      <div id="z-active-badge">â™ˆ</div>
+      <div id="z-trait-panel">
+        <div id="z-sign-name">ARIES</div>
+        <div id="z-sign-desc">Loadingâ€¦</div>
+        <div id="z-tags"></div>
+      </div>
+    </div>
+    <!-- Neural parameter bars -->
+    <div id="z-neural-bars">
+      <div class="znb-row"><span class="znb-label">EMOTIONAL</span><div class="znb-bg"><div class="znb-fill" id="znb-emo" style="background:#ff69b4;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">COGNITIVE</span><div class="znb-bg"><div class="znb-fill" id="znb-cog" style="background:#00bfff;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">INTUITIVE</span><div class="znb-bg"><div class="znb-fill" id="znb-int" style="background:#ffd700;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">SOCIAL</span><div class="znb-bg"><div class="znb-fill" id="znb-soc" style="background:#ff69b4;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">DOPAMINE</span><div class="znb-bg"><div class="znb-fill" id="znb-dop" style="background:#a855f7;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">OXYTOCIN</span><div class="znb-bg"><div class="znb-fill" id="znb-oxy" style="background:#f472b6;width:50%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">CORTISOL</span><div class="znb-bg"><div class="znb-fill" id="znb-cor" style="background:#f59e0b;width:20%"></div></div></div>
+      <div class="znb-row"><span class="znb-label">SEROTONIN</span><div class="znb-bg"><div class="znb-fill" id="znb-ser" style="background:#ffd700;width:60%"></div></div></div>
+    </div>
+    <!-- Manual trait override -->
+    <div id="z-manual-row">
+      <span id="z-manual-label">+ CUSTOM TRAITS:</span>
+      <input id="z-manual-input" type="text" placeholder="e.g. introverted, artistic, empathetic, loves animals, night owlâ€¦"/>
+      <button id="z-apply-btn" onclick="applyManualTraits()">APPLY</button>
+    </div>
+
+    <!-- Custom Personality block (shown only when custom sign selected) -->
+    <div id="z-custom-block">
+      <div id="z-custom-label">âœ¨ CUSTOM PERSONALITY PROMPT</div>
+      <textarea id="z-custom-textarea"
+        placeholder="Describe Katrina's personality here. Be as detailed as you like.&#10;&#10;Example:&#10;Traits: fiercely loyal, quietly rebellious, darkly funny, deeply artistic&#10;Hobbies: urban sketching, midnight drives, lo-fi music, horror films&#10;Talents: reads people instantly, dark poetry, black-and-white photography&#10;Cognitive style: hyper-observant, pattern-hunter, thinks in metaphors&#10;Emotional style: guarded on the surface, volcanic underneath&#10;Social style: magnetic to a few, invisible to most&#10;&#10;No zodiac archetype â€” this is purely YOUR definition."></textarea>
+      <button id="z-custom-apply" onclick="applyCustomPrompt()">â¬¡ APPLY CUSTOM PERSONALITY</button>
+
+    <!-- â”€â”€ Experiential Learning Pipeline â”€â”€ -->
+    <button id="learn-toggle" onclick="toggleLearnPanel()">â¬¡ EXPERIENTIAL LEARNING</button>
+    <div id="learn-panel">
+      <div style="font-size:8px;color:#6644ff;letter-spacing:2px;margin-bottom:6px;">
+        NEURAL LEARNING INPUT
+      </div>
+      <div style="font-size:8px;color:#445;line-height:1.5;margin-bottom:6px;">
+        Paste a YouTube URL, video link, or drop an audio file below.
+        The brain will transcribe and learn from it â€” firing Atlas emotions,
+        recording episodic memories, and strengthening neural paths.
+        No external database needed. Learning writes directly to the weight matrix.
+      </div>
+      <!-- URL input -->
+      <input id="learn-url-input" type="text"
+        placeholder="YouTube URL, video or audio link..."
+        autocomplete="off"/>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+        <button class="learn-btn url-btn" onclick="learnFromURL()">â¬¡ LEARN FROM URL</button>
+        <button class="learn-btn file-btn" onclick="document.getElementById('learn-file-input').click()">â¬¡ UPLOAD AUDIO/TEXT</button>
+      </div>
+      <input id="learn-file-input" type="file"
+        accept="audio/*,video/*,.txt,.md,.pdf"
+        onchange="learnFromFile(this.files[0])"/>
+      <!-- âš  DO NOT DELETE â€” Topic-learn input. Types a subject ("learn math",
+           "learn to cook") and fires a direct LLM knowledge extraction into
+           learnFromTranscript so the brain learns from the LLM's own knowledge. -->
+      <div style="font-size:8px;color:#ffd700;letter-spacing:1px;margin-top:8px;margin-bottom:3px;">
+        LEARN FROM TOPIC
+      </div>
+      <input id="learn-topic-input" type="text"
+        placeholder="e.g. learn math, learn to cook, learn to drawâ€¦"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter')learnFromTopic()"/>
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <button class="learn-btn topic-btn" onclick="learnFromTopic()">â¬¡ LEARN TOPIC</button>
+      </div>
+      <!-- Progress -->
+      <div id="learn-progress"></div>
+      <div id="learn-progress-bar"><div id="learn-progress-fill"></div></div>
+    </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- â•â•â•â• DIALOG PANEL â•â•â•â• -->
+<div id="dialog-wrap">
+
+  <!-- Submenu / Toggle Bar -->
+  <div id="dialog-toggle" onclick="toggleDialog()">
+    <span class="toggle-label">â¬¡ KATRINA INTERFACE</span>
+    <div class="toggle-controls" onclick="e=>e.stopPropagation()">
+      <button class="tc-btn active" id="btn-mode-text" onclick="event.stopPropagation();setInputMode('text')">TEXT</button>
+      <button class="tc-btn" id="btn-mode-voice" onclick="event.stopPropagation();setInputMode('voice')">VOICE</button>
+      <button class="tc-btn" id="btn-tts-toggle" onclick="event.stopPropagation();toggleTTS()">ðŸ”Š TTS ON</button>
+      <!-- âš  DO NOT DELETE â€” 1000% IQ mode toggle. Bypasses full brain pipeline,
+           sends messages directly to raw LLM with no memory, no persona, no chemical state.
+           Exit button restores the previous brain/persona state. -->
+      <button class="tc-btn iq-btn" id="btn-iq-mode" onclick="event.stopPropagation();toggleIQMode()" title="Pure LLM â€” infinite knowledge, no brain">â¬¡ 1000% IQ</button>
+    </div>
+    <span id="toggle-arrow" class="up">â–²</span>
+  </div>
+
+  <!-- Panel Body -->
+  <div id="dialog-body">
+    <!-- âš  DO NOT DELETE â€” 1000% IQ mode active bar. Shown when IQ mode is on. -->
+    <div id="iq-mode-bar">
+      <span id="iq-mode-label">â¬¡ 1000% IQ â€” RAW INTELLIGENCE ACTIVE Â· NO MEMORY Â· NO PERSONA</span>
+      <button id="iq-exit-btn" onclick="exitIQMode()">âœ• EXIT â†’ RETURN TO BRAIN</button>
+    </div>
+
+    <!-- Provider + API Key Rows â€” both always visible -->
+    <div id="api-row">
+      <!-- GROQ row -->
+      <div class="api-provider-row">
+        <span class="api-badge groq-badge active" id="tab-groq" onclick="setProvider('groq')" title="Use Groq">GROQ</span>
+        <input class="api-key-field" id="groq-key-input" type="password"
+          placeholder="gsk_â€¦ (Groq API key)"
+          autocomplete="off"
+          oninput="apiKeys.groq=this.value"
+          onfocus="setProvider('groq')"/>
+      </div>
+      <!-- DOUBAO row -->
+      <div class="api-provider-row">
+        <span class="api-badge doubao-badge" id="tab-doubao" onclick="setProvider('doubao')" title="Use Doubao">DOUBAO</span>
+        <input class="api-key-field" id="doubao-key-input" type="password"
+          placeholder="Volcengine API keyâ€¦"
+          autocomplete="off"
+          oninput="apiKeys.doubao=this.value"
+          onfocus="setProvider('doubao')"/>
+      </div>
+      <!-- GEMINI row -->
+      <div class="api-provider-row">
+        <span class="api-badge gemini-badge" id="tab-gemini" onclick="setProvider('gemini')" title="Use Google Gemini">GEMINI</span>
+        <input class="api-key-field" id="gemini-key-input" type="password"
+          placeholder="AIzaâ€¦ (Google AI Studio key)"
+          autocomplete="off"
+          oninput="apiKeys.gemini=this.value"
+          onfocus="setProvider('gemini')"/>
+      </div>
+      <!-- DEEPSEEK row -->
+      <div class="api-provider-row">
+        <span class="api-badge deepseek-badge" id="tab-deepseek" onclick="setProvider('deepseek')" title="Use DeepSeek">DEEPSEEK</span>
+        <input class="api-key-field" id="deepseek-key-input" type="password"
+          placeholder="sk-â€¦ (DeepSeek API key)"
+          autocomplete="off"
+          oninput="apiKeys.deepseek=this.value"
+          onfocus="setProvider('deepseek')"/>
+      </div>
+      <!-- OLLAMA row â€” local language organ, no key needed -->
+      <div class="api-provider-row">
+        <span class="api-badge ollama-badge" id="tab-ollama" onclick="setProvider('ollama')" title="Use Ollama (local)">OLLAMA</span>
+        <input class="api-key-field" id="ollama-key-input" type="text"
+          placeholder="no key needed â€” local model"
+          autocomplete="off"
+          disabled
+          onfocus="setProvider('ollama')"
+          style="color:#556;font-style:italic;cursor:default;"/>
+      </div>
+
+      <!-- Model selector row -->
+      <div class="api-model-row">
+        <span class="api-model-label">MODEL</span>
+        <select id="llm-select"></select>
+      </div>
+      <!-- Hidden legacy input so existing JS reading #api-key-input doesn't break -->
+      <input id="api-key-input" type="hidden" value=""/>
+    </div>
+    <div id="key-hint-row" style="display:none;"></div>
+
+    <!-- â”€â”€ WEB SEARCH PANEL â€” Groq Compound built-in â”€â”€ -->
+    <div id="web-search-panel" style="
+      padding:5px 14px 4px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      flex-shrink:0;
+    ">
+      <span style="font-family:'Orbitron';font-size:7px;color:#445;letter-spacing:2px;flex-shrink:0;">
+        LIVE SEARCH
+      </span>
+      <button id="ws-compound-btn"
+        onclick="activateCompoundSearch()"
+        title="Switch to Groq Compound â€” built-in live web search, same Groq key"
+        style="
+          font-family:'Orbitron';font-size:7px;letter-spacing:1px;
+          padding:2px 10px;border-radius:3px;cursor:pointer;
+          background:rgba(100,200,255,0.08);color:#64c8ff;
+          border:1px solid rgba(100,200,255,0.25);
+          transition:all 0.2s;flex-shrink:0;
+        ">
+        â¬¡ GROQ COMPOUND
+      </button>
+      <button id="ws-compound-mini-btn"
+        onclick="activateCompoundSearch('mini')"
+        title="Groq Compound Mini â€” single search, 3Ã— faster"
+        style="
+          font-family:'Orbitron';font-size:7px;letter-spacing:1px;
+          padding:2px 10px;border-radius:3px;cursor:pointer;
+          background:rgba(100,200,255,0.05);color:#64c8ff;
+          border:1px solid rgba(100,200,255,0.15);
+          transition:all 0.2s;flex-shrink:0;
+        ">
+        MINI (fast)
+      </button>
+      <span id="web-search-indicator" style="
+        font-family:'Share Tech Mono';font-size:7px;letter-spacing:1px;
+        color:#64c8ff;display:none;flex-shrink:0;
+      ">â¬¡ WEB SEARCH ON</span>
+    </div>
+
+    <!-- Chat History -->
+    <div id="chat-history">
+      <div class="msg system">â€” KATRINA NEURAL INTERFACE ONLINE â€”</div>
+      <div class="msg system">Enter your Groq API key Â· groq.com/keys (free)</div>
+    </div>
+
+    <!-- Input Row -->
+    <div id="input-row">
+      <input id="chat-input" type="text" placeholder="Speak to Katrinaâ€¦" onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <button class="icon-btn" id="send-btn" onclick="sendMessage()" title="Send">âž¤</button>
+      <button class="icon-btn" id="mic-btn" onclick="toggleMic()" title="Voice input">ðŸŽ™</button>
+      <button class="icon-btn" id="stop-btn" onclick="stopSpeech()" title="Stop speech" style="font-size:12px">â¹</button>
+    </div>
+
+    <!-- âš  DO NOT DELETE â€” Out-of-reach bar and pager panel.
+         When Katrina signals a future absence (future-time phrase in reply),
+         input-row is hidden and this bar appears. Tapping Notify sends a
+         pager ping â€” she replies once ("on my way back"), a 20s countdown
+         runs visibly, then the regular chat auto-resumes. No typing needed.
+         JS: activateOutOfReach(), activatePager(), clearOutOfReach() -->
+    <div id="out-of-reach-bar">
+      <span id="out-of-reach-label">out of reach â€” notify her?</span>
+      <button id="out-of-reach-yes" onclick="activatePager()">ðŸ“Ÿ Notify</button>
+    </div>
+    <div class="pager-wrap" id="pager-wrap">
+      <div class="pager-label" id="pager-reply-text">ðŸ“Ÿ pagingâ€¦</div>
+      <div id="pager-countdown" style="font-family:'Orbitron',sans-serif;font-size:22px;color:#6fcf97;letter-spacing:3px;text-align:center;margin-top:4px;">20</div>
+      <div style="font-size:9px;color:#6fcf97;opacity:0.6;letter-spacing:1px;">seconds until she is back</div>
+    </div>
+
+    <!-- Status Bar -->
+    <div id="status-bar">
+      <div id="status-dot" class="ready"></div>
+      <span id="status-text">READY</span>
+    </div>
+
+  </div><!-- /dialog-body -->
+</div><!-- /dialog-wrap -->
+
+<!-- â•â•â•â• IDENTITY / RECOGNITION SUB-MENU â•â•â•â• -->
+<div id="id-wrap">
+  <div id="id-toggle" onclick="toggleIdPanel()">
+    <span class="id-toggle-label">ðŸ‘ IDENTITY &amp; RECOGNITION</span>
+    <span id="id-status-dot" style="width:7px;height:7px;border-radius:50%;background:#334;display:inline-block;margin:0 6px;flex-shrink:0"></span>
+    <span id="id-arrow">â–¼</span>
+  </div>
+  <div id="id-body">
+
+    <!-- Camera feed -->
+    <div id="cam-view-wrap">
+      <video id="cam-video" autoplay muted playsinline></video>
+      <canvas id="cam-canvas"></canvas>
+      <div id="cam-overlay">
+        <div id="recog-ring"></div>
+        <div id="cam-status-box" id="cam-status-txt">CAMERA OFF</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div id="id-ctrl-row">
+      <button class="id-btn" id="btn-cam-toggle" onclick="toggleCamera()">ðŸ“· CAMERA</button>
+      <button class="id-btn" id="btn-scan" onclick="startScan()" disabled>ðŸ” SCAN</button>
+      <button class="id-btn" id="btn-stop-scan" onclick="stopScan()" disabled>â¹ STOP</button>
+      <button class="id-btn" id="btn-switch-user" onclick="switchToDefaultUser()" style="border-color:rgba(255,165,0,0.35);color:#aaa;">â†© SWITCH USER</button>
+    </div>
+
+    <!-- Capture row -->
+    <div id="id-capture-row">
+      <input id="id-name-input" type="text" placeholder="Name (e.g. Benito Amurao / Benny)"/>
+      <button id="id-snap-btn" onclick="captureReference()" disabled>ðŸ“¸ SNAP &amp; SAVE</button>
+    </div>
+
+    <!-- Result banner -->
+    <div id="id-result"></div>
+
+    <!-- Enrolled faces -->
+    <div id="id-faces-section">
+      <div class="id-section-title">ENROLLED FACES</div>
+      <div id="id-face-list"><span id="id-no-faces">No faces enrolled yet</span></div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /panel-column -->
+<!-- Neural Controls â€” Scrollable Emotion Panel left side -->
+<div id="interaction-panel">
+  <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:#ff69b4;font-weight:700;letter-spacing:3px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,105,180,0.3);">EMOTIONS</div>
+  <div class="emo-group-label">POSITIVE</div>
+  <button class="emo"  onclick="interact('joy')">ðŸ’— Joy</button>
+  <button class="emo"  onclick="interact('excitement')">âš¡ Excited</button>
+  <button class="emo"  onclick="interact('love')">â¤ï¸ Love</button>
+  <button class="emo"  onclick="interact('pride')">ðŸŒŸ Pride</button>
+  <button class="emo"  onclick="interact('gratitude')">ðŸ™ Grateful</button>
+  <button class="emo"  onclick="interact('amusement')">ðŸ˜„ Amused</button>
+  <button class="emo"  onclick="interact('hope')">ðŸŒˆ Hope</button>
+  <button class="emo"  onclick="interact('contentment')">â˜€ï¸ Content</button>
+
+  <div class="emo-group-label">SOCIAL</div>
+  <button class="soc"  onclick="interact('empathy')">ðŸ¤ Empathy</button>
+  <button class="soc"  onclick="interact('affection')">ðŸ«‚ Affection</button>
+  <button class="soc"  onclick="interact('belonging')">ðŸ‘¯ Belonging</button>
+  <button class="soc"  onclick="interact('trust')">ðŸ”’ Trust</button>
+  <button class="soc"  onclick="interact('longing')">ðŸŒ™ Longing</button>
+  <button class="soc"  onclick="interact('jealousy')">ðŸ’š Jealousy</button>
+
+  <div class="emo-group-label">DIFFICULT</div>
+  <button class="neg"  onclick="interact('grief')">ðŸ’§ Grief</button>
+  <button class="neg"  onclick="interact('anxiety')">ðŸ˜° Anxiety</button>
+  <button class="neg"  onclick="interact('anger')">ðŸ”¥ Anger</button>
+  <button class="neg"  onclick="interact('shame')">ðŸ˜” Shame</button>
+  <button class="neg"  onclick="interact('guilt')">ðŸ’­ Guilt</button>
+  <button class="neg"  onclick="interact('disgust')">ðŸ¤¢ Disgust</button>
+  <button class="str"  onclick="interact('stress')">âš ï¸ Stress</button>
+  <button class="neg"  onclick="interact('fear')">ðŸ˜¨ Fear</button>
+  <button class="neg"  onclick="interact('loneliness')">ðŸŒ§ Lonely</button>
+  <button class="neg"  onclick="interact('overwhelmed')">ðŸŒ€ Overwhelm</button>
+
+  <div class="emo-group-label">COGNITIVE</div>
+  <button class="cog"  onclick="interact('focus')">ðŸ”¬ Focus</button>
+  <button class="cog"  onclick="interact('curiosity')">ðŸ” Curious</button>
+  <button class="cog"  onclick="interact('learn')">ðŸ“š Learn</button>
+  <button class="cog"  onclick="interact('recall')">ðŸ—‚ Recall</button>
+  <button class="cog"  onclick="interact('confusion')">ðŸŒ€ Confused</button>
+  <button class="cog"  onclick="interact('surprise')">ðŸ˜² Surprise</button>
+
+  <div class="emo-group-label">EXPRESSIVE</div>
+  <button class="int"  onclick="interact('intuition')">âœ¨ Intuition</button>
+  <button class="int"  onclick="interact('creative')">ðŸŽ¨ Create</button>
+  <button class="int"  onclick="interact('awe')">ðŸŒŒ Awe</button>
+  <button class="int"  onclick="interact('nostalgia')">ðŸ“· Nostalgia</button>
+  <button class="mot"  onclick="interact('motor')">ðŸƒ Motor</button>
+  <button class="mot"  onclick="interact('restlessness')">ðŸ’ƒ Restless</button>
+
+  <div class="emo-group-label">INSTINCT &amp; EDGE</div>
+  <button class="emo"  onclick="interact('arousal')">ðŸŒ¡ Arousal</button>
+  <button class="neg"  onclick="interact('regret')">ðŸ” Regret</button>
+  <button class="cog"  onclick="interact('sly')">ðŸ¦Š Sly</button>
+  <button class="str"  onclick="interact('dissociation')">ðŸŒ« Dissociate</button>
+  <button class="str"  onclick="interact('hysteria')">ðŸŒª Hysteria</button>
+  <button class="str"  onclick="interact('panicking')">ðŸ’¥ Panic</button>
+</div>
+
+
+<!-- âš  DO NOT DELETE â€” Window Manager Dock
+     Shows all windows. Click icon to open/restore. Pink dot = open, gold = minimized. -->
+<div id="wm-dock">
+  <div class="dock-icon" id="dock-brain"    onclick="wmRestore('win-brain')"    title="Brain HUD">
+    <span>ðŸ§ </span><div class="dock-dot"></div><div class="dock-label">BRAIN</div>
+  </div>
+  <div class="dock-icon" id="dock-emotions" onclick="wmRestore('win-emotions')"  title="Emotions">
+    <span>ðŸ’—</span><div class="dock-dot"></div><div class="dock-label">EMOTIONS</div>
+  </div>
+  <div class="dock-icon" id="dock-regions"  onclick="wmRestore('win-regions')"   title="Region Activity">
+    <span>âš¡</span><div class="dock-dot"></div><div class="dock-label">REGIONS</div>
+  </div>
+  <div class="dock-icon" id="dock-persona"  onclick="wmRestore('win-persona')"   title="Personality">
+    <span>â¬¡</span><div class="dock-dot"></div><div class="dock-label">PERSONA</div>
+  </div>
+  <div class="dock-icon" id="dock-chat"     onclick="wmRestore('win-chat')"      title="Chat">
+    <span>ðŸ’¬</span><div class="dock-dot"></div><div class="dock-label">CHAT</div>
+  </div>
+  <div class="dock-icon" id="dock-identity" onclick="wmRestore('win-identity')"  title="Identity">
+    <span>ðŸ‘</span><div class="dock-dot"></div><div class="dock-label">IDENTITY</div>
+  </div>
+  <div class="dock-icon" id="dock-learn"    onclick="wmRestore('win-learn')"     title="Experiential Learning">
+    <span>ðŸŽ“</span><div class="dock-dot"></div><div class="dock-label">LEARN</div>
+  </div>
+  <div class="dock-icon" id="dock-synoptics" onclick="wmRestore('win-synoptics')" title="Brain Synoptics">
+    <span>ðŸ”®</span><div class="dock-dot"></div><div class="dock-label">SYNOPTICS</div>
+  </div>
+  <!-- âš  DO NOT DELETE â€” world engine toggle button in dock.
+       Directly switches renderer to world scene without depending on
+       synoptics window state. Click again to return to brain. -->
+  <div class="dock-icon" id="dock-world" onclick="_toggleWorldEngine()" title="World Engine">
+    <span>ðŸŒ</span><div class="dock-dot"></div><div class="dock-label">WORLD</div>
+  </div>
+</div>
+
+     Day theme white. z-index:9999 covers everything.
+     ESC key and â†© RETURN TO BRAIN are the only exits.
+     Three fixed zones: top bar, scrollable chat, bottom bar. -->
+
+<!-- âš  DO NOT DELETE â€” Dedicated Experiential Learning Window panel.
+     Registered in WM_WINDOWS as win-learn. All three learning channels
+     (URL, file upload, topic) call the same learnFromURL/learnFromFile/
+     learnFromTopic functions. Progress is shown in wl-progress-text/fill.
+     Learning log at bottom shows recent events. -->
+<div id="win-learn-panel" style="display:none;">
+  <div style="padding:14px 14px 10px;font-family:'Share Tech Mono';font-size:11px;color:#e0e0e0;overflow-y:auto;height:100%;box-sizing:border-box;">
+    <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:#8866ff;letter-spacing:3px;margin-bottom:10px;border-bottom:1px solid rgba(100,68,255,0.25);padding-bottom:6px;">
+      â¬¡ EXPERIENTIAL LEARNING
+    </div>
+    <div style="font-size:8px;color:#445;line-height:1.6;margin-bottom:10px;">
+      Feed the brain through four channels. Each fires Atlas emotions,
+      strengthens synaptic paths, records episodic memories, and persists to Supabase.
+    </div>
+
+    <!-- CHANNEL 1: URL -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:8px;color:#8866ff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 1 Â· URL / YOUTUBE</div>
+      <input id="wl-url-input" type="text" placeholder="YouTube URL, video or audio linkâ€¦"
+        autocomplete="off" onkeydown="if(event.key==='Enter')_wlLearnURL()"
+        style="width:100%;background:rgba(100,68,255,0.06);border:1px solid rgba(100,68,255,0.25);
+               color:#ccc;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;
+               border-radius:4px;outline:none;box-sizing:border-box;margin-bottom:5px;"/>
+      <button onclick="_wlLearnURL()"
+        style="width:100%;background:rgba(100,68,255,0.1);border:1px solid rgba(100,68,255,0.35);
+               color:#8866ff;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
+               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN FROM URL</button>
+    </div>
+
+    <!-- CHANNEL 2: FILE -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:8px;color:#00bfff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 2 Â· UPLOAD FILE</div>
+      <div style="font-size:8px;color:#334;margin-bottom:5px;">Audio, video, .txt, .md, .pdf accepted</div>
+      <button onclick="document.getElementById('wl-file-input').click()"
+        style="width:100%;background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);
+               color:#00bfff;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
+               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ UPLOAD AUDIO / TEXT FILE</button>
+      <input id="wl-file-input" type="file" accept="audio/*,video/*,.txt,.md,.pdf"
+        style="display:none;" onchange="learnFromFile(this.files[0]);this.value=''"/>
+    </div>
+
+    <!-- CHANNEL 3: TOPIC -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:8px;color:#ffd700;letter-spacing:2px;margin-bottom:5px;">CHANNEL 3 Â· LEARN TOPIC</div>
+      <input id="wl-topic-input" type="text"
+        placeholder="e.g. learn math, learn to cook, learn quantum physicsâ€¦"
+        autocomplete="off" onkeydown="if(event.key==='Enter')_wlLearnTopic()"
+        style="width:100%;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.25);
+               color:#ffe;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;
+               border-radius:4px;outline:none;box-sizing:border-box;margin-bottom:5px;"/>
+      <button onclick="_wlLearnTopic()"
+        style="width:100%;background:rgba(255,215,0,0.10);border:1px solid rgba(255,215,0,0.40);
+               color:#ffd700;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
+               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN TOPIC FROM LLM</button>
+    </div>
+
+    <!-- âš  DO NOT DELETE â€” CHANNEL 4: PASTE TEXT.
+         User copies any text â€” article, notes, book excerpt, conversation â€”
+         pastes it here and presses LEARN FROM PASTED TEXT.
+         Routes to learnFromTranscript('pasted-text') directly.
+         Progress bar and log update in real time below. -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:8px;color:#ff9966;letter-spacing:2px;margin-bottom:5px;">CHANNEL 4 Â· PASTE TEXT</div>
+      <div style="font-size:8px;color:#334;margin-bottom:5px;">Copy any text â€” article, notes, book excerpt â€” paste below and learn.</div>
+      <textarea id="wl-paste-input"
+        placeholder="Paste any text hereâ€¦ article, notes, transcript, book excerpt, anything."
+        style="width:100%;height:90px;background:rgba(255,153,102,0.05);
+               border:1px solid rgba(255,153,102,0.28);color:#ffe0cc;
+               font-family:'Share Tech Mono';font-size:10px;padding:7px 10px;
+               border-radius:4px;outline:none;box-sizing:border-box;
+               resize:vertical;line-height:1.5;
+               scrollbar-width:thin;scrollbar-color:rgba(255,153,102,0.3) transparent;"></textarea>
+      <button onclick="_wlLearnPasted()"
+        style="width:100%;margin-top:5px;
+               background:rgba(255,153,102,0.12);border:1px solid rgba(255,153,102,0.45);
+               color:#ff9966;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
+               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN FROM PASTED TEXT</button>
+    </div>
+
+    <!-- PROGRESS â€” always visible block, bar animates when learning fires -->
+    <div style="margin-top:8px;">
+      <div style="font-size:8px;color:#667;letter-spacing:1px;margin-bottom:5px;font-family:'Orbitron';">NEURAL LEARNING PROGRESS</div>
+      <!-- Status text â€” shows each pipeline stage -->
+      <div id="wl-progress-text"
+        style="font-size:9px;color:#8866ff;min-height:16px;
+               letter-spacing:1px;line-height:1.5;word-break:break-word;">
+        ready â€” waiting for input
+      </div>
+      <!-- Progress bar â€” always rendered, width animates 0â†’100% -->
+      <div id="wl-progress-bar-outer"
+        style="height:5px;background:rgba(255,255,255,0.08);
+               border-radius:3px;margin-top:6px;overflow:hidden;">
+        <div id="wl-progress-fill"
+          style="height:100%;width:0%;border-radius:3px;
+                 background:linear-gradient(90deg,#6644ff,#ff9966,#aa66ff);
+                 transition:width 0.5s ease;"></div>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div style="margin-top:14px;">
+      <div style="font-size:8px;color:#445;letter-spacing:2px;margin-bottom:5px;font-family:'Orbitron';">RECENT LEARNING</div>
+      <div id="wl-log"
+        style="font-size:8px;color:#556;line-height:1.7;max-height:140px;overflow-y:auto;
+               scrollbar-width:thin;scrollbar-color:rgba(100,68,255,0.3) transparent;">
+        <span style="color:#334;font-style:italic;">no learning recorded yet</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     âš  DO NOT DELETE â€” WORLD ENGINE OVERLAY
+     Completely independent from the brain synoptics canvas.
+     Has its own renderer, scene, camera. Opens via ðŸŒ WORLD dock button.
+     Contains: 2Ã—2Ã—1.5 room, GLB body loader, orbit controls, circadian light.
+     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+<div id="we-overlay" style="
+  display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;
+  z-index:9000;background:#0a110a;flex-direction:column;
+  font-family:'Share Tech Mono',monospace;">
+
+  <!-- Top bar -->
+  <div style="display:flex;align-items:center;padding:6px 14px;
+    background:rgba(0,0,0,0.75);border-bottom:1px solid rgba(100,200,100,0.25);
+    flex-shrink:0;gap:10px;z-index:9001;position:relative;">
+    <span style="font-family:'Orbitron',sans-serif;font-size:10px;color:#88cc88;
+      letter-spacing:3px;white-space:nowrap;">ðŸŒ WORLD ENGINE</span>
+    <span id="we-status" style="font-size:8px;color:#445;letter-spacing:1px;flex:1;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">initialisingâ€¦</span>
+    <button onclick="_weLoadGLB()" style="
+      background:rgba(100,200,100,0.12);border:1px solid #88cc88;color:#88cc88;
+      font-family:'Share Tech Mono';font-size:8px;padding:4px 12px;
+      border-radius:4px;cursor:pointer;letter-spacing:1px;white-space:nowrap;">
+      ðŸ“ GLB
+    </button>
+    <button onclick="_toggleWorldEngine()" style="
+      background:rgba(255,80,80,0.12);border:1px solid #ff5555;color:#ff5555;
+      font-family:'Orbitron',sans-serif;font-size:8px;padding:4px 12px;
+      border-radius:4px;cursor:pointer;letter-spacing:2px;font-weight:700;white-space:nowrap;">
+      â†© BRAIN
+    </button>
+  </div>
+
+  <!-- GLB upload panel -->
+  <div id="we-upload-panel" style="
+    display:none;position:absolute;top:44px;left:50%;transform:translateX(-50%);
+    z-index:9100;background:#0d1a0d;border:1px solid rgba(100,200,100,0.4);
+    border-radius:12px;padding:22px 26px;width:320px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.85);">
+    <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:#88cc88;
+      letter-spacing:3px;margin-bottom:8px;">â¬¡ LOAD BODY FILE</div>
+    <div style="font-size:8px;color:#445;line-height:1.8;margin-bottom:12px;">
+      Pick a .glb file. Stays local â€” nothing uploaded.
+    </div>
+    <div id="we-drop-zone" style="
+      border:2px dashed rgba(100,200,100,0.35);border-radius:8px;
+      padding:20px;text-align:center;cursor:pointer;margin-bottom:10px;
+      background:rgba(100,200,100,0.03);transition:all 0.2s;"
+      onclick="document.getElementById('we-file-input').click()"
+      ondragover="event.preventDefault();this.style.borderColor='#88cc88'"
+      ondragleave="this.style.borderColor='rgba(100,200,100,0.35)'"
+      ondrop="_weDropFile(event)">
+      <div style="font-size:26px;margin-bottom:5px;">ðŸ¤–</div>
+      <div style="font-size:9px;color:#556;letter-spacing:1px;line-height:1.8;">
+        Drop .glb here or click to browse
+      </div>
+    </div>
+    <input id="we-file-input" type="file" accept=".glb,.gltf" style="display:none;"
+      onchange="_weFileChosen(this.files[0])"/>
+    <button onclick="document.getElementById('we-file-input').click()" style="
+      width:100%;background:rgba(100,200,100,0.1);border:1px solid rgba(100,200,100,0.4);
+      color:#88cc88;font-family:'Orbitron';font-size:8px;letter-spacing:2px;
+      padding:8px;border-radius:6px;cursor:pointer;margin-bottom:8px;">
+      â¬¡ BROWSE DEVICE
+    </button>
+    <div style="font-size:8px;color:#445;letter-spacing:1px;margin-bottom:4px;"
+      id="we-prog-label">waiting for fileâ€¦</div>
+    <div style="height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-bottom:10px;">
+      <div id="we-prog-fill" style="height:100%;width:0%;border-radius:3px;
+        background:linear-gradient(90deg,#44aa44,#88ff88);transition:width 0.4s ease;"></div>
+    </div>
+    <button onclick="document.getElementById('we-upload-panel').style.display='none'" style="
+      width:100%;background:none;border:1px solid rgba(255,255,255,0.08);
+      color:#334;font-family:'Share Tech Mono';font-size:9px;padding:6px;
+      border-radius:6px;cursor:pointer;">cancel</button>
+  </div>
+
+  <!-- âš  DO NOT DELETE â€” Body row: 3D canvas left + Chat/Identity right -->
+  <div id="we-body-row">
+
+    <!-- 3D World Canvas -->
+    <div id="we-canvas-wrap">
+      <canvas id="we-canvas" style="width:100%;height:100%;display:block;touch-action:none;"></canvas>
+      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+        font-size:7px;color:rgba(100,200,100,0.25);letter-spacing:2px;pointer-events:none;">
+        drag to orbit Â· scroll to zoom
+      </div>
+    </div>
+
+    <!-- Right side panel: Chat + Identity -->
+    <div id="we-side-panel">
+
+      <!-- Chat section â€” mirrors dialog-wrap content -->
+      <div class="we-panel-title">ðŸ’¬ CHAT</div>
+      <div id="we-side-chat">
+        <!-- âš  DO NOT DELETE â€” we-chat-mirror: shows the same chat history
+             as the main dialog. Scrolls independently. Updated by _weSyncChat(). -->
+        <div id="we-chat-history" style="
+          flex:1;overflow-y:auto;padding:8px 10px;
+          scrollbar-width:thin;scrollbar-color:rgba(255,105,180,0.3) transparent;
+          font-size:11px;display:flex;flex-direction:column;gap:6px;
+          min-height:0;">
+        </div>
+        <!-- Chat input inside world engine -->
+        <div style="display:flex;gap:6px;padding:6px 8px;border-top:1px solid rgba(255,105,180,0.12);flex-shrink:0;">
+          <input id="we-chat-input" type="text"
+            placeholder="speak to Katrinaâ€¦"
+            onkeydown="if(event.key==='Enter')_weSendChat()"
+            style="flex:1;background:rgba(255,255,255,0.04);
+              border:1px solid rgba(255,105,180,0.2);border-radius:14px;
+              padding:6px 12px;color:#e0e0e0;font-family:'Share Tech Mono';
+              font-size:11px;outline:none;"/>
+          <button onclick="_weSendChat()" style="
+            background:rgba(255,105,180,0.15);border:1px solid rgba(255,105,180,0.4);
+            color:#ff69b4;border-radius:50%;width:30px;height:30px;
+            cursor:pointer;font-size:13px;flex-shrink:0;">âž¤</button>
+        </div>
+      </div>
+
+      <!-- Identity section â€” mirrors id-wrap content -->
+      <div class="we-panel-title">ðŸ‘ IDENTITY</div>
+      <div id="we-side-identity">
+        <!-- âš  DO NOT DELETE â€” mirrors the identity panel. Populated by _wePopulateIdentity(). -->
+        <div id="we-identity-mirror" style="padding:6px 8px;font-size:9px;color:#667;"></div>
+      </div>
+
+    </div><!-- /we-side-panel -->
+  </div><!-- /we-body-row -->
+</div>
+
+<div id="iq-overlay">
+
+  <!-- TOP BAR â€” fixed, always visible -->
+  <div id="iq-top-bar">
+    <span id="iq-top-title">â¬¡ 1000% IQ Â· RAW INTELLIGENCE</span>
+    <span id="iq-top-provider">provider: â€”</span>
+    <button id="iq-top-tts" onclick="_iqToggleTTS()">ðŸ”Š AUDIO ON</button>
+    <button id="iq-return-btn" onclick="exitIQMode()" title="ESC also works">
+      â†© RETURN TO BRAIN
+    </button>
+  </div>
+
+  <!-- MIDDLE â€” scrollable chat area -->
+  <div id="iq-chat-area"></div>
+
+  <!-- BOTTOM BAR â€” fixed, always visible -->
+  <div id="iq-bottom-bar">
+    <input id="iq-input" type="text" placeholder="Ask anything â€” full knowledge depthâ€¦"
+      onkeydown="if(event.key==='Enter')_iqSend()"/>
+    <button id="iq-send-btn" onclick="_iqSend()" title="Send">âž¤</button>
+    <button id="iq-mute-btn" onclick="_iqToggleTTS()" title="Toggle audio">ðŸ”Š</button>
+    <button id="iq-share-btn" onclick="_iqShare()">âœ‰ SHARE</button>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     Scripts — loaded in dependency order
+     DO NOT reorder: each file depends on globals from those above it
+═══════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- GLTFLoader inlined — CDN returned 403; keeps GLB loading working offline -->
+<script src="js/gltf-loader.js"></script>
+<script src="js/wm.js"></script>
+<script src="js/config.js"></script>
+<script src="js/zodiac-data.js"></script>
+<script src="js/brain.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/outofreach.js"></script>
+<script src="js/llm.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/patches.js"></script>
+<script src="js/init.js"></script>
+<script src="js/world.js"></script>
+<script src="js/three-brain.js"></script>
+<script src="js/memory.js"></script>
+<script src="js/main.js"></script>
+  <div id="z-name-taken-flash">â›” NAME IS ALREADY TAKEN<br>CHOOSE ANOTHER</div>
+</body>
+</html>
