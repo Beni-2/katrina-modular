@@ -1090,6 +1090,7 @@ function loadTemporalMemory() {
 const SUPABASE_URL      = 'https://odyumzwppektitnxxdig.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9keXVtendwcGVrdGl0bnh4ZGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2Nzk2NjAsImV4cCI6MjA5NDI1NTY2MH0.DhV7pWYVIfWq5kqO3dPrWG6SESPQMsHleHDyTcQgecQ';
 const SUPABASE_TABLE    = 'katrina_memory';
+const SUPABASE_OWNER_KEY = 'katrina-benito-2026';
 
 // â”€â”€ No JS client library needed â€” pure REST fetch.
 //    The DataCloneError was caused by the Supabase UMD library using
@@ -1136,7 +1137,7 @@ async function _testSupabaseConnection(silent) {
   const _el = document.getElementById('hud-supabase-status');
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?limit=1&select=key',
+      SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?limit=1&select=key&owner_key=eq.' + encodeURIComponent(SUPABASE_OWNER_KEY),
       {
         method:      'GET',
         mode:        'cors',
@@ -1180,7 +1181,7 @@ async function _sbWrite(key, value) {
           'Content-Type':  'application/json',
           'Prefer':        'resolution=merge-duplicates',
         },
-        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now() }),
+        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now(), owner_key: SUPABASE_OWNER_KEY }),
       }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1197,7 +1198,7 @@ async function _sbRead(key) {
   try {
     const res = await fetch(
       SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE +
-        '?key=eq.' + encodeURIComponent(key) + '&select=value&limit=1',
+        '?key=eq.' + encodeURIComponent(key) + '&owner_key=eq.' + encodeURIComponent(SUPABASE_OWNER_KEY) + '&select=value&limit=1',
       {
         method:      'GET',
         mode:        'cors',
@@ -1327,3 +1328,4 @@ function _supabaseHealthCheck() {
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // END SUPABASE PERSISTENCE LAYER
+
