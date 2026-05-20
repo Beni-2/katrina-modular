@@ -914,7 +914,10 @@ function WE_init() {
   window.addEventListener('resize', _weResizeCanvas);
   _weResizeCanvas();
 
-  _weStatus('room ready â€” click ðŸ“ GLB to load body');
+  _weStatus('room ready - loading body...');
+
+  // Auto-load default body GLB after renderer has started
+  setTimeout(() => _weLoadBodyURL('assets/body.glb'), 800);
 
   // â”€â”€ Test cube â€” spins in centre to confirm renderer is working â”€â”€
   // Red rotating box at eye level. Disappears when GLB body loads.
