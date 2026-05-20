@@ -279,18 +279,64 @@ function buildPreThoughtPrompt(userText, preThought) {
 async function callLLMWithBrainLoop(provider, apiKey, userText) {
   BRAIN_LOOP.revisionCount = 0;
 
-  // â”€â”€ Step 1: Brain generates pre-thought â”€â”€
-  const preThought = generatePreThought(userText);
-  const targetSig  = computeTargetSignature();
-
-  appendMsg('system',
-    preThought.avert
-      ? `â¬¡ Brain pre-thought [AVERT]: ${preThought.prethought}`
-      : `â¬¡ Brain pre-thought: ${preThought.prethought}`
-  );
-
-  // Pre-thought neural burst â€” INTUIT + PFC deliberating
+  // â”€â”€ Step 1: LLM generates pre-thought from raw brain state â”€â”€
+  // This is the emergent emotional reaction â€” not coded logic.
+  // The LLM reads the chemistry and produces Katrina's first internal response.
   fire(['INTUIT','PFC','HIPPO'], 10);
+
+  let preThought = { prethought: '', avert: false, emotionalCeiling: 1.0 };
+
+  const _preThoughtPrompt =
+    'You are Katrina\'s internal brain â€” not her voice. Just her first raw reaction.\n\n' +
+    'BRAIN CHEMISTRY:\n' +
+    'Oxytocin '      + (chem.oxy ||0).toFixed(2) + '  ' +
+    'Dopamine '      + (chem.dop ||0).toFixed(2) + '  ' +
+    'Serotonin '     + (chem.ser ||0).toFixed(2) + '  ' +
+    'Cortisol '      + (chem.cor ||0).toFixed(2) + '  ' +
+    'Endorphins '    + (chem.enk ||0).toFixed(2) + '\n' +
+    'Norepinephrine '+ (chem.nor ||0).toFixed(2) + '  ' +
+    'GABA '          + (chem.gaba||0).toFixed(2) + '\n' +
+    'Emotional '     + (sys.emo  ||0).toFixed(2) + '  ' +
+    'Cognitive '     + (sys.cog  ||0).toFixed(2) + '  ' +
+    'Intuitive '     + (sys.int_ ||0).toFixed(2) + '\n\n' +
+    'Benny just said: “' + userText + '”\n\n' +
+    'What is the FIRST thing that moves through Katrina before she says a word?\n' +
+    'Not her response. Her reaction. Internal. Honest. Could be a feeling, a thought, a body sensation, a memory.\n' +
+    'One sentence only. No names. No punctuation tricks. Raw.';
+
+  try {
+    const _cfg     = PROVIDERS[provider];
+    const _modelId = document.getElementById('llm-select')?.value || '';
+    const _res = await safeFetch(_cfg.endpoint, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model:       _modelId,
+        messages:    [{ role: 'user', content: _preThoughtPrompt }],
+        max_tokens:  50,
+        temperature: currentProvider === 'ollama' ? 1.1 : 0.95,
+      }),
+    });
+    if (_res.ok) {
+      const _d = await _res.json();
+      const _reaction = ((_d.choices||[])[0]||{}).message?.content?.trim();
+      if (_reaction && _reaction.length > 4) {
+        preThought.prethought = _reaction;
+        appendMsg('system', '⬡ ' + _reaction);
+      } else {
+        preThought = generatePreThought(userText);
+        appendMsg('system', '⬡ ' + preThought.prethought);
+      }
+    } else {
+      preThought = generatePreThought(userText);
+      appendMsg('system', '⬡ ' + preThought.prethought);
+    }
+  } catch(e) {
+    preThought = generatePreThought(userText);
+    appendMsg('system', '⬡ ' + preThought.prethought);
+  }
+
+  const targetSig  = computeTargetSignature();
 
   // â”€â”€ Step 2: Get initial draft seeded by pre-thought â”€â”€
   const seededPrompt  = buildPreThoughtPrompt(userText, preThought);
