@@ -240,9 +240,9 @@ function loadAllKatrinaState() {
   loadTemporalMemory();
   loadNarrativeMemory();
   loadChatHistory();
-  loadChemState();       // restore mood from last session
-  applyAbsenceEffect();  // shift chemistry based on how long Benny was away
-  // Rebuild evolved profile incorporating loaded data
+  loadChemState();
+  applyAbsenceEffect();
+  if (typeof loadWorldConfig === 'function') loadWorldConfig();
   buildEvolvedProfile();
 }
 

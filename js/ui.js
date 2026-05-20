@@ -425,6 +425,12 @@ function buildSystemPrompt() {
     if (_absence) base += '\n\nAbsence context: ' + _absence;
   }
 
+  // â”€â”€ Sandbox world context (her home + nearby places) â”€â”€
+  if (typeof getWorldContext === 'function') {
+    const _world = getWorldContext();
+    if (_world) base += '\n\n' + _world;
+  }
+
   // â”€â”€ Real-world context (date/time, weather, news) â”€â”€
   const _now = new Date().toLocaleString('en-US', {
     weekday:'short', month:'short', day:'numeric',

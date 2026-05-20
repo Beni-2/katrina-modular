@@ -64,6 +64,7 @@ ${_hybridSeedStr}${activeGoal
   : `Let your mind wander naturally as ${_personaName}. ` +
     `${topEmotions ? 'Emotions present right now: ' + topEmotions + '.' : ''} ` +
     `${topMemories ? 'Recent impressions: ' + topMemories + '.' : ''} ` +
+    `${(typeof getWorldThoughtSeed === 'function' && getWorldThoughtSeed()) ? 'You find yourself ' + getWorldThoughtSeed() + '.' : ''}` +
     `Think about something that is genuinely on your mind right now.`}
 ONE or TWO sentences maximum. Stream of consciousness. No greeting. No em-dashes. No markdown.
 This is private thought â€” raw and honest. Speak as ${_personaName}.`;
@@ -212,9 +213,22 @@ const DAILY_LIFE_GOALS = {
 
 // Suggest a goal appropriate to the current time
 function suggestDailyGoal() {
-  if (activeGoal) return; // already has a goal
-  const env  = capturePeripheral();
-  const pool = DAILY_LIFE_GOALS[env.timeOfDay] || DAILY_LIFE_GOALS.afternoon;
+  if (activeGoal) return;
+  const env = capturePeripheral();
+  const tod = env.timeOfDay || 'afternoon';
+
+  // Prefer world-config goals if places are defined
+  if (typeof getWorldDailyGoals === 'function') {
+    const worldGoals = getWorldDailyGoals(tod);
+    if (worldGoals && worldGoals.length) {
+      const pick = worldGoals[Math.floor(Math.random() * worldGoals.length)];
+      setGoal(pick.desc, [...pick.steps], pick.motivation);
+      return;
+    }
+  }
+
+  // Fall back to hardcoded goals
+  const pool = DAILY_LIFE_GOALS[tod] || DAILY_LIFE_GOALS.afternoon;
   const pick = pool[Math.floor(Math.random() * pool.length)];
   setGoal(pick.desc, [...pick.steps], pick.motivation);
 }
