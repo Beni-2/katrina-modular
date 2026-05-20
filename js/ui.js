@@ -1,19 +1,19 @@
-﻿
+
 // â"€â"€ REAL-WORLD CONTEXT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-let _weatherContext = ‘’;
-let _newsContext    = ‘’;
+let _weatherContext = '';
+let _newsContext    = '';
 let _weatherTs      = 0;
 let _newsTs         = 0;
 const _WEATHER_TTL  = 10 * 60 * 1000;
 const _NEWS_TTL     = 30 * 60 * 1000;
 
 async function fetchWeatherContext() {
-  const key = document.getElementById(‘owm-key-input’)?.value?.trim();
+  const key = document.getElementById('owm-key-input')?.value?.trim();
   if (!key) return;
   if (Date.now() - _weatherTs < _WEATHER_TTL) return;
   _weatherTs = Date.now();
   try {
-    const city = document.getElementById(‘owm-city-input’)?.value?.trim();
+    const city = document.getElementById('owm-city-input')?.value?.trim();
     let url;
     if (city) {
       url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${key}&units=metric`;
@@ -32,7 +32,7 @@ async function fetchWeatherContext() {
 }
 
 async function fetchNewsContext() {
-  const key = document.getElementById(‘gnews-key-input’)?.value?.trim();
+  const key = document.getElementById('gnews-key-input')?.value?.trim();
   if (!key) return;
   if (Date.now() - _newsTs < _NEWS_TTL) return;
   _newsTs = Date.now();
@@ -41,7 +41,7 @@ async function fetchNewsContext() {
     if (!r.ok) return;
     const d = await r.json();
     if (d.articles?.length) {
-      _newsContext = d.articles.map(a => a.title).join(‘ | ‘);
+      _newsContext = d.articles.map(a => a.title).join(' | ');
       _updateRealWorldHUD();
     }
   } catch(e) {}
@@ -52,23 +52,23 @@ async function refreshRealWorldContext() {
 }
 
 function _updateRealWorldHUD() {
-  const panel = document.getElementById(‘real-world-panel’);
-  const el    = document.getElementById(‘real-world-indicator’);
+  const panel = document.getElementById('real-world-panel');
+  const el    = document.getElementById('real-world-indicator');
   if (!el || !panel) return;
   const parts = [];
-  if (_weatherContext) parts.push(‘🌡️ ‘ + _weatherContext);
-  if (_newsContext)    parts.push(‘📰 news ready’);
-  el.textContent      = parts.join(‘  ·  ‘);
-  panel.style.display = parts.length ? ‘’ : ‘none’;
+  if (_weatherContext) parts.push('🌡️ ' + _weatherContext);
+  if (_newsContext)    parts.push('📰 news ready');
+  el.textContent      = parts.join('  ·  ');
+  panel.style.display = parts.length ? '' : 'none';
 }
 
 setInterval(refreshRealWorldContext, _WEATHER_TTL);
 // â"€â"€ END REAL-WORLD CONTEXT â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 // Active zodiac state
-let activeSign   = null;  // null = no zodiac chosen â†’ pure Katrina by default
-let manualTraits = ‘’;
-let customPrompt = ‘’;   // raw text for Custom Personality
+let activeSign   = null;  // null = no zodiac chosen â†' pure Katrina by default
+let manualTraits = '';
+let customPrompt = '';   // raw text for Custom Personality
 let zodiacOpen   = true;
 
 // Merge manual traits into the system prompt addition
