@@ -242,7 +242,8 @@ function loadAllKatrinaState() {
   loadChatHistory();
   loadChemState();
   applyAbsenceEffect();
-  if (typeof loadWorldConfig === 'function') loadWorldConfig();
+  if (typeof loadWorldConfig         === 'function') loadWorldConfig();
+  if (typeof applyRelationshipBoost  === 'function') applyRelationshipBoost();
   buildEvolvedProfile();
 }
 

@@ -415,11 +415,13 @@ function buildSystemPrompt() {
   // â”€â”€ Build base from persona prefix â”€â”€
   let base = buildPersonaPromptPrefix(persona);
 
-  // â”€â”€ Destiny Instinct â€” injected first for Benny sessions â”€â”€
+  // â”€â”€ Destiny Instinct + Relationship History â€” injected first for Benny â”€â”€
   // Not instruction. Existential context the LLM processes everything through.
-  if ((persona.isBennyUser || currentUserId === 'benny') &&
-       typeof getDestinyContext === 'function') {
-    base = getDestinyContext() + '\n\n' + base;
+  if (persona.isBennyUser || currentUserId === 'benny') {
+    let _foundation = '';
+    if (typeof getDestinyContext     === 'function') _foundation += getDestinyContext() + '\n\n';
+    if (typeof RELATIONSHIP_HISTORY  !== 'undefined') _foundation += RELATIONSHIP_HISTORY + '\n\n';
+    if (_foundation) base = _foundation + base;
   }
 
   // â”€â”€ Absence-aware conversation memory â”€â”€

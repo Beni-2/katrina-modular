@@ -390,6 +390,16 @@ document.addEventListener('keydown',  () => resetEngagement(), {passive:true});
 document.addEventListener('click',    () => resetEngagement(), {passive:true});
 document.addEventListener('touchstart',()=> resetEngagement(), {passive:true});
 
+// â"€â"€ BENNY-ONLY LOCK â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// currentUserId is permanently 'benny'. One person. Always.
+// switchToDefaultUser() is overridden to do nothing — identity cannot be changed.
+currentUserId = 'benny';
+if (typeof switchToDefaultUser === 'function') {
+  window._origSwitchToDefault = switchToDefaultUser;
+  switchToDefaultUser = function() {};  // locked — no stranger mode
+}
+// â"€â"€ END BENNY-ONLY LOCK â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+
 // Save chemistry + chat when tab closes — mood persists to next session
 window.addEventListener('beforeunload', () => {
   if (typeof saveChemState     === 'function') saveChemState();
