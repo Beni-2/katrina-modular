@@ -14,25 +14,30 @@ let _wmTopZ = 7000;
 
 // â”€â”€ Window definitions â€” maps window id â†’ panel id + config â”€â”€
 const WM_WINDOWS = [
-  { id:'win-brain',    panel:'hud',          title:'â¬¡ BRAIN Â· NEURAL STATE',    dock:'dock-brain',
-    defaultPos:{left:20,top:20},     defaultSize:{width:250,height:500} },
-  { id:'win-emotions', panel:'emotions-hud', title:'â¬¡ EMOTIONS Â· LAYER SYSTEM', dock:'dock-emotions',
-    defaultPos:{left:20,top:540},    defaultSize:{width:250,height:360} },
-  { id:'win-regions',  panel:'hud-right',    title:'â¬¡ REGION ACTIVITY',          dock:'dock-regions',
-    defaultPos:{left:Math.max(0, window.innerWidth-260), top:60}, defaultSize:{width:240,height:340} },
-  { id:'win-persona',  panel:'panel-column', title:'â¬¡ PERSONALITY Â· IDENTITY',  dock:'dock-persona',
-    defaultPos:{left:660,top:20},    defaultSize:{width:720,height:700} },
-  { id:'win-chat',     panel:'dialog-wrap',  title:'â¬¡ KATRINA INTERFACE Â· CHAT', dock:'dock-chat',
-    defaultPos:{left:660,top:740},   defaultSize:{width:720,height:340} },
-  { id:'win-identity', panel:'id-wrap',      title:'â¬¡ IDENTITY Â· RECOGNITION',  dock:'dock-identity',
-    defaultPos:{left:Math.max(0, window.innerWidth-260), top:60}, defaultSize:{width:245,height:480} },
-  { id:'win-learn',    panel:'win-learn-panel', title:'â¬¡ EXPERIENTIAL LEARNING Â· NEURAL INPUT', dock:'dock-learn',
-    defaultPos:{left:20,top:910},    defaultSize:{width:320,height:560} },
-  // âš  DO NOT DELETE â€” synoptics window. Wraps the Three.js brain canvas.
-  // When minimized/closed the main screen is free for the world engine.
-  // Starts maximized (full screen) to match the current canvas behaviour.
-  { id:'win-synoptics', panel:'three-canvas-wrap', title:'ðŸ”® BRAIN SYNOPTICS Â· NEURAL VISUALIZATION', dock:'dock-synoptics',
-    defaultPos:{left:0,top:0}, defaultSize:{width:window.innerWidth, height:window.innerHeight-52} },
+  // Brain stat bars — left column
+  { id:'win-brain',    panel:'hud',          title:'⬡ BRAIN · NEURAL STATE',    dock:'dock-brain',
+    defaultPos:{left:10,top:10},     defaultSize:{width:250,height:380} },
+  // Emotions panel — left column below brain
+  { id:'win-emotions', panel:'emotions-hud', title:'⬡ EMOTIONS · LAYER SYSTEM', dock:'dock-emotions',
+    defaultPos:{left:10,top:400},    defaultSize:{width:250,height:260} },
+  // Region activity — starts minimized, restore from dock
+  { id:'win-regions',  panel:'hud-right',    title:'⬡ REGION ACTIVITY',          dock:'dock-regions',
+    defaultPos:{left:Math.max(0,window.innerWidth-260),top:10}, defaultSize:{width:240,height:340}, startMinimized:true },
+  // Personality panel — starts minimized, restore from dock when needed
+  { id:'win-persona',  panel:'panel-column', title:'⬡ PERSONALITY · IDENTITY',  dock:'dock-persona',
+    defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(660,window.innerHeight-80)}, startMinimized:true },
+  // CHAT — primary window, always visible, top-centre
+  { id:'win-chat',     panel:'dialog-wrap',  title:'⬡ KATRINA INTERFACE · CHAT', dock:'dock-chat',
+    defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(660,window.innerHeight-80)} },
+  // Identity / face recognition — starts minimized
+  { id:'win-identity', panel:'id-wrap',      title:'⬡ IDENTITY · RECOGNITION',  dock:'dock-identity',
+    defaultPos:{left:Math.max(0,window.innerWidth-260),top:10}, defaultSize:{width:245,height:480}, startMinimized:true },
+  // Experiential learning — starts minimized
+  { id:'win-learn',    panel:'win-learn-panel', title:'⬡ EXPERIENTIAL LEARNING · NEURAL INPUT', dock:'dock-learn',
+    defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(560,window.innerHeight-80)}, startMinimized:true },
+  // ⚠ DO NOT DELETE — synoptics window wraps the Three.js brain canvas.
+  { id:'win-synoptics', panel:'three-canvas-wrap', title:'🔮 BRAIN SYNOPTICS · NEURAL VISUALIZATION', dock:'dock-synoptics',
+    defaultPos:{left:0,top:0}, defaultSize:{width:window.innerWidth,height:window.innerHeight-52} },
 ];
 
 function wmInit() {
@@ -78,14 +83,19 @@ function wmInit() {
     panel.style.right    = '';
     panel.style.zIndex   = '';
 
+    // Start minimized if config says so (restore via dock)
+    if (cfg.startMinimized) {
+      win.classList.add('minimized');
+      _wmUpdateDock(cfg.id, false, true);
+    } else {
+      _wmUpdateDock(cfg.id, true);
+    }
+
     // Focus on click
     win.addEventListener('mousedown', () => wmFocus(cfg.id), true);
 
     // Drag
     wmMakeDraggable(win, tbar);
-
-    // Update dock dot
-    _wmUpdateDock(cfg.id, true);
   });
 
   // Special: emotions-hud was positioned by JS â€” neutralise that
