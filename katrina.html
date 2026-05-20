@@ -232,6 +232,9 @@
   .api-badge.gnews-badge{background:rgba(255,80,0,0.10);color:#ff5000;border-color:rgba(255,80,0,0.30);}
   .api-badge.gnews-badge.active{background:rgba(255,80,0,0.22);box-shadow:0 0 8px rgba(255,80,0,0.3);}
   #gnews-key-input:focus{border-color:#ff5000;}
+  .api-badge.el-badge{background:rgba(255,180,0,0.10);color:#ffb400;border-color:rgba(255,180,0,0.30);}
+  .api-badge.el-badge.active{background:rgba(255,180,0,0.22);box-shadow:0 0 8px rgba(255,180,0,0.3);}
+  #elevenlabs-key-input:focus,#elevenlabs-voice-input:focus{border-color:#ffb400;}
   .api-badge.emailjs-badge{background:rgba(180,0,255,0.10);color:#b400ff;border-color:rgba(180,0,255,0.30);}
   .api-badge.emailjs-badge.active{background:rgba(180,0,255,0.22);box-shadow:0 0 8px rgba(180,0,255,0.3);}
   #emailjs-key-input:focus,#emailjs-service-input:focus,#emailjs-template-input:focus,#emailjs-to-input:focus{border-color:#b400ff;}
@@ -1603,6 +1606,21 @@ body.synoptics-hidden::before {
           onchange="refreshRealWorldContext()"/>
       </div>
 
+
+      <!-- ElevenLabs voice rows -->
+      <div class="api-provider-row" style="margin-top:6px;">
+        <span class="api-badge el-badge" title="ElevenLabs — real AI voice. Free: elevenlabs.io">VOICE</span>
+        <input class="api-key-field" id="elevenlabs-key-input" type="password"
+          placeholder="ElevenLabs API key — elevenlabs.io (free tier)"
+          autocomplete="off"/>
+      </div>
+      <div class="api-provider-row">
+        <span style="font-family:'Share Tech Mono';font-size:8px;color:#445;padding:3px 7px;border:1px solid rgba(255,180,0,0.2);border-radius:4px;flex-shrink:0;white-space:nowrap;">VOICE ID</span>
+        <input class="api-key-field" id="elevenlabs-voice-input" type="text"
+          placeholder="Voice ID (default: Rachel — 21m00Tcm4TlvDq8ikWAM)"
+          value="21m00Tcm4TlvDq8ikWAM"
+          autocomplete="off"/>
+      </div>
 
       <!-- EmailJS reach-out rows -->
       <div class="api-provider-row" style="margin-top:6px;">

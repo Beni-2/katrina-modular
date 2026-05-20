@@ -340,9 +340,86 @@ function cleanForDisplay(text) {
 function isTTSSpeaking() { return ttsBusy; }
 
 function speakText(text) {
-  if (!ttsEnabled || !window.speechSynthesis) return;
+  if (!ttsEnabled) return;
   ttsQueue.push(cleanForSpeech(text));
   if (!ttsBusy) _playNext();
+}
+
+// â"€â"€ ElevenLabs TTS â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Uses ElevenLabs API when key is set. Falls back to Web Speech API silently.
+// Chemistry maps to voice settings: high oxy â†' more expressive (lower stability)
+// high dop â†' more style exaggeration.
+async function _playElevenLabs(text) {
+  const key     = document.getElementById('elevenlabs-key-input')?.value?.trim();
+  const voiceId = document.getElementById('elevenlabs-voice-input')?.value?.trim()
+                  || '21m00Tcm4TlvDq8ikWAM';  // Rachel â€" default warm female voice
+  if (!key) return false;
+
+  // Map brain chemistry to ElevenLabs voice settings
+  const oxyLevel  = (typeof chem !== 'undefined') ? chem.oxy : 0.5;
+  const dopLevel  = (typeof chem !== 'undefined') ? chem.dop : 0.5;
+  const corLevel  = (typeof chem !== 'undefined') ? chem.cor : 0.2;
+  // High oxy = more expressive (lower stability). High cortisol = tighter (higher stability).
+  const stability  = Math.max(0.15, Math.min(0.90, 0.55 - (oxyLevel - 0.5) * 0.5 + corLevel * 0.25));
+  const similarity = 0.82;
+  const style      = Math.max(0.0,  Math.min(0.60, (dopLevel - 0.30) * 0.70));
+
+  try {
+    setStatus('speaking', 'SPEAKINGâ€¦');
+    interact('social');
+    if (typeof _weIsSpeaking !== 'undefined') _weIsSpeaking = true;
+    if (typeof _weInstinct   !== 'undefined' && _weStartupDone && !_weInstinct.engaged)
+      _weSetState('engage_speak');
+
+    const res = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key':   key,
+        'Content-Type': 'application/json',
+        'Accept':       'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: {
+          stability,
+          similarity_boost: similarity,
+          style,
+          use_speaker_boost: true,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      console.warn('[ElevenLabs] HTTP', res.status, await res.text());
+      return false;  // fall back to Web Speech
+    }
+
+    const blob  = await res.blob();
+    const url   = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+      currentUtterance = null;
+      if (typeof _weIsSpeaking !== 'undefined') _weIsSpeaking = false;
+      _playNext();
+    };
+    audio.onerror = () => {
+      URL.revokeObjectURL(url);
+      currentUtterance = null;
+      if (typeof _weIsSpeaking !== 'undefined') _weIsSpeaking = false;
+      _playNext();
+    };
+
+    currentUtterance = audio;
+    await audio.play();
+    return true;
+  } catch(e) {
+    console.warn('[ElevenLabs]', e.message);
+    return false;
+  }
 }
 
 // â”€â”€ Cached voice reference (resolved once after voices load) â”€â”€
@@ -489,7 +566,7 @@ function computeTTSVoiceProfile(text) {
   return { rate, pitch, volume };
 }
 
-function _playNext() {
+async function _playNext() {
   if (!ttsQueue.length) {
     ttsBusy = false;
     currentUtterance = null;
@@ -498,6 +575,17 @@ function _playNext() {
   }
   ttsBusy = true;
   const text = ttsQueue.shift();
+
+  // â"€â"€ Try ElevenLabs first â"€â"€
+  const _elKey = document.getElementById('elevenlabs-key-input')?.value?.trim();
+  if (_elKey) {
+    const ok = await _playElevenLabs(text);
+    if (ok) return;
+    // ElevenLabs failed â€" fall through to Web Speech API
+  }
+
+  // â"€â"€ Web Speech API fallback â"€â"€
+  if (!window.speechSynthesis) { ttsBusy = false; return; }
   currentUtterance = new SpeechSynthesisUtterance(text);
 
   const voice = _resolveKatrinaVoice();
@@ -546,8 +634,13 @@ function _playNext() {
 function stopSpeech() {
   ttsQueue = [];
   ttsBusy  = false;
-  if (window.speechSynthesis) speechSynthesis.cancel();
-  currentUtterance = null;
+  if (currentUtterance instanceof Audio) {
+    currentUtterance.pause();
+    currentUtterance = null;
+  } else if (window.speechSynthesis) {
+    speechSynthesis.cancel();
+    currentUtterance = null;
+  }
 }
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
