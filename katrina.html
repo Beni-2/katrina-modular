@@ -2187,130 +2187,68 @@ body.synoptics-hidden::before {
 <!-- ══ WORLD CONFIG PANEL ══════════════════════════════════════════════════ -->
 <div id="world-config-panel" style="
   display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  z-index:200;width:620px;max-width:96vw;max-height:85vh;overflow-y:auto;
+  z-index:200;width:580px;max-width:96vw;max-height:85vh;overflow-y:auto;
   background:rgba(4,4,20,0.97);border:1px solid rgba(0,200,100,0.35);
   border-radius:12px;padding:20px;backdrop-filter:blur(18px);
   box-shadow:0 0 40px rgba(0,200,100,0.15);
-  font-family:'Share Tech Mono',monospace;color:#e0e0e0;
-">
-  <!-- Header -->
+  font-family:'Share Tech Mono',monospace;color:#e0e0e0;">
+
+  <style>
+    .wc-row{display:flex;gap:4px;margin-bottom:4px;align-items:center;}
+    .wc-f{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);
+      color:#ccc;font-family:'Share Tech Mono';font-size:9px;padding:4px 6px;border-radius:3px;outline:none;}
+    .wc-f:focus{border-color:#00c864;}
+    .wc-name{flex:2;}.wc-type{flex:1;cursor:pointer;}.wc-dist{flex:1;}.wc-notes{flex:2;}
+    .wc-del{background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.25);
+      color:#ff6060;padding:3px 8px;border-radius:3px;cursor:pointer;flex-shrink:0;font-size:10px;}
+    .wc-del:hover{background:rgba(255,60,60,0.25);}
+    .wc-f option{background:#0a0a1a;color:#ccc;}
+    .wc-lbl{font-size:8px;color:#00c864;letter-spacing:2px;margin:10px 0 4px;}
+    .wc-inp{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,100,0.25);
+      color:#ccc;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;
+      border-radius:4px;outline:none;box-sizing:border-box;margin-bottom:4px;}
+    .wc-inp:focus{border-color:#00c864;}
+  </style>
+
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid rgba(0,200,100,0.2);padding-bottom:10px;">
     <span style="font-family:'Orbitron',sans-serif;font-size:13px;color:#00c864;letter-spacing:3px;">🏠 SANDBOX WORLD</span>
     <button onclick="toggleWorldConfig()" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#888;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:10px;">CLOSE</button>
   </div>
 
-  <!-- Shared CSS for this panel -->
-  <style>
-    .wc-row{display:flex;gap:4px;margin-bottom:4px;align-items:center;}
-    .wc-f{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);color:#ccc;font-family:'Share Tech Mono';font-size:9px;padding:4px 6px;border-radius:3px;outline:none;}
-    .wc-f:focus{border-color:#00c864;}
-    .wc-name{flex:2;} .wc-type{flex:1;cursor:pointer;} .wc-dist{flex:1;} .wc-notes{flex:2;}
-    .wc-del{background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.25);color:#ff6060;padding:3px 8px;border-radius:3px;cursor:pointer;flex-shrink:0;font-size:10px;}
-    .wc-del:hover{background:rgba(255,60,60,0.25);}
-    .wc-f option{background:#0a0a1a;color:#ccc;}
-    .wc-label{font-size:8px;color:#00c864;letter-spacing:2px;margin-bottom:4px;margin-top:10px;}
-    .wc-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,100,0.25);color:#ccc;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;border-radius:4px;outline:none;box-sizing:border-box;}
-    .wc-input:focus{border-color:#00c864;}
-    .wc-btn{background:rgba(0,200,100,0.1);border:1px solid rgba(0,200,100,0.3);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:1px;padding:6px 14px;border-radius:4px;cursor:pointer;transition:all 0.2s;}
-    .wc-btn:hover{background:rgba(0,200,100,0.2);}
-    .wc-btn:disabled{opacity:0.4;cursor:not-allowed;}
-    .wc-btn-add{background:rgba(0,200,100,0.06);border:1px dashed rgba(0,200,100,0.3);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:2px;padding:6px;border-radius:4px;cursor:pointer;width:100%;}
-  </style>
+  <div class="wc-lbl">KATRINA'S ADDRESS</div>
+  <input id="wc-katrina-addr-input" class="wc-inp" type="text" value="46812 Heron Drive, Bodega Bay, CA"/>
 
-  <!-- Google Maps API Key -->
-  <div class="wc-label">GOOGLE MAPS API KEY</div>
-  <div style="display:flex;gap:6px;align-items:center;">
-    <input id="wc-maps-key-input" class="wc-input" type="password"
-      placeholder="AIza… — get free key at console.cloud.google.com (enable Maps JS + Places APIs)"
-      style="flex:1;"/>
+  <div class="wc-lbl">BENNY'S LOCATION</div>
+  <input id="wc-benny-addr-input" class="wc-inp" type="text" value="2 blocks away on Harbor View Lane"/>
+
+  <div class="wc-lbl">HOME DESCRIPTION</div>
+  <input id="wc-home-input" class="wc-inp" type="text" value="a quiet house near the water"/>
+
+  <div class="wc-lbl">NEIGHBORHOOD</div>
+  <input id="wc-neighborhood-input" class="wc-inp" type="text" value="Bodega Bay, CA"/>
+
+  <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+    <button onclick="wcSaveHome()" style="background:rgba(0,200,100,0.1);border:1px solid rgba(0,200,100,0.3);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:1px;padding:6px 14px;border-radius:4px;cursor:pointer;">SAVE</button>
+    <button onclick="resetWorldToDefaults()" style="background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.25);color:#ffb400;font-family:'Orbitron';font-size:8px;letter-spacing:1px;padding:6px 14px;border-radius:4px;cursor:pointer;">RESET DEFAULTS</button>
   </div>
-  <div style="font-size:8px;color:#334;margin-top:3px;letter-spacing:0.5px;">
-    Enable: Maps JavaScript API + Places API · Free tier: $200/month credit (well over 1000 searches)
-  </div>
-
-  <!-- Addresses -->
-  <div class="wc-label">KATRINA'S ADDRESS</div>
-  <input id="wc-katrina-addr-input" class="wc-input" type="text"
-    value="46812 Heron Drive, Bodega Bay, CA 94923"
-    placeholder="Katrina's full address"/>
-
-  <div class="wc-label">BENNY'S ADDRESS <span style="color:#445;font-size:7px;">(narrative: 2 blocks from Katrina)</span></div>
-  <input id="wc-benny-addr-input" class="wc-input" type="text"
-    value="5616 Richardson Street, Sausalito, CA 94965"
-    placeholder="Benny's address"/>
-
-  <!-- Home description -->
-  <div class="wc-label">HOME DESCRIPTION</div>
-  <input id="wc-home-input" class="wc-input" type="text"
-    value="a house on Heron Drive" placeholder="e.g. a cozy house near the water"/>
-  <div class="wc-label">NEIGHBORHOOD</div>
-  <input id="wc-neighborhood-input" class="wc-input" type="text"
-    value="Bodega Bay, CA" placeholder="Neighborhood / city"/>
-
-  <!-- Load from Maps button -->
-  <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;">
-    <button id="wc-load-btn" class="wc-btn" onclick="autoPopulateFromMaps()" style="font-size:9px;padding:8px 18px;">
-      📍 LOAD REAL PLACES FROM GOOGLE MAPS
-    </button>
-    <button class="wc-btn" onclick="wcSaveHome()" style="background:rgba(100,150,255,0.08);border-color:rgba(100,150,255,0.3);color:#6496ff;">
-      SAVE DETAILS
-    </button>
-  </div>
-  <div id="wc-status" style="font-size:8px;color:#00c864;margin-top:6px;letter-spacing:0.5px;min-height:14px;"></div>
+  <div id="wc-status" style="font-size:8px;color:#00c864;margin-top:6px;min-height:14px;letter-spacing:0.5px;"></div>
 
   <!-- Places list -->
-  <div class="wc-label" style="margin-top:14px;">
-    NEARBY PLACES
-    <span id="wc-place-count" style="color:#445;font-size:7px;margin-left:6px;"></span>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;margin-bottom:4px;">
+    <span style="font-size:8px;color:#00c864;letter-spacing:2px;">NEARBY PLACES</span>
+    <span id="wc-place-count" style="font-size:7px;color:#445;"></span>
   </div>
   <div style="display:flex;gap:4px;margin-bottom:4px;font-size:7px;color:#334;letter-spacing:1px;padding:0 2px;">
-    <span style="flex:2;">NAME</span><span style="flex:1;">TYPE</span><span style="flex:1;">DISTANCE</span><span style="flex:2;">ADDRESS/NOTES</span><span style="width:32px;"></span>
+    <span style="flex:2;">NAME</span><span style="flex:1;">TYPE</span><span style="flex:1;">DISTANCE</span><span style="flex:2;">NOTES</span><span style="width:32px;"></span>
   </div>
   <div id="wc-places-list"></div>
-  <button class="wc-btn-add" onclick="wcAddPlace()" style="margin-top:6px;">+ ADD PLACE MANUALLY</button>
+  <button onclick="wcAddPlace()" style="margin-top:6px;width:100%;background:rgba(0,200,100,0.06);border:1px dashed rgba(0,200,100,0.3);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:2px;padding:7px;border-radius:4px;cursor:pointer;">+ ADD PLACE</button>
 
   <div style="font-size:7px;color:#223;text-align:center;margin-top:12px;letter-spacing:1px;">
-    Places save automatically · injected into every conversation, thought, and daily goal
+    Changes save automatically · used in all conversations, thoughts, and daily goals
   </div>
 </div>
 
-
-  <!-- Home -->
-  <div style="margin-bottom:12px;">
-    <div style="font-size:8px;color:#00c864;letter-spacing:2px;margin-bottom:6px;">HOME DESCRIPTION</div>
-    <input id="wc-home-input" type="text" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,100,0.25);color:#ccc;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;border-radius:4px;outline:none;box-sizing:border-box;margin-bottom:6px;"
-      placeholder="e.g. a cozy apartment on the 3rd floor"/>
-    <input id="wc-neighborhood-input" type="text" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,100,0.25);color:#ccc;font-family:'Share Tech Mono';font-size:10px;padding:6px 10px;border-radius:4px;outline:none;box-sizing:border-box;"
-      placeholder="Neighborhood / city  e.g. Quezon City, Metro Manila"/>
-    <button onclick="wcSaveHome()" style="margin-top:6px;background:rgba(0,200,100,0.1);border:1px solid rgba(0,200,100,0.3);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:1px;padding:5px 14px;border-radius:4px;cursor:pointer;">SAVE HOME</button>
-  </div>
-
-  <!-- Places -->
-  <div style="margin-bottom:8px;">
-    <div style="font-size:8px;color:#00c864;letter-spacing:2px;margin-bottom:6px;">NEARBY PLACES</div>
-    <style>
-      .wc-row{display:flex;gap:4px;margin-bottom:4px;align-items:center;}
-      .wc-f{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.10);color:#ccc;font-family:'Share Tech Mono';font-size:9px;padding:4px 6px;border-radius:3px;outline:none;}
-      .wc-f:focus{border-color:#00c864;}
-      .wc-name{flex:2;}
-      .wc-type{flex:1;cursor:pointer;}
-      .wc-dist{flex:1;}
-      .wc-notes{flex:2;}
-      .wc-del{background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.25);color:#ff6060;padding:3px 8px;border-radius:3px;cursor:pointer;flex-shrink:0;font-size:10px;}
-      .wc-del:hover{background:rgba(255,60,60,0.25);}
-      .wc-f option{background:#0a0a1a;color:#ccc;}
-    </style>
-    <div style="display:flex;gap:4px;margin-bottom:4px;font-size:8px;color:#445;letter-spacing:1px;padding:0 2px;">
-      <span style="flex:2;">NAME</span><span style="flex:1;">TYPE</span><span style="flex:1;">DISTANCE</span><span style="flex:2;">NOTES</span><span style="width:32px;"></span>
-    </div>
-    <div id="wc-places-list"></div>
-    <button onclick="wcAddPlace()" style="margin-top:8px;width:100%;background:rgba(0,200,100,0.08);border:1px solid rgba(0,200,100,0.25);color:#00c864;font-family:'Orbitron';font-size:8px;letter-spacing:2px;padding:7px;border-radius:4px;cursor:pointer;">+ ADD PLACE</button>
-  </div>
-
-  <div style="font-size:8px;color:#334;text-align:center;margin-top:10px;letter-spacing:1px;">
-    Changes save automatically · used in all conversations + autonomous thoughts
-  </div>
-</div>
 
 </body>
 </html>
