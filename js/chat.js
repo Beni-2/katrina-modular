@@ -13,6 +13,10 @@ async function processUserInput(text) {
   // â”€â”€ Always show user message FIRST in chat trail â”€â”€
   appendMsg('user', text);
   chatHistory.push({role:'user', content:text});
+  // â”€â”€ Detect Benny's emotional state from text (async, non-blocking) â”€â”€
+  if (typeof analyzeTextEmotion === 'function') {
+    analyzeTextEmotion(text).catch(function(){});
+  }
   // â”€â”€ Extract and store Benny memories from this message (async, non-blocking) â”€â”€
   if (typeof extractBennyMemory === 'function') {
     extractBennyMemory(text).then(function(ex) {

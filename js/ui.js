@@ -440,6 +440,12 @@ function buildSystemPrompt() {
     if (_bio) base += '\n\n' + _bio;
   }
 
+  // â”€â”€ Text emotion context (from what Benny just wrote) â”€â”€
+  if (typeof getTextEmotionContext === 'function') {
+    const _textEmo = getTextEmotionContext();
+    if (_textEmo) base += '\n\n' + _textEmo;
+  }
+
   // â”€â”€ Benny-specific memories â”€â”€
   if (typeof getBennyMemoriesContext === 'function') {
     const _memCtx = getBennyMemoriesContext(
