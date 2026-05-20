@@ -686,11 +686,7 @@ function getNeuroLinguisticDirective() {
   }
 
   return directives.length > 0
-    ? '
-
-NEURO-LINGUISTIC SYNC (direct from neural activity):
-' + directives.join('
-')
+    ? '\n\nNEURO-LINGUISTIC SYNC (direct from neural activity):\n' + directives.join('\n')
     : '';
 }
 
