@@ -412,6 +412,8 @@ window.onload = function() {
   setTimeout(initCircadianFromRealTime, 500);
   // Load all persisted state â€” Supabase first, localStorage fallback
   setTimeout(loadAllKatrinaState, 1200);
+  // Show messages Katrina generated while browser was closed
+  setTimeout(() => { if (typeof loadServerMessages === 'function') loadServerMessages(); }, 2500);
   // âš  DO NOT DELETE â€” auto-open world engine on page load.
   // Shows the 3D box and body immediately without user needing to click ðŸŒ.
   setTimeout(() => {

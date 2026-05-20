@@ -1,0 +1,13 @@
+{
+  "name": "katrina-brain-server",
+  "version": "1.0.0",
+  "description": "Katrina 24/7 background brain loop",
+  "main": "brain-loop.js",
+  "scripts": {
+    "start": "node brain-loop.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "dotenv": "^16.4.5"
+  }
+}
