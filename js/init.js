@@ -452,13 +452,9 @@ window.onload = function() {
   setTimeout(loadAllKatrinaState, 1200);
   // Show messages Katrina generated while browser was closed
   setTimeout(() => { if (typeof loadServerMessages === 'function') loadServerMessages(); }, 2500);
-  // âš  DO NOT DELETE â€” auto-open world engine on page load.
-  // Shows the 3D box and body immediately without user needing to click ðŸŒ.
-  setTimeout(() => {
-    if (typeof _toggleWorldEngine === 'function') {
-      _toggleWorldEngine();
-    }
-  }, 800);
+  // World engine opens manually via the WORLD dock button.
+  // Auto-open disabled: WE overlay (z-index 9000) covers all WM windows (z-index 7000),
+  // making chat input, API key fields, learning panel, and personality panel unreachable.
 };
 
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

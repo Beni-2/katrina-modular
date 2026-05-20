@@ -1162,6 +1162,7 @@ body.synoptics-hidden::before {
   /* Remove old interaction-panel â€” replaced by emotions-hud */
   #interaction-panel{display:none;}
 
+  #iq-mode-bar{display:none;}
 </style>
 </head>
 <body>
@@ -1513,7 +1514,7 @@ body.synoptics-hidden::before {
   <!-- Submenu / Toggle Bar -->
   <div id="dialog-toggle" onclick="toggleDialog()">
     <span class="toggle-label">â¬¡ KATRINA INTERFACE</span>
-    <div class="toggle-controls" onclick="e=>e.stopPropagation()">
+    <div class="toggle-controls" onclick="event.stopPropagation()">
       <button class="tc-btn active" id="btn-mode-text" onclick="event.stopPropagation();setInputMode('text')">TEXT</button>
       <button class="tc-btn" id="btn-mode-voice" onclick="event.stopPropagation();setInputMode('voice')">VOICE</button>
       <button class="tc-btn" id="btn-tts-toggle" onclick="event.stopPropagation();toggleTTS()">ðŸ”Š TTS ON</button>
@@ -1887,7 +1888,7 @@ body.synoptics-hidden::before {
   </div>
 </div>
 
-     Day theme white. z-index:9999 covers everything.
+<!--     Day theme white. z-index:9999 covers everything.
      ESC key and â†© RETURN TO BRAIN are the only exits.
      Three fixed zones: top bar, scrollable chat, bottom bar. -->
 
