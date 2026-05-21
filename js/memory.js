@@ -1418,7 +1418,7 @@ async function _sbWrite(key, value) {
           'Content-Type':  'application/json',
           'Prefer':        'resolution=merge-duplicates',
         },
-        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now() }),
+        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now(), owner_key: SUPABASE_OWNER_KEY }),
       }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1435,7 +1435,7 @@ async function _sbRead(key) {
   try {
     const res = await fetch(
       SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE +
-        '?key=eq.' + encodeURIComponent(key) + '&select=value&limit=1',
+        '?key=eq.' + encodeURIComponent(key) + '&owner_key=eq.' + encodeURIComponent(SUPABASE_OWNER_KEY) + '&select=value&limit=1',
       {
         method:      'GET',
         mode:        'cors',
