@@ -1,5 +1,5 @@
 ﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš  DO NOT DELETE â€” KATRINA WINDOW MANAGER
+// âš  DO NOT DELETE â€" KATRINA WINDOW MANAGER
 //
 //  Wraps existing panels in draggable floating windows.
 //  All existing IDs, functions, CSS classes untouched.
@@ -12,7 +12,7 @@
 window._wmState = {};   // { winId: {x,y,w,h,minimized,maximized} }
 let _wmTopZ = 7000;
 
-// â”€â”€ Window definitions â€” maps window id â†’ panel id + config â”€â”€
+// â"€â"€ Window definitions â€" maps window id â†' panel id + config â"€â"€
 const WM_WINDOWS = [
   // Brain stat bars — left column
   { id:'win-brain',    panel:'hud',          title:'⬡ BRAIN · NEURAL STATE',    dock:'dock-brain',
@@ -98,17 +98,17 @@ function wmInit() {
     wmMakeDraggable(win, tbar);
   });
 
-  // Special: emotions-hud was positioned by JS â€” neutralise that
+  // Special: emotions-hud was positioned by JS â€" neutralise that
   const eHud = document.getElementById('emotions-hud');
   if (eHud) { eHud.style.top = ''; eHud.style.position = 'relative'; }
 
-  // â”€â”€ Synoptics canvas window is registered separately via wmInitSynoptics() â”€â”€
-  // âš  DO NOT DELETE â€” the Three.js canvas does not exist at wmInit time because
+  // â"€â"€ Synoptics canvas window is registered separately via wmInitSynoptics() â"€â"€
+  // âš  DO NOT DELETE â€" the Three.js canvas does not exist at wmInit time because
   // initThree() runs after wmInit. wmInitSynoptics() is called from window.onload
   // after initThree() completes, wraps the canvas then, and creates the window.
 
-  // â”€â”€ Apply setLearnProgress patch here â€” inside wmInit, after all functions defined â”€â”€
-  // âš  DO NOT DELETE â€” patches setLearnProgress to mirror progress into the
+  // â"€â"€ Apply setLearnProgress patch here â€" inside wmInit, after all functions defined â"€â"€
+  // âš  DO NOT DELETE â€" patches setLearnProgress to mirror progress into the
   // dedicated learn window (wl-progress-text, wl-progress-fill, wl-log).
   // Must run here, not at script-parse time, because setLearnProgress is
   // defined much later in the file and would be undefined at parse time.
@@ -118,27 +118,27 @@ function wmInit() {
       _origSLP(msg, pct);
       const txt  = document.getElementById('wl-progress-text');
       const fill = document.getElementById('wl-progress-fill');
-      if (txt) txt.textContent = msg || 'ready â€” waiting for input';
+      if (txt) txt.textContent = msg || 'ready â€" waiting for input';
       if (fill) {
         fill.style.width = (pct !== undefined ? Math.min(100, pct) : 0) + '%';
         if (msg && msg.includes('âš ')) {
           fill.style.background = 'linear-gradient(90deg,#ff4444,#ff8844)';
-        } else if (pct >= 100 || (msg && (msg.includes('âœ“') || msg.includes('complete')))) {
+        } else if (pct >= 100 || (msg && (msg.includes('âœ"') || msg.includes('complete')))) {
           fill.style.background = 'linear-gradient(90deg,#44ff88,#00ffc8)';
         } else {
           fill.style.background = 'linear-gradient(90deg,#6644ff,#ff9966,#aa66ff)';
         }
       }
-      if (msg && (msg.includes('âœ“') || msg.includes('âš ') || msg.includes('complete') || pct >= 100)) {
+      if (msg && (msg.includes('âœ"') || msg.includes('âš ') || msg.includes('complete') || pct >= 100)) {
         const log = document.getElementById('wl-log');
         if (log) {
           const ph = log.querySelector('span[style*="font-style:italic"]');
           if (ph) log.innerHTML = '';
           const entry = document.createElement('div');
           entry.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.05);padding:3px 0;font-size:8px;';
-          const dot = msg.includes('âš ') ? 'ðŸ”´' : 'ðŸŸ¢';
+          const dot = msg.includes('âš ') ? 'ðŸ"´' : 'ðŸŸ¢';
           entry.style.color = msg.includes('âš ') ? '#ff6644' : '#8866ff';
-          entry.textContent = dot + ' ' + new Date().toLocaleTimeString() + ' â€” ' + msg;
+          entry.textContent = dot + ' ' + new Date().toLocaleTimeString() + ' â€" ' + msg;
           log.insertBefore(entry, log.firstChild);
         }
       }
@@ -150,7 +150,7 @@ function wmInit() {
   _wmClampAll();
 }
 
-// â”€â”€ Focus â”€â”€
+// â"€â"€ Focus â"€â"€
 function wmFocus(winId) {
   _wmTopZ++;
   const win = document.getElementById(winId);
@@ -160,7 +160,7 @@ function wmFocus(winId) {
   _wmUpdateDock(winId, true);
 }
 
-// â”€â”€ Minimize â”€â”€
+// â"€â"€ Minimize â"€â"€
 function wmMinimize(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
@@ -170,7 +170,7 @@ function wmMinimize(winId) {
   if (winId === 'win-synoptics') document.body.classList.add('synoptics-hidden');
 }
 
-// â”€â”€ Maximize / restore â”€â”€
+// â"€â"€ Maximize / restore â"€â"€
 function wmMaximize(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
@@ -188,7 +188,7 @@ function wmMaximize(winId) {
   wmFocus(winId);
 }
 
-// â”€â”€ Close (hides to dock) â”€â”€
+// â"€â"€ Close (hides to dock) â"€â"€
 function wmClose(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
@@ -198,7 +198,7 @@ function wmClose(winId) {
   if (winId === 'win-synoptics') document.body.classList.add('synoptics-hidden');
 }
 
-// â”€â”€ Restore from dock â”€â”€
+// â"€â"€ Restore from dock â"€â"€
 function wmRestore(winId) {
   const win = document.getElementById(winId);
   if (!win) return;
@@ -208,7 +208,7 @@ function wmRestore(winId) {
   if (winId === 'win-synoptics') document.body.classList.remove('synoptics-hidden');
 }
 
-// â”€â”€ Dock dot state â”€â”€
+// â"€â"€ Dock dot state â"€â"€
 function _wmUpdateDock(winId, open, minimized) {
   const cfg  = WM_WINDOWS.find(w => w.id === winId);
   if (!cfg) return;
@@ -228,7 +228,7 @@ function _wmUpdateDock(winId, open, minimized) {
   }
 }
 
-// â”€â”€ Drag â”€â”€
+// â"€â"€ Drag â"€â"€
 function wmMakeDraggable(win, handle) {
   let _dx = 0, _dy = 0, _dragging = false;
 
@@ -252,7 +252,7 @@ function wmMakeDraggable(win, handle) {
   document.addEventListener('mouseup', () => { _dragging = false; });
 }
 
-// â”€â”€ Clamp all windows to viewport â”€â”€
+// â"€â"€ Clamp all windows to viewport â"€â"€
 function _wmClampAll() {
   document.querySelectorAll('.wm-window').forEach(win => {
     const rect = win.getBoundingClientRect();
@@ -265,8 +265,8 @@ function _wmClampAll() {
   });
 }
 
-// â”€â”€ Init after DOM is ready â”€â”€
-// positionEmotionsHUD is called from window.onload â€” wmInit runs after it
+// â"€â"€ Init after DOM is ready â"€â"€
+// positionEmotionsHUD is called from window.onload â€" wmInit runs after it
 // so it can neutralise the position it set.
 window.addEventListener('load', () => {
   setTimeout(() => {
@@ -277,8 +277,8 @@ window.addEventListener('load', () => {
   }, 200);
 });
 
-// â”€â”€ Learning window bridge functions â”€â”€
-// âš  DO NOT DELETE â€” these route the dedicated learn window's inputs
+// â"€â"€ Learning window bridge functions â"€â"€
+// âš  DO NOT DELETE â€" these route the dedicated learn window's inputs
 // to the existing learnFromURL / learnFromFile / learnFromTopic functions
 // and mirror progress output into the window's own progress elements.
 
@@ -293,21 +293,21 @@ function _wlSetProgress(msg, pct) {
   if (bar)  bar.style.display = (pct !== undefined) ? 'block' : 'none';
   if (fill && pct !== undefined) fill.style.width = pct + '%';
   // Append to log if it is a completion or error message
-  if (msg && (msg.includes('âœ“') || msg.includes('âš ') || msg.includes('complete'))) {
+  if (msg && (msg.includes('âœ"') || msg.includes('âš ') || msg.includes('complete'))) {
     const log = document.getElementById('wl-log');
     if (log) {
       if (log.querySelector('span[style*="color:#334"]')) log.innerHTML = '';
       const entry = document.createElement('div');
       entry.style.cssText = 'border-bottom:1px solid rgba(255,255,255,0.05);padding:3px 0;';
-      entry.textContent = new Date().toLocaleTimeString() + ' â€” ' + msg;
+      entry.textContent = new Date().toLocaleTimeString() + ' â€" ' + msg;
       log.insertBefore(entry, log.firstChild);
     }
   }
 }
 
 
-// â”€â”€ Patch setLearnProgress to update the dedicated learn window â”€â”€
-// âš  DO NOT DELETE â€” this patch is applied inside wmInit() which runs after
+// â"€â"€ Patch setLearnProgress to update the dedicated learn window â"€â"€
+// âš  DO NOT DELETE â€" this patch is applied inside wmInit() which runs after
 // all functions are defined. Patching here at script-parse time would fail
 // because setLearnProgress is defined further down in the file.
 // The actual patch code lives inside wmInit() below.
@@ -327,7 +327,7 @@ function _wlLearnTopic() {
   learnFromTopic();
 }
 
-// âš  DO NOT DELETE â€” Channel 4 paste-text learning.
+// âš  DO NOT DELETE â€" Channel 4 paste-text learning.
 async function _wlLearnPasted() {
   const ta = document.getElementById('wl-paste-input');
   if (!ta || !ta.value.trim()) {
@@ -337,7 +337,7 @@ async function _wlLearnPasted() {
   const text = ta.value.trim();
   const wordCount = text.split(/\s+/).length;
   if (wordCount < 10) {
-    if (typeof setLearnProgress === 'function') setLearnProgress('âš  Text too short â€” paste at least a paragraph.', 0);
+    if (typeof setLearnProgress === 'function') setLearnProgress('âš  Text too short â€" paste at least a paragraph.', 0);
     return;
   }
   ta.value = '';
@@ -349,14 +349,14 @@ async function _wlLearnPasted() {
   }
 }
 
-// â”€â”€ Re-clamp on resize â”€â”€
+// â"€â"€ Re-clamp on resize â"€â"€
 window.addEventListener('resize', _wmClampAll);
 
-// â”€â”€ World engine toggle â”€â”€
-// âš  DO NOT DELETE â€” directly switches the renderer between brain scene
+// â"€â"€ World engine toggle â"€â"€
+// âš  DO NOT DELETE â€" directly switches the renderer between brain scene
 // and world scene. Independent of synoptics window state.
 // ðŸŒ dock icon calls this. Click once = world engine. Click again = brain.
-// âš  DO NOT DELETE â€” _toggleWorldEngine: opens/closes world engine overlay.
+// âš  DO NOT DELETE â€" _toggleWorldEngine: opens/closes world engine overlay.
 // World engine uses its OWN canvas+renderer. No scene sharing with brain.
 function _toggleWorldEngine() {
   const ov = document.getElementById('we-overlay');
@@ -386,12 +386,12 @@ function _toggleWorldEngine() {
   }
 }
 
-// âš  DO NOT DELETE â€” wmInitSynoptics: wraps the Three.js brain canvas in a
+// âš  DO NOT DELETE â€" wmInitSynoptics: wraps the Three.js brain canvas in a
 // floating WM window. Called from window.onload AFTER initThree() so the
 // canvas exists. Cannot run inside wmInit because canvas is not ready then.
 function wmInitSynoptics() {
   const canvas = document.getElementById('three-canvas');
-  if (!canvas) { console.warn('[WM] three-canvas not found â€” synoptics skipped'); return; }
+  if (!canvas) { console.warn('[WM] three-canvas not found â€" synoptics skipped'); return; }
 
   // 1. Create wrapper div around the canvas
   const wrap = document.createElement('div');
@@ -408,7 +408,7 @@ function wmInitSynoptics() {
   const win = document.createElement('div');
   win.className = 'wm-window';
   win.id = 'win-synoptics';
-  // Start maximised â€” full screen, same as the canvas was before
+  // Start maximised â€" full screen, same as the canvas was before
   win.style.left   = '0px';
   win.style.top    = '0px';
   win.style.width  = window.innerWidth + 'px';
@@ -419,9 +419,9 @@ function wmInitSynoptics() {
   tbar.innerHTML =
     `<div class="wm-title">${cfg.title}</div>` +
     `<div class="wm-controls">` +
-      `<button class="wm-btn minimize" onclick="wmMinimize('win-synoptics')" title="Minimize â€” frees main screen for world engine"></button>` +
+      `<button class="wm-btn minimize" onclick="wmMinimize('win-synoptics')" title="Minimize â€" frees main screen for world engine"></button>` +
       `<button class="wm-btn maximize" onclick="wmMaximize('win-synoptics')" title="Maximize"></button>` +
-      `<button class="wm-btn close"    onclick="wmClose('win-synoptics')"    title="Close â€” frees main screen for world engine"></button>` +
+      `<button class="wm-btn close"    onclick="wmClose('win-synoptics')"    title="Close â€" frees main screen for world engine"></button>` +
     `</div>`;
 
   const content = document.createElement('div');
@@ -438,7 +438,7 @@ function wmInitSynoptics() {
   wmMakeDraggable(win, tbar);
   _wmUpdateDock('win-synoptics', true, false);
 
-  // 3. ResizeObserver â€” keeps renderer sharp when window is resized
+  // 3. ResizeObserver â€" keeps renderer sharp when window is resized
   if (window.ResizeObserver) {
     new ResizeObserver(() => {
       if (typeof renderer !== 'undefined' && renderer) {
@@ -450,13 +450,13 @@ function wmInitSynoptics() {
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
         }
-        // World engine has its own resize listener â€” no action needed here
+        // World engine has its own resize listener â€" no action needed here
       }
     }).observe(content);
   }
 
   console.log('[WM] Synoptics window initialised');
-  // World engine initialises independently via _toggleWorldEngine â†’ WE_init
+  // World engine initialises independently via _toggleWorldEngine â†' WE_init
 }
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // END KATRINA WINDOW MANAGER

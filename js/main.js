@@ -122,8 +122,8 @@ async function triggerReachOut() {
 //  END REACH-OUT SYSTEM
 // ════════════════════════════════════════════════════════════════════════════
 
-// â”€â”€ Global ESC key exits IQ mode from anywhere on the page â”€â”€
-// âš  DO NOT DELETE â€” this is the universal escape hatch for 1000% IQ mode.
+// â"€â"€ Global ESC key exits IQ mode from anywhere on the page â"€â"€
+// âš  DO NOT DELETE â€" this is the universal escape hatch for 1000% IQ mode.
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape' && typeof _iqMode !== 'undefined' && _iqMode) {
     exitIQMode();
@@ -234,7 +234,7 @@ function saveAllKatrinaState() {
   consolidateDayNarrative();
 }
 
-// â”€â”€ Master load â”€â”€
+// â"€â"€ Master load â"€â"€
 function loadAllKatrinaState() {
   loadKatrinaProfile();
   loadEmotionTimeline();
@@ -250,7 +250,7 @@ function loadAllKatrinaState() {
 }
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš   DO NOT DELETE â€” TOPIC LEARNING + 1000% IQ MODE
+// âš   DO NOT DELETE â€" TOPIC LEARNING + 1000% IQ MODE
 //
 //  FEATURE 1: LEARN FROM TOPIC
 //  learnFromTopic() reads a text field ("learn math", "learn to cook", etc.),
@@ -261,23 +261,23 @@ function loadAllKatrinaState() {
 //  records the event, Supabase persists it. No web access needed.
 //
 //  FEATURE 2: 1000% IQ MODE
-//  A toggle that bypasses the entire brain pipeline â€” no pre-thought, no
+//  A toggle that bypasses the entire brain pipeline â€" no pre-thought, no
 //  signature matching, no brain loop, no chemical state, no persona, no
 //  emotion encounters recorded, no memory written, no Supabase writes.
 //  Pure direct LLM channel with a minimal system prompt. Maximum knowledge
-//  depth, zero personality filter. Amnesia by design â€” it is an oracle.
+//  depth, zero personality filter. Amnesia by design â€" it is an oracle.
 //  Exit button restores the previous brain/persona state exactly.
 //  chatHistory from the IQ session is NOT written to the main history
 //  so it cannot contaminate the persona's conversation context.
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 //  FEATURE 1: LEARN FROM TOPIC
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 async function learnFromTopic() {
   const inp = document.getElementById('learn-topic-input');
   if (!inp || !inp.value.trim()) {
-    setLearnProgress('âš  Enter a topic first â€” e.g. "learn math" or "learn to cook"');
+    setLearnProgress('âš  Enter a topic first â€" e.g. "learn math" or "learn to cook"');
     return;
   }
   const topic = inp.value.trim();
@@ -319,7 +319,7 @@ async function learnFromTopic() {
     const knowledge= ((data.choices||[])[0]||{}).message?.content?.trim();
     if (!knowledge) { setLearnProgress('âš  No content generated. Try again.'); return; }
 
-    setLearnProgress(`Knowledge generated â€” feeding into neural systemâ€¦`, 35);
+    setLearnProgress(`Knowledge generated â€" feeding into neural systemâ€¦`, 35);
     await learnFromTranscript(knowledge, `topic:${topic}`);
 
   } catch(e) {
@@ -327,9 +327,9 @@ async function learnFromTopic() {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 //  FEATURE 2: 1000% IQ MODE
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 let _iqMode           = false;
 let _iqChatHistory    = [];
 let _prevPersonaState = null;
@@ -368,7 +368,7 @@ function enterIQMode() {
   const area = document.getElementById('iq-chat-area');
   if (area) {
     area.innerHTML = '';
-    _iqAppendSys('â¬¡ 1000% IQ active â€” pure LLM Â· no memory Â· no persona Â· no brain');
+    _iqAppendSys('â¬¡ 1000% IQ active â€" pure LLM Â· no memory Â· no persona Â· no brain');
     _iqAppendSys('ESC or â†© RETURN TO BRAIN exits back to Katrina at any time.');
   }
 
@@ -406,7 +406,7 @@ function exitIQMode() {
 
   // Restore brain chat display
   resetChatForPersonality();
-  appendMsg('system', 'â¬¡ Brain restored â€” back to persona mode');
+  appendMsg('system', 'â¬¡ Brain restored â€" back to persona mode');
 
   // Return focus to brain input
   setTimeout(() => {
@@ -415,7 +415,7 @@ function exitIQMode() {
   }, 100);
 }
 
-// â”€â”€ IQ overlay helpers â”€â”€
+// â"€â"€ IQ overlay helpers â"€â"€
 function _iqAppendSys(text) {
   const area = document.getElementById('iq-chat-area');
   if (!area) return;
@@ -459,11 +459,11 @@ function _iqToggleTTS() {
   const muteBtn = document.getElementById('iq-mute-btn');
   const ttsBtn  = document.getElementById('iq-top-tts');
   if (muteBtn) {
-    muteBtn.textContent = _iqTTSEnabled ? 'ðŸ”Š' : 'ðŸ”‡';
+    muteBtn.textContent = _iqTTSEnabled ? 'ðŸ"Š' : 'ðŸ"‡';
     muteBtn.classList.toggle('muted', !_iqTTSEnabled);
   }
   if (ttsBtn) {
-    ttsBtn.textContent = _iqTTSEnabled ? 'ðŸ”Š AUDIO ON' : 'ðŸ”‡ AUDIO OFF';
+    ttsBtn.textContent = _iqTTSEnabled ? 'ðŸ"Š AUDIO ON' : 'ðŸ"‡ AUDIO OFF';
     ttsBtn.classList.toggle('muted', !_iqTTSEnabled);
   }
   if (!_iqTTSEnabled) stopSpeech();
@@ -474,7 +474,7 @@ function _iqShare() {
   const body = _iqChatHistory.map(m =>
     (m.role === 'user' ? 'YOU:\n' : 'â¬¡ 1000% IQ:\n') + m.content + '\n'
   ).join('\n---\n\n');
-  const subject = encodeURIComponent('1000% IQ Session â€” Katrina Neural Engine');
+  const subject = encodeURIComponent('1000% IQ Session â€" Katrina Neural Engine');
   const encoded = encodeURIComponent(body);
   window.location.href = `mailto:?subject=${subject}&body=${encoded}`;
 }
@@ -540,13 +540,13 @@ async function processUserInputIQ(text) {
 // END TOPIC LEARNING + 1000% IQ MODE
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-// â”€â”€ Auto-save every 5 minutes â”€â”€
+// â"€â"€ Auto-save every 5 minutes â"€â"€
 setInterval(() => { saveAllKatrinaState(); _supabaseHealthCheck(); }, 5 * 60 * 1000);
 
-// â”€â”€ Save on page unload â”€â”€
+// â"€â"€ Save on page unload â"€â"€
 window.addEventListener('beforeunload', () => { saveAllKatrinaState(); });
 
-// â”€â”€ Midnight narrative consolidation â”€â”€
+// â"€â"€ Midnight narrative consolidation â"€â"€
 (function scheduleMidnightConsolidation() {
   const now    = new Date();
   const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5).getTime() - now.getTime();
@@ -591,36 +591,36 @@ function getMostSalientMemory() {
   return scored[0];
 }
 
-// Bonding moment: high oxytocin conversation â†’ especially salient
+// Bonding moment: high oxytocin conversation â†' especially salient
 function recordBondingMoment(topic) {
   if (chem.oxy > 0.65 || (currentUserId === 'benny' && chem.oxy > 0.4)) {
     recordSalientMoment(topic, null);
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 3. NEURAL JITTER â€” Circadian cognitive impairment
-//    As fatigue > 70%, PFC loses grip â†’ temperature rises, confusion penalty
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// 3. NEURAL JITTER â€" Circadian cognitive impairment
+//    As fatigue > 70%, PFC loses grip â†' temperature rises, confusion penalty
 //    added to brainEvaluateDraft, vocabulary degrades realistically
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function getNeuralJitter() {
   const fatigue = circadianFatigue || 0;
   if (fatigue < 0.70) return { tempBoost: 0, confused: false, maxWords: null };
-  // Fatigue 70â€“85% â†’ mild jitter
+  // Fatigue 70â€"85% â†' mild jitter
   if (fatigue < 0.85) {
     const intensity = (fatigue - 0.70) / 0.15;
     return {
       tempBoost: intensity * 0.25,     // temperature +0.25 max
       confused:  Math.random() < intensity * 0.3,
-      maxWords:  Math.round(60 - intensity * 20), // 40â€“60 words max
+      maxWords:  Math.round(60 - intensity * 20), // 40â€"60 words max
     };
   }
-  // Fatigue 85â€“100% â†’ severe jitter
+  // Fatigue 85â€"100% â†' severe jitter
   const intensity = (fatigue - 0.85) / 0.15;
   return {
     tempBoost: 0.25 + intensity * 0.35,  // temperature +0.25 to +0.60
     confused:  Math.random() < 0.6,
-    maxWords:  Math.round(30 - intensity * 15), // 15â€“30 words max
+    maxWords:  Math.round(30 - intensity * 15), // 15â€"30 words max
   };
 }
 
@@ -642,12 +642,12 @@ function checkNeuralJitterPenalty(draft) {
   return null;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 4. NEURO-LINGUISTIC SYNC â€” Regional activity â†’ direct text constraints
-//    AMYG firing â†’ higher-arousal verbs, shorter sentences
-//    PFC firing  â†’ longer, more structured sentences
-//    INSULA      â†’ more body-sensation language
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// 4. NEURO-LINGUISTIC SYNC â€" Regional activity â†' direct text constraints
+//    AMYG firing â†' higher-arousal verbs, shorter sentences
+//    PFC firing  â†' longer, more structured sentences
+//    INSULA      â†' more body-sensation language
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function getNeuroLinguisticDirective() {
   // Sample activity from key regions
   const amygAct = (regionIdx['AMYG']||[]).slice(0,8)
@@ -663,25 +663,25 @@ function getNeuroLinguisticDirective() {
 
   if (amygAct > 0.55) {
     directives.push(
-      `AMYG activity ${(amygAct*100).toFixed(0)}% â€” use short, punchy sentences. ` +
+      `AMYG activity ${(amygAct*100).toFixed(0)}% â€" use short, punchy sentences. ` +
       `Higher-arousal word choices. Emotional urgency in tone.`
     );
   }
   if (pfcAct < 0.20 && circadianFatigue > 0.60) {
     directives.push(
-      `PFC activity very low (${(pfcAct*100).toFixed(0)}%) â€” avoid complex sentence structure. ` +
+      `PFC activity very low (${(pfcAct*100).toFixed(0)}%) â€" avoid complex sentence structure. ` +
       `Simple words. Incomplete thoughts are acceptable.`
     );
   }
   if (insulaAct > 0.50) {
     directives.push(
-      `INSULA active (${(insulaAct*100).toFixed(0)}%) â€” include body-sensation language. ` +
+      `INSULA active (${(insulaAct*100).toFixed(0)}%) â€" include body-sensation language. ` +
       `"I feel it in my chest", "something in my stomach", "my skin", etc.`
     );
   }
   if (socialAct > 0.60) {
     directives.push(
-      `SOCIAL cortex active â€” more conversational, warm, connecting language.`
+      `SOCIAL cortex active â€" more conversational, warm, connecting language.`
     );
   }
 
@@ -690,11 +690,11 @@ function getNeuroLinguisticDirective() {
     : '';
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // 5. POST-ENGAGEMENT REFRACTORY PERIOD
 //    After long/deep conversations, mentalFatigue spikes and the next
 //    autonomous phase becomes reflective/introverted rather than restless
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 let conversationMessageCount = 0;
 let conversationStartTime    = Date.now();
 let lastRefractoryStart      = null;
@@ -706,7 +706,7 @@ function tickRefractory() {
   if (elapsed < 120) { // 2-minute refractory window
     // During refractory: suppress restless/eager phases
     if (autonomousPhase === 'restless' || autonomousPhase === 'eager') {
-      autonomousPhase = 'calm'; // override â€” brain is consolidating
+      autonomousPhase = 'calm'; // override â€" brain is consolidating
     }
     // Gentle HIPPO + INTUIT drift (consolidation)
     if (Math.random() < 0.02) fire(['HIPPO','INTUIT'], 5);
@@ -719,7 +719,7 @@ function checkConversationRefractory(role) {
   if (role === 'assistant') {
     conversationMessageCount++;
     if (conversationMessageCount >= REFRACTORY_THRESHOLD && !lastRefractoryStart) {
-      // Long conversation just had another exchange â€” spike mental fatigue
+      // Long conversation just had another exchange â€" spike mental fatigue
       bodyCondition.mentalFatigue = Math.min(1, bodyCondition.mentalFatigue + 0.08);
       chem.dop = Math.max(0, chem.dop - 0.05);
       lastRefractoryStart = Date.now();
@@ -733,14 +733,14 @@ function resetConversationCounter() {
   conversationStartTime    = Date.now();
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// 6. METABOLIC GATE â€” Energy budget limits cognitive complexity
-//    Low DRIVES.energy â†’ brainEvaluateDraft rejects replies > 20 words
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// 6. METABOLIC GATE â€" Energy budget limits cognitive complexity
+//    Low DRIVES.energy â†' brainEvaluateDraft rejects replies > 20 words
 //    Simulates glucose depletion making deep thought impossible
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function checkMetabolicGate(draft) {
   const energy = typeof DRIVES !== 'undefined' ? DRIVES.energy : 1.0;
-  if (energy > 0.30) return null; // plenty of energy â€” no constraint
+  if (energy > 0.30) return null; // plenty of energy â€" no constraint
 
   const wordCount = draft.trim().split(/\s+/).length;
   const maxWords  = energy < 0.10 ? 12 : energy < 0.20 ? 20 : 30;
@@ -757,11 +757,11 @@ function checkMetabolicGate(draft) {
   return null;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// INTEGRATION HOOKS â€” wire all 6 systems into existing functions
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// INTEGRATION HOOKS â€" wire all 6 systems into existing functions
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-// â”€â”€ Hook 1: recordIncomingMessage into processUserInput â”€â”€
+// â"€â"€ Hook 1: recordIncomingMessage into processUserInput â"€â"€
 const _origProcessUserInput_bio = processUserInput;
 processUserInput = async function(text) {
   recordIncomingMessage();
@@ -769,7 +769,7 @@ processUserInput = async function(text) {
   return _origProcessUserInput_bio(text);
 };
 
-// â”€â”€ Hook 2: Salience recording after reply is generated â”€â”€
+// â"€â"€ Hook 2: Salience recording after reply is generated â"€â"€
 const _origTriggerNeural_bio = triggerNeuralFromReply;
 triggerNeuralFromReply = function(text) {
   _origTriggerNeural_bio(text);
@@ -778,7 +778,7 @@ triggerNeuralFromReply = function(text) {
   checkConversationRefractory('assistant');
 };
 
-// â”€â”€ Hook 3: Neural jitter + metabolic gate + neuro-linguistic into brainEvaluateDraft â”€â”€
+// â"€â"€ Hook 3: Neural jitter + metabolic gate + neuro-linguistic into brainEvaluateDraft â"€â"€
 const _origBrainEval_bio = brainEvaluateDraft;
 brainEvaluateDraft = function(draft, userText, emotionalCeiling) {
   const result = _origBrainEval_bio(draft, userText, emotionalCeiling);
@@ -798,7 +798,7 @@ brainEvaluateDraft = function(draft, userText, emotionalCeiling) {
   return result;
 };
 
-// â”€â”€ Hook 4: Neural jitter temperature boost in callLLM â”€â”€
+// â"€â"€ Hook 4: Neural jitter temperature boost in callLLM â"€â"€
 const _origCallLLM_bio = callLLM;
 callLLM = async function(provider, apiKey, userText) {
   // Apply jitter temperature boost
@@ -813,7 +813,7 @@ callLLM = async function(provider, apiKey, userText) {
   return result;
 };
 
-// â”€â”€ Hook 5: Neuro-linguistic directive injected into buildSystemPrompt â”€â”€
+// â"€â"€ Hook 5: Neuro-linguistic directive injected into buildSystemPrompt â"€â"€
 const _origBSP_bio = buildSystemPrompt;
 buildSystemPrompt = function() {
   const base         = _origBSP_bio();
@@ -831,7 +831,7 @@ buildSystemPrompt = function() {
   return base + nlDirective + atlasCtx + temporalCtx + narrativeCtx + goalCtx + v32Ctx + bennyCtx + webCtx + overloadNote;
 };
 
-// â”€â”€ Hook 6: Refractory tick into tickAutonomous â”€â”€
+// â"€â"€ Hook 6: Refractory tick into tickAutonomous â"€â"€
 const _origTickAuto_bio = tickAutonomous;
 tickAutonomous = function() {
   _origTickAuto_bio();
@@ -839,7 +839,7 @@ tickAutonomous = function() {
   tickSensoryBuffer();
 };
 
-// â”€â”€ Hook 7: Salience memory into generatePreThought â”€â”€
+// â"€â"€ Hook 7: Salience memory into generatePreThought â"€â"€
 const _origGenPreThought_bio = generatePreThought;
 generatePreThought = function(userText) {
   const result = _origGenPreThought_bio(userText);
@@ -864,11 +864,11 @@ generatePreThought = function(userText) {
   return result;
 };
 
-// â”€â”€ Hook 8: Sensory overload max_tokens applied to callLLM â”€â”€
+// â"€â"€ Hook 8: Sensory overload max_tokens applied to callLLM â"€â"€
 // Done via buildSystemPrompt injection (overload note forces brevity)
 // and via getNeuralJitter max_tokens in brainEvaluateDraft constraint
 
-// â”€â”€ Hook 9: Reset conversation counter on long idle â”€â”€
+// â"€â"€ Hook 9: Reset conversation counter on long idle â"€â"€
 const _origResetEngage_bio = resetEngagement;
 resetEngagement = function() {
   _origResetEngage_bio();
