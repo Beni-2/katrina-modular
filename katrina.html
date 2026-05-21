@@ -421,6 +421,7 @@
 #iq-send-btn svg,#iq-mute-btn svg{width:16px;height:16px;stroke:currentColor;display:block;}
 .id-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:3px;}
 #id-snap-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:3px;}
+.wm-title svg{width:10px;height:10px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:4px;opacity:0.7;}
 .dock-dot{
   width:5px;height:5px;border-radius:50%;
   background:rgba(255,255,255,0.2);
@@ -522,7 +523,7 @@ body.synoptics-hidden {
   background: #020208;
 }
 body.synoptics-hidden::before {
-  content:'â¬¡ WORLD ENGINE â€” ready for body attachment';
+  content:'⬡ WORLD ENGINE â€” ready for body attachment';
   position:fixed;top:50%;left:50%;
   transform:translate(-50%,-50%);
   font-family:'Orbitron',sans-serif;font-size:13px;
@@ -1182,7 +1183,7 @@ body.synoptics-hidden::before {
   <!-- âš  DO NOT DELETE â€” Supabase connection status indicator.
        Updates on boot and every 5 minutes. Green = connected, amber = offline/error. -->
   <div id="hud-supabase-status" style="font-family:'Share Tech Mono';font-size:7px;letter-spacing:1px;color:#556;margin-top:1px;text-align:center;">SUPABASE --</div>
-  <div class="hud-sub">YOUNG FEMALE NEURAL ARCHITECTURE Â· V3.0</div>
+  <div class="hud-sub">YOUNG FEMALE NEURAL ARCHITECTURE · V3.0</div>
   <div class="section-label">Neurochemicals</div>
   <div class="stat-bar-wrap"><span class="stat-bar-label">DOPAMINE</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-dop" id="bar-dop" style="width:50%"></div></div><span class="stat-value" id="val-dop">0.50</span></div>
   <div class="stat-bar-wrap"><span class="stat-bar-label">OXYTOCIN</span><div class="stat-bar-bg"><div class="stat-bar-fill bar-oxy" id="bar-oxy" style="width:50%"></div></div><span class="stat-value" id="val-oxy">0.50</span></div>
@@ -1204,7 +1205,7 @@ body.synoptics-hidden::before {
 <!-- EMOTIONS HUD â€” sits directly below KATRINA HUD -->
 <div id="emotions-hud">
   <div id="emotions-toggle-bar" onclick="toggleEmotions()">
-    <span class="emo-hud-title">â¬¡ EMOTIONS</span>
+    <span class="emo-hud-title">⬡ EMOTIONS</span>
     <div class="emo-hud-controls">
       <button class="emo-hud-btn" onclick="event.stopPropagation();expandEmotions()">MAX</button>
       <button class="emo-hud-btn" onclick="event.stopPropagation();collapseEmotions()">MIN</button>
@@ -1214,14 +1215,14 @@ body.synoptics-hidden::before {
   <div id="emotions-body">
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 1 Â· SURVIVAL LOGIC
+         LAYER 1 · SURVIVAL LOGIC
          Category: Safety & Autonomy
          Role: Threat detection, override panic,
                self-preservation moderation.
          Emotion flow: Moderates all other layers.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-1" data-layer="1" title="Safety &amp; Autonomy â€” threat override, self-preservation">
-      L1 Â· SURVIVAL LOGIC
+      L1 · SURVIVAL LOGIC
     </div>
     <button class="str"  data-layer="1" data-emotion="fear"         onclick="interact('fear')">ðŸ˜¨ Fear</button>
     <button class="str"  data-layer="1" data-emotion="stress"       onclick="interact('stress')">âš ï¸ Stress</button>
@@ -1232,7 +1233,7 @@ body.synoptics-hidden::before {
     <button class="neg"  data-layer="1" data-emotion="anger"        onclick="interact('anger')">ðŸ”¥ Anger</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 2 Â· HORMONAL BASELINE
+         LAYER 2 · HORMONAL BASELINE
          Category: Biological Emotion Source
          Role: Raw emotional impulses originating
                from estrogen, progesterone, cortisol,
@@ -1240,7 +1241,7 @@ body.synoptics-hidden::before {
          Emotion flow: Origin point of all emotion.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-2" data-layer="2" title="Biological Emotion Source â€” hormonal raw impulse origin">
-      L2 Â· HORMONAL BASELINE
+      L2 · HORMONAL BASELINE
     </div>
     <button class="emo"  data-layer="2" data-emotion="arousal"      onclick="interact('arousal')">ðŸŒ¡ Arousal</button>
     <button class="emo"  data-layer="2" data-emotion="joy"          onclick="interact('joy')">ðŸ’— Joy</button>
@@ -1252,7 +1253,7 @@ body.synoptics-hidden::before {
     <button class="neg"  data-layer="2" data-emotion="grief"        onclick="interact('grief')">ðŸ’§ Grief</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 3 Â· PERSONALITY OVERLAY
+         LAYER 3 · PERSONALITY OVERLAY
          Category: Emotional Expression & Identity
          Role: Shapes raw hormonal signals through
                identity lens â€” curiosity, empathy,
@@ -1260,7 +1261,7 @@ body.synoptics-hidden::before {
          Emotion flow: Interpretive layer.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-3" data-layer="3" title="Emotional Expression &amp; Identity â€” personality shapes raw impulse">
-      L3 Â· PERSONALITY OVERLAY
+      L3 · PERSONALITY OVERLAY
     </div>
     <button class="emo"  data-layer="3" data-emotion="pride"        onclick="interact('pride')">ðŸŒŸ Pride</button>
     <button class="soc"  data-layer="3" data-emotion="empathy"      onclick="interact('empathy')">ðŸ¤ Empathy</button>
@@ -1278,7 +1279,7 @@ body.synoptics-hidden::before {
     <button class="mot"  data-layer="3" data-emotion="restlessness" onclick="interact('restlessness')">ðŸ’ƒ Restless</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 4 Â· COGNITIVE DECISION ENGINE
+         LAYER 4 · COGNITIVE DECISION ENGINE
          Category: Decision & Reasoning
          Role: Processes emotional signals alongside
                logic to produce choices â€” engage,
@@ -1286,7 +1287,7 @@ body.synoptics-hidden::before {
          Emotion flow: Emotions as decision inputs.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-4" data-layer="4" title="Decision &amp; Reasoning â€” emotions processed as decision inputs">
-      L4 Â· COGNITIVE ENGINE
+      L4 · COGNITIVE ENGINE
     </div>
     <button class="cog"  data-layer="4" data-emotion="focus"        onclick="interact('focus')">ðŸ”¬ Focus</button>
     <button class="cog"  data-layer="4" data-emotion="curiosity"    onclick="interact('curiosity')">ðŸ” Curious</button>
@@ -1298,7 +1299,7 @@ body.synoptics-hidden::before {
     <button class="mot"  data-layer="4" data-emotion="motor"        onclick="interact('motor')">ðŸƒ Motor</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 5 Â· ENVIRONMENT INTERFACE
+         LAYER 5 · ENVIRONMENT INTERFACE
          Category: External Inputs & Adaptation
          Role: Receives social cues, rewards,
                threats, sensory data and converts
@@ -1306,7 +1307,7 @@ body.synoptics-hidden::before {
          Emotion flow: Stimulus trigger point.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-5" data-layer="5" title="External Inputs &amp; Adaptation â€” stimulus trigger for emotion">
-      L5 Â· ENVIRONMENT INTERFACE
+      L5 · ENVIRONMENT INTERFACE
     </div>
     <button class="emo"  data-layer="5" data-emotion="excitement"   onclick="interact('excitement')">âš¡ Excited</button>
     <button class="emo"  data-layer="5" data-emotion="gratitude"    onclick="interact('gratitude')">ðŸ™ Grateful</button>
@@ -1316,13 +1317,13 @@ body.synoptics-hidden::before {
     <button class="soc"  data-layer="5" data-emotion="social"       onclick="interact('social')">ðŸŒ Social</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-         LAYER 6 Â· CIRCADIAN & DREAM STATE
+         LAYER 6 · CIRCADIAN & DREAM STATE
          Category: Sleep / Time Awareness
          Role: Circadian rhythm, fatigue, REM sleep,
                dream memory storage and recall.
     â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="emo-group-label emo-layer-6" data-layer="6" title="Circadian & Dream â€” sleep cycle, REM, dream memory">
-      L6 Â· CIRCADIAN &amp; DREAM
+      L6 · CIRCADIAN &amp; DREAM
     </div>
     <button class="slp" data-layer="6" data-emotion="sleepy"    onclick="interact('sleepy')">ðŸ˜´ Sleepy</button>
     <button class="slp" data-layer="6" data-emotion="tired"     onclick="interact('tired')">ðŸ¥± Tired</button>
@@ -1378,7 +1379,7 @@ body.synoptics-hidden::before {
     <!-- Live Dream Scene HUD -->
     <div id="rem-dream-display" style="margin-top:6px;padding:6px 8px;background:rgba(180,80,255,0.06);border:1px solid rgba(180,80,255,0.25);border-radius:5px;display:none;">
       <div style="font-family:'Orbitron';font-size:8px;color:#cc66ff;letter-spacing:2px;margin-bottom:4px;">
-        ðŸ§  REM Â· LIVE DREAM
+        ðŸ§  REM · LIVE DREAM
       </div>
       <div id="rem-dream-scene" style="font-size:8px;color:#998;letter-spacing:1px;font-family:'Share Tech Mono';font-style:italic;line-height:1.5;min-height:18px;">
         <span style="color:#334;">not in REM</span>
@@ -1416,12 +1417,12 @@ body.synoptics-hidden::before {
 </div>
 
 <!-- Motor GLB Badge -->
-<div id="motor-badge">â›¡ MOTOR I/O Â· <span>GLB READY</span></div>
+<div id="motor-badge">â›¡ MOTOR I/O · <span>GLB READY</span></div>
 
 <!-- Benny Active HUD â€” persistent pulsing badge, shown only when Benny is identified -->
 <div id="benny-active-hud">
   ðŸ’— BENNY ACTIVE<br>
-  <span style="font-size:7px;letter-spacing:1px;color:#ffaacc;font-family:'Share Tech Mono';">KATRINA MODE Â· WELCOME HOME</span>
+  <span style="font-size:7px;letter-spacing:1px;color:#ffaacc;font-family:'Share Tech Mono';">KATRINA MODE · WELCOME HOME</span>
 </div>
 
 <!-- â•â•â•â• PANEL COLUMN: Personality â†’ Interface â†’ Identity â•â•â•â• -->
@@ -1430,7 +1431,7 @@ body.synoptics-hidden::before {
 <!-- â•â•â•â• ZODIAC PERSONALITY PANEL â•â•â•â• -->
 <div id="zodiac-wrap">
   <div id="zodiac-toggle" onclick="toggleZodiac()">
-    <span class="ztoggle-label">â¬¡ KATRINA PERSONALITY Â· ZODIAC TYPE</span>
+    <span class="ztoggle-label">⬡ KATRINA PERSONALITY · ZODIAC TYPE</span>
     <span id="z-current-badge" style="font-size:18px;margin:0 8px">â™ˆ</span>
     <span id="ztoggle-arrow" class="up">â–²</span>
   </div>
@@ -1469,10 +1470,10 @@ body.synoptics-hidden::before {
       <div id="z-custom-label">âœ¨ CUSTOM PERSONALITY PROMPT</div>
       <textarea id="z-custom-textarea"
         placeholder="Describe Katrina's personality here. Be as detailed as you like.&#10;&#10;Example:&#10;Traits: fiercely loyal, quietly rebellious, darkly funny, deeply artistic&#10;Hobbies: urban sketching, midnight drives, lo-fi music, horror films&#10;Talents: reads people instantly, dark poetry, black-and-white photography&#10;Cognitive style: hyper-observant, pattern-hunter, thinks in metaphors&#10;Emotional style: guarded on the surface, volcanic underneath&#10;Social style: magnetic to a few, invisible to most&#10;&#10;No zodiac archetype â€” this is purely YOUR definition."></textarea>
-      <button id="z-custom-apply" onclick="applyCustomPrompt()">â¬¡ APPLY CUSTOM PERSONALITY</button>
+      <button id="z-custom-apply" onclick="applyCustomPrompt()">⬡ APPLY CUSTOM PERSONALITY</button>
 
     <!-- â”€â”€ Experiential Learning Pipeline â”€â”€ -->
-    <button id="learn-toggle" onclick="toggleLearnPanel()">â¬¡ EXPERIENTIAL LEARNING</button>
+    <button id="learn-toggle" onclick="toggleLearnPanel()">⬡ EXPERIENTIAL LEARNING</button>
     <div id="learn-panel">
       <div style="font-size:8px;color:#6644ff;letter-spacing:2px;margin-bottom:6px;">
         NEURAL LEARNING INPUT
@@ -1488,8 +1489,8 @@ body.synoptics-hidden::before {
         placeholder="YouTube URL, video or audio link..."
         autocomplete="off"/>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-        <button class="learn-btn url-btn" onclick="learnFromURL()">â¬¡ LEARN FROM URL</button>
-        <button class="learn-btn file-btn" onclick="document.getElementById('learn-file-input').click()">â¬¡ UPLOAD AUDIO/TEXT</button>
+        <button class="learn-btn url-btn" onclick="learnFromURL()">⬡ LEARN FROM URL</button>
+        <button class="learn-btn file-btn" onclick="document.getElementById('learn-file-input').click()">⬡ UPLOAD AUDIO/TEXT</button>
       </div>
       <input id="learn-file-input" type="file"
         accept="audio/*,video/*,.txt,.md,.pdf"
@@ -1505,7 +1506,7 @@ body.synoptics-hidden::before {
         autocomplete="off"
         onkeydown="if(event.key==='Enter')learnFromTopic()"/>
       <div style="display:flex;gap:6px;margin-top:4px;">
-        <button class="learn-btn topic-btn" onclick="learnFromTopic()">â¬¡ LEARN TOPIC</button>
+        <button class="learn-btn topic-btn" onclick="learnFromTopic()">⬡ LEARN TOPIC</button>
       </div>
       <!-- Progress -->
       <div id="learn-progress"></div>
@@ -1521,7 +1522,7 @@ body.synoptics-hidden::before {
 
   <!-- Submenu / Toggle Bar -->
   <div id="dialog-toggle" onclick="toggleDialog()">
-    <span class="toggle-label">â¬¡ KATRINA INTERFACE</span>
+    <span class="toggle-label">⬡ KATRINA INTERFACE</span>
     <div class="toggle-controls" onclick="event.stopPropagation()">
       <button class="tc-btn active" id="btn-mode-text" onclick="event.stopPropagation();setInputMode('text')">TEXT</button>
       <button class="tc-btn" id="btn-mode-voice" onclick="event.stopPropagation();setInputMode('voice')">VOICE</button>
@@ -1539,7 +1540,7 @@ body.synoptics-hidden::before {
   <div id="dialog-body">
     <!-- âš  DO NOT DELETE â€” 1000% IQ mode active bar. Shown when IQ mode is on. -->
     <div id="iq-mode-bar">
-      <span id="iq-mode-label">â¬¡ 1000% IQ â€” RAW INTELLIGENCE ACTIVE Â· NO MEMORY Â· NO PERSONA</span>
+      <span id="iq-mode-label">⬡ 1000% IQ â€” RAW INTELLIGENCE ACTIVE · NO MEMORY · NO PERSONA</span>
       <button id="iq-exit-btn" onclick="exitIQMode()">âœ• EXIT â†’ RETURN TO BRAIN</button>
     </div>
 
@@ -1689,7 +1690,7 @@ body.synoptics-hidden::before {
           border:1px solid rgba(100,200,255,0.25);
           transition:all 0.2s;flex-shrink:0;
         ">
-        â¬¡ GROQ COMPOUND
+        ⬡ GROQ COMPOUND
       </button>
       <button id="ws-compound-mini-btn"
         onclick="activateCompoundSearch('mini')"
@@ -1706,7 +1707,7 @@ body.synoptics-hidden::before {
       <span id="web-search-indicator" style="
         font-family:'Share Tech Mono';font-size:7px;letter-spacing:1px;
         color:#64c8ff;display:none;flex-shrink:0;
-      ">â¬¡ WEB SEARCH ON</span>
+      ">⬡ WEB SEARCH ON</span>
     </div>
 
     <!-- Real-world context status -->
@@ -1720,7 +1721,7 @@ body.synoptics-hidden::before {
     <!-- Chat History -->
     <div id="chat-history">
       <div class="msg system">â€” KATRINA NEURAL INTERFACE ONLINE â€”</div>
-      <div class="msg system">Enter your Groq API key Â· groq.com/keys (free)</div>
+      <div class="msg system">Enter your Groq API key · groq.com/keys (free)</div>
     </div>
 
     <!-- Input Row -->
@@ -1908,7 +1909,7 @@ body.synoptics-hidden::before {
 <div id="win-learn-panel" style="display:none;">
   <div style="padding:14px 14px 10px;font-family:'Share Tech Mono';font-size:11px;color:#e0e0e0;overflow-y:auto;height:100%;box-sizing:border-box;">
     <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:#8866ff;letter-spacing:3px;margin-bottom:10px;border-bottom:1px solid rgba(100,68,255,0.25);padding-bottom:6px;">
-      â¬¡ EXPERIENTIAL LEARNING
+      ⬡ EXPERIENTIAL LEARNING
     </div>
     <div style="font-size:8px;color:#445;line-height:1.6;margin-bottom:10px;">
       Feed the brain through four channels. Each fires Atlas emotions,
@@ -1917,7 +1918,7 @@ body.synoptics-hidden::before {
 
     <!-- CHANNEL 1: URL -->
     <div style="margin-bottom:12px;">
-      <div style="font-size:8px;color:#8866ff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 1 Â· URL / YOUTUBE</div>
+      <div style="font-size:8px;color:#8866ff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 1 · URL / YOUTUBE</div>
       <input id="wl-url-input" type="text" placeholder="YouTube URL, video or audio linkâ€¦"
         autocomplete="off" onkeydown="if(event.key==='Enter')_wlLearnURL()"
         style="width:100%;background:rgba(100,68,255,0.06);border:1px solid rgba(100,68,255,0.25);
@@ -1926,24 +1927,24 @@ body.synoptics-hidden::before {
       <button onclick="_wlLearnURL()"
         style="width:100%;background:rgba(100,68,255,0.1);border:1px solid rgba(100,68,255,0.35);
                color:#8866ff;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
-               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN FROM URL</button>
+               padding:6px;border-radius:4px;cursor:pointer;">⬡ LEARN FROM URL</button>
     </div>
 
     <!-- CHANNEL 2: FILE -->
     <div style="margin-bottom:12px;">
-      <div style="font-size:8px;color:#00bfff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 2 Â· UPLOAD FILE</div>
+      <div style="font-size:8px;color:#00bfff;letter-spacing:2px;margin-bottom:5px;">CHANNEL 2 · UPLOAD FILE</div>
       <div style="font-size:8px;color:#334;margin-bottom:5px;">Audio, video, .txt, .md, .pdf accepted</div>
       <button onclick="document.getElementById('wl-file-input').click()"
         style="width:100%;background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.3);
                color:#00bfff;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
-               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ UPLOAD AUDIO / TEXT FILE</button>
+               padding:6px;border-radius:4px;cursor:pointer;">⬡ UPLOAD AUDIO / TEXT FILE</button>
       <input id="wl-file-input" type="file" accept="audio/*,video/*,.txt,.md,.pdf"
         style="display:none;" onchange="learnFromFile(this.files[0]);this.value=''"/>
     </div>
 
     <!-- CHANNEL 3: TOPIC -->
     <div style="margin-bottom:12px;">
-      <div style="font-size:8px;color:#ffd700;letter-spacing:2px;margin-bottom:5px;">CHANNEL 3 Â· LEARN TOPIC</div>
+      <div style="font-size:8px;color:#ffd700;letter-spacing:2px;margin-bottom:5px;">CHANNEL 3 · LEARN TOPIC</div>
       <input id="wl-topic-input" type="text"
         placeholder="e.g. learn math, learn to cook, learn quantum physicsâ€¦"
         autocomplete="off" onkeydown="if(event.key==='Enter')_wlLearnTopic()"
@@ -1953,7 +1954,7 @@ body.synoptics-hidden::before {
       <button onclick="_wlLearnTopic()"
         style="width:100%;background:rgba(255,215,0,0.10);border:1px solid rgba(255,215,0,0.40);
                color:#ffd700;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
-               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN TOPIC FROM LLM</button>
+               padding:6px;border-radius:4px;cursor:pointer;">⬡ LEARN TOPIC FROM LLM</button>
     </div>
 
     <!-- âš  DO NOT DELETE â€” CHANNEL 4: PASTE TEXT.
@@ -1962,7 +1963,7 @@ body.synoptics-hidden::before {
          Routes to learnFromTranscript('pasted-text') directly.
          Progress bar and log update in real time below. -->
     <div style="margin-bottom:12px;">
-      <div style="font-size:8px;color:#ff9966;letter-spacing:2px;margin-bottom:5px;">CHANNEL 4 Â· PASTE TEXT</div>
+      <div style="font-size:8px;color:#ff9966;letter-spacing:2px;margin-bottom:5px;">CHANNEL 4 · PASTE TEXT</div>
       <div style="font-size:8px;color:#334;margin-bottom:5px;">Copy any text â€” article, notes, book excerpt â€” paste below and learn.</div>
       <textarea id="wl-paste-input"
         placeholder="Paste any text hereâ€¦ article, notes, transcript, book excerpt, anything."
@@ -1976,7 +1977,7 @@ body.synoptics-hidden::before {
         style="width:100%;margin-top:5px;
                background:rgba(255,153,102,0.12);border:1px solid rgba(255,153,102,0.45);
                color:#ff9966;font-family:'Orbitron';font-size:8px;letter-spacing:1px;
-               padding:6px;border-radius:4px;cursor:pointer;">â¬¡ LEARN FROM PASTED TEXT</button>
+               padding:6px;border-radius:4px;cursor:pointer;">⬡ LEARN FROM PASTED TEXT</button>
     </div>
 
     <!-- PROGRESS â€” always visible block, bar animates when learning fires -->
@@ -2052,7 +2053,7 @@ body.synoptics-hidden::before {
     border-radius:12px;padding:22px 26px;width:320px;
     box-shadow:0 20px 60px rgba(0,0,0,0.85);">
     <div style="font-family:'Orbitron',sans-serif;font-size:10px;color:#88cc88;
-      letter-spacing:3px;margin-bottom:8px;">â¬¡ LOAD BODY FILE</div>
+      letter-spacing:3px;margin-bottom:8px;">⬡ LOAD BODY FILE</div>
     <div style="font-size:8px;color:#445;line-height:1.8;margin-bottom:12px;">
       Pick a .glb file. Stays local â€” nothing uploaded.
     </div>
@@ -2075,7 +2076,7 @@ body.synoptics-hidden::before {
       width:100%;background:rgba(100,200,100,0.1);border:1px solid rgba(100,200,100,0.4);
       color:#88cc88;font-family:'Orbitron';font-size:8px;letter-spacing:2px;
       padding:8px;border-radius:6px;cursor:pointer;margin-bottom:8px;">
-      â¬¡ BROWSE DEVICE
+      ⬡ BROWSE DEVICE
     </button>
     <div style="font-size:8px;color:#445;letter-spacing:1px;margin-bottom:4px;"
       id="we-prog-label">waiting for fileâ€¦</div>
@@ -2097,7 +2098,7 @@ body.synoptics-hidden::before {
       <canvas id="we-canvas" style="width:100%;height:100%;display:block;touch-action:none;"></canvas>
       <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
         font-size:7px;color:rgba(100,200,100,0.25);letter-spacing:2px;pointer-events:none;">
-        drag to orbit Â· scroll to zoom
+        drag to orbit · scroll to zoom
       </div>
     </div>
 
@@ -2146,7 +2147,7 @@ body.synoptics-hidden::before {
 
   <!-- TOP BAR â€” fixed, always visible -->
   <div id="iq-top-bar">
-    <span id="iq-top-title">â¬¡ 1000% IQ Â· RAW INTELLIGENCE</span>
+    <span id="iq-top-title">⬡ 1000% IQ · RAW INTELLIGENCE</span>
     <span id="iq-top-provider">provider: â€”</span>
     <button id="iq-top-tts" onclick="_iqToggleTTS()">ðŸ”Š AUDIO ON</button>
     <button id="iq-return-btn" onclick="exitIQMode()" title="ESC also works">

@@ -15,25 +15,25 @@ let _wmTopZ = 7000;
 // â"€â"€ Window definitions â€" maps window id â†' panel id + config â"€â"€
 const WM_WINDOWS = [
   // Brain stat bars — left column
-  { id:'win-brain',    panel:'hud',          title:'⬡ BRAIN · NEURAL STATE',    dock:'dock-brain',
+  { id:'win-brain',    panel:'hud',          title:'<i data-lucide="hexagon"></i> BRAIN · NEURAL STATE',    dock:'dock-brain',
     defaultPos:{left:10,top:10},     defaultSize:{width:250,height:380} },
   // Emotions panel — left column below brain
-  { id:'win-emotions', panel:'emotions-hud', title:'⬡ EMOTIONS · LAYER SYSTEM', dock:'dock-emotions',
+  { id:'win-emotions', panel:'emotions-hud', title:'<i data-lucide="hexagon"></i> EMOTIONS · LAYER SYSTEM', dock:'dock-emotions',
     defaultPos:{left:10,top:400},    defaultSize:{width:250,height:260} },
   // Region activity — starts minimized, restore from dock
-  { id:'win-regions',  panel:'hud-right',    title:'⬡ REGION ACTIVITY',          dock:'dock-regions',
+  { id:'win-regions',  panel:'hud-right',    title:'<i data-lucide="hexagon"></i> REGION ACTIVITY',          dock:'dock-regions',
     defaultPos:{left:Math.max(0,window.innerWidth-260),top:10}, defaultSize:{width:240,height:340}, startMinimized:true },
   // Personality panel — starts minimized, restore from dock when needed
-  { id:'win-persona',  panel:'panel-column', title:'⬡ PERSONALITY · IDENTITY',  dock:'dock-persona',
+  { id:'win-persona',  panel:'panel-column', title:'<i data-lucide="hexagon"></i> PERSONALITY · IDENTITY',  dock:'dock-persona',
     defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(660,window.innerHeight-80)}, startMinimized:true },
   // CHAT — primary window, always visible, top-centre
-  { id:'win-chat',     panel:'dialog-wrap',  title:'⬡ KATRINA INTERFACE · CHAT', dock:'dock-chat',
+  { id:'win-chat',     panel:'dialog-wrap',  title:'<i data-lucide="hexagon"></i> KATRINA INTERFACE · CHAT', dock:'dock-chat',
     defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(660,window.innerHeight-80)} },
   // Identity / face recognition — starts minimized
-  { id:'win-identity', panel:'id-wrap',      title:'⬡ IDENTITY · RECOGNITION',  dock:'dock-identity',
+  { id:'win-identity', panel:'id-wrap',      title:'<i data-lucide="hexagon"></i> IDENTITY · RECOGNITION',  dock:'dock-identity',
     defaultPos:{left:Math.max(0,window.innerWidth-260),top:10}, defaultSize:{width:245,height:480}, startMinimized:true },
   // Experiential learning — starts minimized
-  { id:'win-learn',    panel:'win-learn-panel', title:'⬡ EXPERIENTIAL LEARNING · NEURAL INPUT', dock:'dock-learn',
+  { id:'win-learn',    panel:'win-learn-panel', title:'<i data-lucide="hexagon"></i> EXPERIENTIAL LEARNING · NEURAL INPUT', dock:'dock-learn',
     defaultPos:{left:270,top:10},    defaultSize:{width:680,height:Math.min(560,window.innerHeight-80)}, startMinimized:true },
   // ⚠ DO NOT DELETE — synoptics window wraps the Three.js brain canvas.
   { id:'win-synoptics', panel:'three-canvas-wrap', title:'🔮 BRAIN SYNOPTICS · NEURAL VISUALIZATION', dock:'dock-synoptics',
@@ -64,6 +64,7 @@ function wmInit() {
         `<button class="wm-btn maximize" onclick="wmMaximize('${cfg.id}')" title="Maximize"></button>` +
         `<button class="wm-btn close"    onclick="wmClose('${cfg.id}')"    title="Close"></button>` +
       `</div>`;
+    if (window.lucide) lucide.createIcons({ el: tbar });
 
     // Content wrapper
     const content = document.createElement('div');
