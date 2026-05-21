@@ -424,6 +424,7 @@
 .wm-title svg{width:10px;height:10px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:4px;opacity:0.7;}
 .emo-hud-title svg,.ztoggle-label svg,.toggle-label svg{width:10px;height:10px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:4px;}
 button svg.lucide-hexagon,span svg.lucide-hexagon{width:10px;height:10px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:3px;}
+#emotions-body button svg{width:11px;height:11px;stroke:currentColor;display:inline-block;vertical-align:-2px;margin-right:5px;opacity:0.85;}
 .dock-dot{
   width:5px;height:5px;border-radius:50%;
   background:rgba(255,255,255,0.2);
@@ -1226,13 +1227,13 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-1" data-layer="1" title="Safety &amp; Autonomy â€” threat override, self-preservation">
       L1 · SURVIVAL LOGIC
     </div>
-    <button class="str"  data-layer="1" data-emotion="fear"         onclick="interact('fear')">ðŸ˜¨ Fear</button>
-    <button class="str"  data-layer="1" data-emotion="stress"       onclick="interact('stress')">âš ï¸ Stress</button>
-    <button class="str"  data-layer="1" data-emotion="panicking"    onclick="interact('panicking')">ðŸ’¥ Panic</button>
-    <button class="str"  data-layer="1" data-emotion="hysteria"     onclick="interact('hysteria')">ðŸŒª Hysteria</button>
-    <button class="str"  data-layer="1" data-emotion="dissociation" onclick="interact('dissociation')">ðŸŒ« Dissociate</button>
-    <button class="neg"  data-layer="1" data-emotion="overwhelmed"  onclick="interact('overwhelmed')">ðŸŒ€ Overwhelm</button>
-    <button class="neg"  data-layer="1" data-emotion="anger"        onclick="interact('anger')">ðŸ”¥ Anger</button>
+    <button class="str"  data-layer="1" data-emotion="fear"         onclick="interact('fear')"><i data-lucide="shield-alert"></i> Fear</button>
+    <button class="str"  data-layer="1" data-emotion="stress"       onclick="interact('stress')"><i data-lucide="zap"></i> Stress</button>
+    <button class="str"  data-layer="1" data-emotion="panicking"    onclick="interact('panicking')"><i data-lucide="flame"></i> Panic</button>
+    <button class="str"  data-layer="1" data-emotion="hysteria"     onclick="interact('hysteria')"><i data-lucide="wind"></i> Hysteria</button>
+    <button class="str"  data-layer="1" data-emotion="dissociation" onclick="interact('dissociation')"><i data-lucide="cloud"></i> Dissociate</button>
+    <button class="neg"  data-layer="1" data-emotion="overwhelmed"  onclick="interact('overwhelmed')"><i data-lucide="loader"></i> Overwhelm</button>
+    <button class="neg"  data-layer="1" data-emotion="anger"        onclick="interact('anger')"><i data-lucide="flame"></i> Anger</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          LAYER 2 · HORMONAL BASELINE
@@ -1245,14 +1246,14 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-2" data-layer="2" title="Biological Emotion Source â€” hormonal raw impulse origin">
       L2 · HORMONAL BASELINE
     </div>
-    <button class="emo"  data-layer="2" data-emotion="arousal"      onclick="interact('arousal')">ðŸŒ¡ Arousal</button>
-    <button class="emo"  data-layer="2" data-emotion="joy"          onclick="interact('joy')">ðŸ’— Joy</button>
-    <button class="emo"  data-layer="2" data-emotion="love"         onclick="interact('love')">â¤ï¸ Love</button>
-    <button class="emo"  data-layer="2" data-emotion="contentment"  onclick="interact('contentment')">â˜€ï¸ Content</button>
-    <button class="emo"  data-layer="2" data-emotion="amusement"    onclick="interact('amusement')">ðŸ˜„ Amused</button>
-    <button class="soc"  data-layer="2" data-emotion="longing"      onclick="interact('longing')">ðŸŒ™ Longing</button>
-    <button class="soc"  data-layer="2" data-emotion="trust"        onclick="interact('trust')">ðŸ”’ Trust</button>
-    <button class="neg"  data-layer="2" data-emotion="grief"        onclick="interact('grief')">ðŸ’§ Grief</button>
+    <button class="emo"  data-layer="2" data-emotion="arousal"      onclick="interact('arousal')"><i data-lucide="thermometer"></i> Arousal</button>
+    <button class="emo"  data-layer="2" data-emotion="joy"          onclick="interact('joy')"><i data-lucide="heart"></i> Joy</button>
+    <button class="emo"  data-layer="2" data-emotion="love"         onclick="interact('love')"><i data-lucide="heart"></i> Love</button>
+    <button class="emo"  data-layer="2" data-emotion="contentment"  onclick="interact('contentment')"><i data-lucide="sun"></i> Content</button>
+    <button class="emo"  data-layer="2" data-emotion="amusement"    onclick="interact('amusement')"><i data-lucide="smile"></i> Amused</button>
+    <button class="soc"  data-layer="2" data-emotion="longing"      onclick="interact('longing')"><i data-lucide="moon"></i> Longing</button>
+    <button class="soc"  data-layer="2" data-emotion="trust"        onclick="interact('trust')"><i data-lucide="lock"></i> Trust</button>
+    <button class="neg"  data-layer="2" data-emotion="grief"        onclick="interact('grief')"><i data-lucide="droplets"></i> Grief</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          LAYER 3 · PERSONALITY OVERLAY
@@ -1265,20 +1266,20 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-3" data-layer="3" title="Emotional Expression &amp; Identity â€” personality shapes raw impulse">
       L3 · PERSONALITY OVERLAY
     </div>
-    <button class="emo"  data-layer="3" data-emotion="pride"        onclick="interact('pride')">ðŸŒŸ Pride</button>
-    <button class="soc"  data-layer="3" data-emotion="empathy"      onclick="interact('empathy')">ðŸ¤ Empathy</button>
-    <button class="soc"  data-layer="3" data-emotion="affection"    onclick="interact('affection')">ðŸ«‚ Affection</button>
-    <button class="soc"  data-layer="3" data-emotion="belonging"    onclick="interact('belonging')">ðŸ‘¯ Belonging</button>
-    <button class="soc"  data-layer="3" data-emotion="jealousy"     onclick="interact('jealousy')">ðŸ’š Jealousy</button>
-    <button class="int"  data-layer="3" data-emotion="nostalgia"    onclick="interact('nostalgia')">ðŸ“· Nostalgia</button>
-    <button class="int"  data-layer="3" data-emotion="awe"          onclick="interact('awe')">ðŸŒŒ Awe</button>
-    <button class="int"  data-layer="3" data-emotion="intuition"    onclick="interact('intuition')">âœ¨ Intuition</button>
-    <button class="int"  data-layer="3" data-emotion="creative"     onclick="interact('creative')">ðŸŽ¨ Create</button>
-    <button class="neg"  data-layer="3" data-emotion="shame"        onclick="interact('shame')">ðŸ˜” Shame</button>
-    <button class="neg"  data-layer="3" data-emotion="guilt"        onclick="interact('guilt')">ðŸ’­ Guilt</button>
-    <button class="neg"  data-layer="3" data-emotion="regret"       onclick="interact('regret')">ðŸ” Regret</button>
-    <button class="cog"  data-layer="3" data-emotion="sly"          onclick="interact('sly')">ðŸ¦Š Sly</button>
-    <button class="mot"  data-layer="3" data-emotion="restlessness" onclick="interact('restlessness')">ðŸ’ƒ Restless</button>
+    <button class="emo"  data-layer="3" data-emotion="pride"        onclick="interact('pride')"><i data-lucide="star"></i> Pride</button>
+    <button class="soc"  data-layer="3" data-emotion="empathy"      onclick="interact('empathy')"><i data-lucide="heart-handshake"></i> Empathy</button>
+    <button class="soc"  data-layer="3" data-emotion="affection"    onclick="interact('affection')"><i data-lucide="hand-heart"></i> Affection</button>
+    <button class="soc"  data-layer="3" data-emotion="belonging"    onclick="interact('belonging')"><i data-lucide="users"></i> Belonging</button>
+    <button class="soc"  data-layer="3" data-emotion="jealousy"     onclick="interact('jealousy')"><i data-lucide="eye"></i> Jealousy</button>
+    <button class="int"  data-layer="3" data-emotion="nostalgia"    onclick="interact('nostalgia')"><i data-lucide="camera"></i> Nostalgia</button>
+    <button class="int"  data-layer="3" data-emotion="awe"          onclick="interact('awe')"><i data-lucide="sparkles"></i> Awe</button>
+    <button class="int"  data-layer="3" data-emotion="intuition"    onclick="interact('intuition')"><i data-lucide="sparkles"></i> Intuition</button>
+    <button class="int"  data-layer="3" data-emotion="creative"     onclick="interact('creative')"><i data-lucide="palette"></i> Create</button>
+    <button class="neg"  data-layer="3" data-emotion="shame"        onclick="interact('shame')"><i data-lucide="cloud-rain"></i> Shame</button>
+    <button class="neg"  data-layer="3" data-emotion="guilt"        onclick="interact('guilt')"><i data-lucide="message-circle"></i> Guilt</button>
+    <button class="neg"  data-layer="3" data-emotion="regret"       onclick="interact('regret')"><i data-lucide="rotate-ccw"></i> Regret</button>
+    <button class="cog"  data-layer="3" data-emotion="sly"          onclick="interact('sly')"><i data-lucide="eye"></i> Sly</button>
+    <button class="mot"  data-layer="3" data-emotion="restlessness" onclick="interact('restlessness')"><i data-lucide="music"></i> Restless</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          LAYER 4 · COGNITIVE DECISION ENGINE
@@ -1291,14 +1292,14 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-4" data-layer="4" title="Decision &amp; Reasoning â€” emotions processed as decision inputs">
       L4 · COGNITIVE ENGINE
     </div>
-    <button class="cog"  data-layer="4" data-emotion="focus"        onclick="interact('focus')">ðŸ”¬ Focus</button>
-    <button class="cog"  data-layer="4" data-emotion="curiosity"    onclick="interact('curiosity')">ðŸ” Curious</button>
-    <button class="cog"  data-layer="4" data-emotion="learn"        onclick="interact('learn')">ðŸ“š Learn</button>
-    <button class="cog"  data-layer="4" data-emotion="recall"       onclick="interact('recall')">ðŸ—‚ Recall</button>
-    <button class="cog"  data-layer="4" data-emotion="confusion"    onclick="interact('confusion')">ðŸŒ€ Confused</button>
-    <button class="cog"  data-layer="4" data-emotion="surprise"     onclick="interact('surprise')">ðŸ˜² Surprise</button>
-    <button class="emo"  data-layer="4" data-emotion="hope"         onclick="interact('hope')">ðŸŒˆ Hope</button>
-    <button class="mot"  data-layer="4" data-emotion="motor"        onclick="interact('motor')">ðŸƒ Motor</button>
+    <button class="cog"  data-layer="4" data-emotion="focus"        onclick="interact('focus')"><i data-lucide="crosshair"></i> Focus</button>
+    <button class="cog"  data-layer="4" data-emotion="curiosity"    onclick="interact('curiosity')"><i data-lucide="search"></i> Curious</button>
+    <button class="cog"  data-layer="4" data-emotion="learn"        onclick="interact('learn')"><i data-lucide="book-open"></i> Learn</button>
+    <button class="cog"  data-layer="4" data-emotion="recall"       onclick="interact('recall')"><i data-lucide="archive"></i> Recall</button>
+    <button class="cog"  data-layer="4" data-emotion="confusion"    onclick="interact('confusion')"><i data-lucide="help-circle"></i> Confused</button>
+    <button class="cog"  data-layer="4" data-emotion="surprise"     onclick="interact('surprise')"><i data-lucide="zap"></i> Surprise</button>
+    <button class="emo"  data-layer="4" data-emotion="hope"         onclick="interact('hope')"><i data-lucide="sun"></i> Hope</button>
+    <button class="mot"  data-layer="4" data-emotion="motor"        onclick="interact('motor')"><i data-lucide="move"></i> Motor</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          LAYER 5 · ENVIRONMENT INTERFACE
@@ -1311,12 +1312,12 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-5" data-layer="5" title="External Inputs &amp; Adaptation â€” stimulus trigger for emotion">
       L5 · ENVIRONMENT INTERFACE
     </div>
-    <button class="emo"  data-layer="5" data-emotion="excitement"   onclick="interact('excitement')">âš¡ Excited</button>
-    <button class="emo"  data-layer="5" data-emotion="gratitude"    onclick="interact('gratitude')">ðŸ™ Grateful</button>
-    <button class="neg"  data-layer="5" data-emotion="loneliness"   onclick="interact('loneliness')">ðŸŒ§ Lonely</button>
-    <button class="neg"  data-layer="5" data-emotion="disgust"      onclick="interact('disgust')">ðŸ¤¢ Disgust</button>
-    <button class="neg"  data-layer="5" data-emotion="anxiety"      onclick="interact('anxiety')">ðŸ˜° Anxiety</button>
-    <button class="soc"  data-layer="5" data-emotion="social"       onclick="interact('social')">ðŸŒ Social</button>
+    <button class="emo"  data-layer="5" data-emotion="excitement"   onclick="interact('excitement')"><i data-lucide="zap"></i> Excited</button>
+    <button class="emo"  data-layer="5" data-emotion="gratitude"    onclick="interact('gratitude')"><i data-lucide="gift"></i> Grateful</button>
+    <button class="neg"  data-layer="5" data-emotion="loneliness"   onclick="interact('loneliness')"><i data-lucide="cloud"></i> Lonely</button>
+    <button class="neg"  data-layer="5" data-emotion="disgust"      onclick="interact('disgust')"><i data-lucide="x-circle"></i> Disgust</button>
+    <button class="neg"  data-layer="5" data-emotion="anxiety"      onclick="interact('anxiety')"><i data-lucide="activity"></i> Anxiety</button>
+    <button class="soc"  data-layer="5" data-emotion="social"       onclick="interact('social')"><i data-lucide="globe"></i> Social</button>
 
     <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          LAYER 6 · CIRCADIAN & DREAM STATE
@@ -1327,12 +1328,12 @@ body.synoptics-hidden::before {
     <div class="emo-group-label emo-layer-6" data-layer="6" title="Circadian & Dream â€” sleep cycle, REM, dream memory">
       L6 · CIRCADIAN &amp; DREAM
     </div>
-    <button class="slp" data-layer="6" data-emotion="sleepy"    onclick="interact('sleepy')">ðŸ˜´ Sleepy</button>
-    <button class="slp" data-layer="6" data-emotion="tired"     onclick="interact('tired')">ðŸ¥± Tired</button>
-    <button class="slp" data-layer="6" data-emotion="nap"       onclick="interact('nap')">ðŸ’¤ Nap</button>
-    <button class="slp" data-layer="6" data-emotion="dreaming"  onclick="interact('dreaming')">ðŸŒ™ Dreaming</button>
-    <button class="slp" data-layer="6" data-emotion="rem"       onclick="interact('rem')">ðŸ§  REM</button>
-    <button class="slp" data-layer="6" data-emotion="waking"    onclick="interact('waking')">ðŸŒ… Waking</button>
+    <button class="slp" data-layer="6" data-emotion="sleepy"    onclick="interact('sleepy')"><i data-lucide="moon"></i> Sleepy</button>
+    <button class="slp" data-layer="6" data-emotion="tired"     onclick="interact('tired')"><i data-lucide="battery-low"></i> Tired</button>
+    <button class="slp" data-layer="6" data-emotion="nap"       onclick="interact('nap')"><i data-lucide="moon"></i> Nap</button>
+    <button class="slp" data-layer="6" data-emotion="dreaming"  onclick="interact('dreaming')"><i data-lucide="moon"></i> Dreaming</button>
+    <button class="slp" data-layer="6" data-emotion="rem"       onclick="interact('rem')"><i data-lucide="brain"></i> REM</button>
+    <button class="slp" data-layer="6" data-emotion="waking"    onclick="interact('waking')"><i data-lucide="sunrise"></i> Waking</button>
 
     <!-- Circadian clock display -->
     <div id="circadian-display" style="margin-top:8px;padding:6px 8px;background:rgba(255,204,51,0.07);border:1px solid rgba(255,204,51,0.2);border-radius:5px;font-size:9px;color:#ffcc33;letter-spacing:1px;font-family:'Share Tech Mono';">
@@ -1381,7 +1382,7 @@ body.synoptics-hidden::before {
     <!-- Live Dream Scene HUD -->
     <div id="rem-dream-display" style="margin-top:6px;padding:6px 8px;background:rgba(180,80,255,0.06);border:1px solid rgba(180,80,255,0.25);border-radius:5px;display:none;">
       <div style="font-family:'Orbitron';font-size:8px;color:#cc66ff;letter-spacing:2px;margin-bottom:4px;">
-        ðŸ§  REM · LIVE DREAM
+        <i data-lucide="brain"></i> REM · LIVE DREAM
       </div>
       <div id="rem-dream-scene" style="font-size:8px;color:#998;letter-spacing:1px;font-family:'Share Tech Mono';font-style:italic;line-height:1.5;min-height:18px;">
         <span style="color:#334;">not in REM</span>
@@ -1809,58 +1810,58 @@ body.synoptics-hidden::before {
 <div id="interaction-panel">
   <div style="font-family:'Orbitron',sans-serif;font-size:11px;color:#ff69b4;font-weight:700;letter-spacing:3px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,105,180,0.3);">EMOTIONS</div>
   <div class="emo-group-label">POSITIVE</div>
-  <button class="emo"  onclick="interact('joy')">ðŸ’— Joy</button>
-  <button class="emo"  onclick="interact('excitement')">âš¡ Excited</button>
-  <button class="emo"  onclick="interact('love')">â¤ï¸ Love</button>
-  <button class="emo"  onclick="interact('pride')">ðŸŒŸ Pride</button>
-  <button class="emo"  onclick="interact('gratitude')">ðŸ™ Grateful</button>
-  <button class="emo"  onclick="interact('amusement')">ðŸ˜„ Amused</button>
-  <button class="emo"  onclick="interact('hope')">ðŸŒˆ Hope</button>
-  <button class="emo"  onclick="interact('contentment')">â˜€ï¸ Content</button>
+  <button class="emo"  onclick="interact('joy')"><i data-lucide="heart"></i> Joy</button>
+  <button class="emo"  onclick="interact('excitement')"><i data-lucide="zap"></i> Excited</button>
+  <button class="emo"  onclick="interact('love')"><i data-lucide="heart"></i> Love</button>
+  <button class="emo"  onclick="interact('pride')"><i data-lucide="star"></i> Pride</button>
+  <button class="emo"  onclick="interact('gratitude')"><i data-lucide="gift"></i> Grateful</button>
+  <button class="emo"  onclick="interact('amusement')"><i data-lucide="smile"></i> Amused</button>
+  <button class="emo"  onclick="interact('hope')"><i data-lucide="sun"></i> Hope</button>
+  <button class="emo"  onclick="interact('contentment')"><i data-lucide="sun"></i> Content</button>
 
   <div class="emo-group-label">SOCIAL</div>
-  <button class="soc"  onclick="interact('empathy')">ðŸ¤ Empathy</button>
-  <button class="soc"  onclick="interact('affection')">ðŸ«‚ Affection</button>
-  <button class="soc"  onclick="interact('belonging')">ðŸ‘¯ Belonging</button>
-  <button class="soc"  onclick="interact('trust')">ðŸ”’ Trust</button>
-  <button class="soc"  onclick="interact('longing')">ðŸŒ™ Longing</button>
-  <button class="soc"  onclick="interact('jealousy')">ðŸ’š Jealousy</button>
+  <button class="soc"  onclick="interact('empathy')"><i data-lucide="heart-handshake"></i> Empathy</button>
+  <button class="soc"  onclick="interact('affection')"><i data-lucide="hand-heart"></i> Affection</button>
+  <button class="soc"  onclick="interact('belonging')"><i data-lucide="users"></i> Belonging</button>
+  <button class="soc"  onclick="interact('trust')"><i data-lucide="lock"></i> Trust</button>
+  <button class="soc"  onclick="interact('longing')"><i data-lucide="moon"></i> Longing</button>
+  <button class="soc"  onclick="interact('jealousy')"><i data-lucide="eye"></i> Jealousy</button>
 
   <div class="emo-group-label">DIFFICULT</div>
-  <button class="neg"  onclick="interact('grief')">ðŸ’§ Grief</button>
-  <button class="neg"  onclick="interact('anxiety')">ðŸ˜° Anxiety</button>
-  <button class="neg"  onclick="interact('anger')">ðŸ”¥ Anger</button>
-  <button class="neg"  onclick="interact('shame')">ðŸ˜” Shame</button>
-  <button class="neg"  onclick="interact('guilt')">ðŸ’­ Guilt</button>
-  <button class="neg"  onclick="interact('disgust')">ðŸ¤¢ Disgust</button>
-  <button class="str"  onclick="interact('stress')">âš ï¸ Stress</button>
-  <button class="neg"  onclick="interact('fear')">ðŸ˜¨ Fear</button>
-  <button class="neg"  onclick="interact('loneliness')">ðŸŒ§ Lonely</button>
-  <button class="neg"  onclick="interact('overwhelmed')">ðŸŒ€ Overwhelm</button>
+  <button class="neg"  onclick="interact('grief')"><i data-lucide="droplets"></i> Grief</button>
+  <button class="neg"  onclick="interact('anxiety')"><i data-lucide="activity"></i> Anxiety</button>
+  <button class="neg"  onclick="interact('anger')"><i data-lucide="flame"></i> Anger</button>
+  <button class="neg"  onclick="interact('shame')"><i data-lucide="cloud-rain"></i> Shame</button>
+  <button class="neg"  onclick="interact('guilt')"><i data-lucide="message-circle"></i> Guilt</button>
+  <button class="neg"  onclick="interact('disgust')"><i data-lucide="x-circle"></i> Disgust</button>
+  <button class="str"  onclick="interact('stress')"><i data-lucide="zap"></i> Stress</button>
+  <button class="neg"  onclick="interact('fear')"><i data-lucide="shield-alert"></i> Fear</button>
+  <button class="neg"  onclick="interact('loneliness')"><i data-lucide="cloud"></i> Lonely</button>
+  <button class="neg"  onclick="interact('overwhelmed')"><i data-lucide="loader"></i> Overwhelm</button>
 
   <div class="emo-group-label">COGNITIVE</div>
-  <button class="cog"  onclick="interact('focus')">ðŸ”¬ Focus</button>
-  <button class="cog"  onclick="interact('curiosity')">ðŸ” Curious</button>
-  <button class="cog"  onclick="interact('learn')">ðŸ“š Learn</button>
-  <button class="cog"  onclick="interact('recall')">ðŸ—‚ Recall</button>
-  <button class="cog"  onclick="interact('confusion')">ðŸŒ€ Confused</button>
-  <button class="cog"  onclick="interact('surprise')">ðŸ˜² Surprise</button>
+  <button class="cog"  onclick="interact('focus')"><i data-lucide="crosshair"></i> Focus</button>
+  <button class="cog"  onclick="interact('curiosity')"><i data-lucide="search"></i> Curious</button>
+  <button class="cog"  onclick="interact('learn')"><i data-lucide="book-open"></i> Learn</button>
+  <button class="cog"  onclick="interact('recall')"><i data-lucide="archive"></i> Recall</button>
+  <button class="cog"  onclick="interact('confusion')"><i data-lucide="help-circle"></i> Confused</button>
+  <button class="cog"  onclick="interact('surprise')"><i data-lucide="zap"></i> Surprise</button>
 
   <div class="emo-group-label">EXPRESSIVE</div>
-  <button class="int"  onclick="interact('intuition')">âœ¨ Intuition</button>
-  <button class="int"  onclick="interact('creative')">ðŸŽ¨ Create</button>
-  <button class="int"  onclick="interact('awe')">ðŸŒŒ Awe</button>
-  <button class="int"  onclick="interact('nostalgia')">ðŸ“· Nostalgia</button>
-  <button class="mot"  onclick="interact('motor')">ðŸƒ Motor</button>
-  <button class="mot"  onclick="interact('restlessness')">ðŸ’ƒ Restless</button>
+  <button class="int"  onclick="interact('intuition')"><i data-lucide="sparkles"></i> Intuition</button>
+  <button class="int"  onclick="interact('creative')"><i data-lucide="palette"></i> Create</button>
+  <button class="int"  onclick="interact('awe')"><i data-lucide="sparkles"></i> Awe</button>
+  <button class="int"  onclick="interact('nostalgia')"><i data-lucide="camera"></i> Nostalgia</button>
+  <button class="mot"  onclick="interact('motor')"><i data-lucide="move"></i> Motor</button>
+  <button class="mot"  onclick="interact('restlessness')"><i data-lucide="music"></i> Restless</button>
 
   <div class="emo-group-label">INSTINCT &amp; EDGE</div>
-  <button class="emo"  onclick="interact('arousal')">ðŸŒ¡ Arousal</button>
-  <button class="neg"  onclick="interact('regret')">ðŸ” Regret</button>
-  <button class="cog"  onclick="interact('sly')">ðŸ¦Š Sly</button>
-  <button class="str"  onclick="interact('dissociation')">ðŸŒ« Dissociate</button>
-  <button class="str"  onclick="interact('hysteria')">ðŸŒª Hysteria</button>
-  <button class="str"  onclick="interact('panicking')">ðŸ’¥ Panic</button>
+  <button class="emo"  onclick="interact('arousal')"><i data-lucide="thermometer"></i> Arousal</button>
+  <button class="neg"  onclick="interact('regret')"><i data-lucide="rotate-ccw"></i> Regret</button>
+  <button class="cog"  onclick="interact('sly')"><i data-lucide="eye"></i> Sly</button>
+  <button class="str"  onclick="interact('dissociation')"><i data-lucide="cloud"></i> Dissociate</button>
+  <button class="str"  onclick="interact('hysteria')"><i data-lucide="wind"></i> Hysteria</button>
+  <button class="str"  onclick="interact('panicking')"><i data-lucide="flame"></i> Panic</button>
 </div>
 
 
