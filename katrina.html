@@ -419,6 +419,8 @@
 .icon-btn svg{width:16px;height:16px;stroke:currentColor;display:block;}
 .tc-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-2px;margin-right:2px;}
 #iq-send-btn svg,#iq-mute-btn svg{width:16px;height:16px;stroke:currentColor;display:block;}
+.id-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:3px;}
+#id-snap-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-1px;margin-right:3px;}
 .dock-dot{
   width:5px;height:5px;border-radius:50%;
   background:rgba(255,255,255,0.2);
@@ -1775,16 +1777,16 @@ body.synoptics-hidden::before {
 
     <!-- Controls -->
     <div id="id-ctrl-row">
-      <button class="id-btn" id="btn-cam-toggle" onclick="toggleCamera()">ðŸ“· CAMERA</button>
-      <button class="id-btn" id="btn-scan" onclick="startScan()" disabled>ðŸ” SCAN</button>
-      <button class="id-btn" id="btn-stop-scan" onclick="stopScan()" disabled>â¹ STOP</button>
-      <button class="id-btn" id="btn-switch-user" onclick="switchToDefaultUser()" style="border-color:rgba(255,165,0,0.35);color:#aaa;">â†© SWITCH USER</button>
+      <button class="id-btn" id="btn-cam-toggle" onclick="toggleCamera()"><i data-lucide="camera"></i> CAMERA</button>
+      <button class="id-btn" id="btn-scan" onclick="startScan()" disabled><i data-lucide="scan-face"></i> SCAN</button>
+      <button class="id-btn" id="btn-stop-scan" onclick="stopScan()" disabled><i data-lucide="square"></i> STOP</button>
+      <button class="id-btn" id="btn-switch-user" onclick="switchToDefaultUser()" style="border-color:rgba(255,165,0,0.35);color:#aaa;"><i data-lucide="user-x"></i> SWITCH USER</button>
     </div>
 
     <!-- Capture row -->
     <div id="id-capture-row">
       <input id="id-name-input" type="text" placeholder="Name (e.g. Benito Amurao / Benny)"/>
-      <button id="id-snap-btn" onclick="captureReference()" disabled>ðŸ“¸ SNAP &amp; SAVE</button>
+      <button id="id-snap-btn" onclick="captureReference()" disabled><i data-lucide="camera"></i> SNAP &amp; SAVE</button>
     </div>
 
     <!-- Result banner -->
