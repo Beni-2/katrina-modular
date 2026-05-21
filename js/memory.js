@@ -1374,7 +1374,7 @@ async function _testSupabaseConnection(silent) {
   const _el = document.getElementById('hud-supabase-status');
   try {
     const res = await fetch(
-      SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?limit=1&select=key&owner_key=eq.' + encodeURIComponent(SUPABASE_OWNER_KEY),
+      SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE + '?limit=1&select=key',
       {
         method:      'GET',
         mode:        'cors',
@@ -1418,7 +1418,7 @@ async function _sbWrite(key, value) {
           'Content-Type':  'application/json',
           'Prefer':        'resolution=merge-duplicates',
         },
-        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now(), owner_key: SUPABASE_OWNER_KEY }),
+        body: JSON.stringify({ key, value: JSON.stringify(value), ts: Date.now() }),
       }
     );
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1435,7 +1435,7 @@ async function _sbRead(key) {
   try {
     const res = await fetch(
       SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE +
-        '?key=eq.' + encodeURIComponent(key) + '&owner_key=eq.' + encodeURIComponent(SUPABASE_OWNER_KEY) + '&select=value&limit=1',
+        '?key=eq.' + encodeURIComponent(key) + '&select=value&limit=1',
       {
         method:      'GET',
         mode:        'cors',
@@ -1513,12 +1513,13 @@ async function loadAllKatrinaState() {
   // â”€â”€ Try Supabase first â”€â”€
   if (_supabaseConnected) {
     try {
-      const [_profile, _timeline, _temporal, _narrative, _recog] = await Promise.all([
+      const [_profile, _timeline, _temporal, _narrative, _recog, _faces] = await Promise.all([
         _sbRead(PROFILE_STORAGE_KEY),
         _sbRead(EMOTION_TIMELINE_KEY),
         _sbRead(TEMPORAL_MEM_KEY),
         _sbRead(NARRATIVE_STORAGE_KEY),
         _sbRead(RECOG_MEMORY_KEY),
+        _sbRead('katrina_faces'),
       ]);
 
       // Apply profile
@@ -1536,6 +1537,15 @@ async function loadAllKatrinaState() {
       if (_narrative) Object.assign(narrativeMemory, _narrative);
       // Apply recognition memory
       if (_recog) Object.assign(recognitionMemory, _recog);
+      // Restore enrolled faces from Supabase (overrides localStorage if fresher)
+      if (_faces && Array.isArray(_faces) && _faces.length) {
+        if (typeof enrolledFaces !== 'undefined') {
+          enrolledFaces.length = 0;
+          _faces.forEach(f => enrolledFaces.push(f));
+          try { localStorage.setItem('katrina_faces', JSON.stringify(_faces)); } catch(e) {}
+          if (typeof renderFaceList === 'function') renderFaceList();
+        }
+      }
 
       const _el = document.getElementById('hud-supabase-status');
       if (_el) { _el.textContent = 'SUPABASE âœ“ MEMORY LOADED'; _el.style.color = '#44ff88'; }

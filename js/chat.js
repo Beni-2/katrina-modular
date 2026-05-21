@@ -687,7 +687,7 @@ function toggleMic() {
   recognition.onstart = () => {
     isRecording = true;
     document.getElementById('mic-btn').classList.add('recording');
-    document.getElementById('mic-btn').textContent = 'âº';
+    (function(b){b.innerHTML='<i data-lucide="square"></i>';if(window.lucide)lucide.createIcons({el:b});})(document.getElementById('mic-btn'));
     setStatus('listening', 'LISTENINGâ€¦');
     interact('focus');
   };
@@ -720,7 +720,7 @@ function toggleMic() {
 function stopMic() {
   isRecording = false;
   document.getElementById('mic-btn').classList.remove('recording');
-  document.getElementById('mic-btn').textContent = 'ðŸŽ™';
+  (function(b){b.innerHTML='<i data-lucide="mic"></i>';if(window.lucide)lucide.createIcons({el:b});})(document.getElementById('mic-btn'));
   setStatus('ready', 'READY');
   if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
 }
@@ -800,6 +800,7 @@ function isBennyName(name) {
 
 function saveFaces() {
   try { localStorage.setItem('katrina_faces', JSON.stringify(enrolledFaces)); } catch(e){}
+  if (typeof _sbSave === 'function') _sbSave('katrina_faces', enrolledFaces);
 }
 
 // â”€â”€ Panel toggle â”€â”€
@@ -817,14 +818,14 @@ async function toggleCamera() {
   const btn = document.getElementById('btn-cam-toggle');
   if (camStream) {
     stopCamera();
-    if (btn) { btn.textContent = 'ðŸ“· CAMERA'; btn.classList.remove('active-cam'); }
+    if (btn) { btn.innerHTML = '<i data-lucide="camera"></i> CAMERA'; if(window.lucide)lucide.createIcons({el:btn}); btn.classList.remove('active-cam'); }
     setIdStatus('off', 'CAMERA OFF');
   } else {
     try {
       camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user', width:320, height:240 }, audio:false });
       const vid = document.getElementById('cam-video');
       if (vid) { vid.srcObject = camStream; vid.play(); }
-      if (btn) { btn.textContent = 'ðŸ”· ON'; btn.classList.add('active-cam'); }
+      if (btn) { btn.innerHTML = '<i data-lucide="camera"></i> ON'; if(window.lucide)lucide.createIcons({el:btn}); btn.classList.add('active-cam'); }
       setIdStatus('ready', 'CAMERA READY');
       // Start expression scanning via face-api.js
       if (typeof onCameraStarted === 'function') onCameraStarted();
@@ -1014,7 +1015,7 @@ function onIdentityMatch(face, sim) {
     window._katrinaStandby = false; // Benny is back
     currentUserId = 'benny';
     if (ring)   { ring.classList.remove('stranger'); ring.classList.add('matched'); }
-    if (result) { result.className='id-result benny-found'; result.textContent='ðŸ’— BENITO DETECTED Â· WELCOME HOME'; }
+    if (result) { result.className='id-result benny-found'; result.textContent='\u2665 BENITO DETECTED \u00b7 WELCOME HOME'; }
     if (dot)    dot.style.background='#ff69b4';
     setIdStatus('benny','BENNY â¤');
     // Update recognition memory â€” Benny seen
@@ -1034,7 +1035,7 @@ function onIdentityMatch(face, sim) {
     currentUserId = face.name;
     if (typeof updateChatInputPlaceholder === ‘function’) updateChatInputPlaceholder();
     if (ring)   { ring.classList.remove(‘matched’); ring.classList.add(‘stranger’); }
-    if (result) { result.className=’id-result stranger-found’; result.textContent=`ðŸ’¤ ${face.name.toUpperCase()} Â· ${(sim*100).toFixed(0)}%`; }
+    if (result) { result.className=’id-result stranger-found’; result.textContent=`● ${face.name.toUpperCase()} · ${(sim*100).toFixed(0)}%`; }
     if (dot)    dot.style.background=’#ffa500’;
     setIdStatus(‘known’, face.name.substring(0,10).toUpperCase());
     // Update recognition memory â€” known face seen
@@ -1057,7 +1058,7 @@ function onStranger() {
   const result = document.getElementById('id-result');
   const dot    = document.getElementById('id-status-dot');
   if (ring)   { ring.classList.remove('matched'); ring.classList.add('stranger'); }
-  if (result) { result.className='id-result stranger-found'; result.textContent='ðŸ‘¤ UNKNOWN Â· RESERVE ACTIVE'; }
+  if (result) { result.className='id-result stranger-found'; result.textContent='\u25cf UNKNOWN \u00b7 RESERVE ACTIVE'; }
   if (dot)    dot.style.background='#ffa500';
 
   if (_bennyWasHere) {
