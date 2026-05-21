@@ -404,6 +404,14 @@ setInterval(() => {
   if (typeof saveChemState === 'function') saveChemState();
 }, 5 * 60 * 1000);
 
+function updateChatInputPlaceholder() {
+  const name = (typeof resolvePersona === 'function') ? resolvePersona().personaName : 'Katrina';
+  const inp = document.getElementById('chat-input');
+  if (inp && inp.placeholder !== 'Press 🎙 to speak…') inp.placeholder = `Speak to ${name}…`;
+  const weInp = document.getElementById('we-chat-input');
+  if (weInp && weInp.placeholder !== 'Press 🎙 to speak…') weInp.placeholder = `Speak to ${name}…`;
+}
+
 window.onload = function() {
   // Load voices asynchronously
   if (window.speechSynthesis) {

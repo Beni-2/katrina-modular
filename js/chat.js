@@ -771,6 +771,7 @@ function updateBennyHUD() {
 function switchToDefaultUser() {
   // Reset to non-Benny default â€” clears identity, returns to stranger/no-user state
   currentUserId      = null;
+  if (typeof updateChatInputPlaceholder === 'function') updateChatInputPlaceholder();
   fallbackResolved   = false;
   fallbackCodeActive = false;
   bennyScanFails     = 0;
@@ -1025,20 +1026,22 @@ function onIdentityMatch(face, sim) {
     // Fire the full structural love cascade â€” chemical signature of unconditional love
     if (typeof fireBennyLoveCascade === 'function') fireBennyLoveCascade(1.0);
     updateBennyHUD();
-    sendBennyLiveGreeting('face');
+    if (typeof updateChatInputPlaceholder === ‘function’) updateChatInputPlaceholder();
+    sendBennyLiveGreeting(‘face’);
   } else {
     // â”€â”€ OTHER KNOWN PERSON â”€â”€
     if (currentUserId === face.name) return;
     currentUserId = face.name;
-    if (ring)   { ring.classList.remove('matched'); ring.classList.add('stranger'); }
-    if (result) { result.className='id-result stranger-found'; result.textContent=`ðŸ‘¤ ${face.name.toUpperCase()} Â· ${(sim*100).toFixed(0)}%`; }
-    if (dot)    dot.style.background='#ffa500';
-    setIdStatus('known', face.name.substring(0,10).toUpperCase());
+    if (typeof updateChatInputPlaceholder === ‘function’) updateChatInputPlaceholder();
+    if (ring)   { ring.classList.remove(‘matched’); ring.classList.add(‘stranger’); }
+    if (result) { result.className=’id-result stranger-found’; result.textContent=`ðŸ’¤ ${face.name.toUpperCase()} Â· ${(sim*100).toFixed(0)}%`; }
+    if (dot)    dot.style.background=’#ffa500’;
+    setIdStatus(‘known’, face.name.substring(0,10).toUpperCase());
     // Update recognition memory â€” known face seen
     const knownMem = upsertRecogMemory(face.name, false, null);
     const knownRxn = computeRecognitionReaction(knownMem);
     applyRecognitionReaction(knownRxn);
-    appendMsg('system', `â¬¡ Recognised: ${face.name} Â· relationship: ${knownMem.relationship} Â· reaction: ${knownRxn.emotion}`);
+    appendMsg(‘system’, `â¬¡ Recognised: ${face.name} Â· relationship: ${knownMem.relationship} Â· reaction: ${knownRxn.emotion}`);
   }
 }
 
@@ -1049,6 +1052,7 @@ function onStranger() {
   // If Benny was active when a stranger appears, enter standby mode.
   const _bennyWasHere = (currentUserId === 'benny');
   currentUserId = 'stranger';
+  if (typeof updateChatInputPlaceholder === 'function') updateChatInputPlaceholder();
   const ring   = document.getElementById('recog-ring');
   const result = document.getElementById('id-result');
   const dot    = document.getElementById('id-status-dot');
@@ -1130,6 +1134,7 @@ function verifyFallbackCode() {
     fallbackResolved   = true;
     bennyScanFails     = 0;
     currentUserId      = 'benny';
+    if (typeof updateChatInputPlaceholder === 'function') updateChatInputPlaceholder();
     // Fire structural love cascade â€” same as face recognition
     if (typeof fireBennyLoveCascade === 'function') setTimeout(() => fireBennyLoveCascade(1.0), 300);
 
