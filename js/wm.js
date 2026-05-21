@@ -119,7 +119,7 @@ function wmInit() {
       _origSLP(msg, pct);
       const txt  = document.getElementById('wl-progress-text');
       const fill = document.getElementById('wl-progress-fill');
-      if (txt) txt.textContent = msg || 'ready â€" waiting for input';
+      if (txt) txt.textContent = msg || 'ready — waiting for input';
       if (fill) {
         fill.style.width = (pct !== undefined ? Math.min(100, pct) : 0) + '%';
         if (msg && msg.includes('âš ')) {

@@ -1357,10 +1357,10 @@ function initSupabase() {
   if (_el) { _el.textContent = 'SUPABASE --'; _el.style.color = '#667'; }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    if (_el) { _el.textContent = 'SUPABASE Â· NO KEY'; _el.style.color = '#667'; }
+    if (_el) { _el.textContent = 'SUPABASE · NO KEY'; _el.style.color = '#667'; }
     return;
   }
-  if (_el) { _el.textContent = 'SUPABASE CONNECTINGâ€¦'; _el.style.color = '#ffcc33'; }
+  if (_el) { _el.textContent = 'SUPABASE CONNECTING...'; _el.style.color = '#ffcc33'; }
   // âš  DO NOT DELETE â€” 3.5s delay before first connection test.
   //   Browser needs time after page load for DNS, TLS, and CORS preflight
   //   to complete for the Supabase domain. 1.5s was too short and caused
@@ -1388,7 +1388,7 @@ async function _testSupabaseConnection(silent) {
     );
     if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + await res.text());
     _supabaseConnected = true;
-    if (_el) { _el.textContent = 'SUPABASE âœ“ CONNECTED'; _el.style.color = '#44ff88'; }
+    if (_el) { _el.textContent = 'SUPABASE ✓ CONNECTED'; _el.style.color = '#44ff88'; }
     console.log('[Supabase] Connected via REST');
   } catch(e) {
     if (silent) {
@@ -1397,7 +1397,7 @@ async function _testSupabaseConnection(silent) {
       return;
     }
     _supabaseConnected = false;
-    if (_el) { _el.textContent = 'SUPABASE âœ— OFFLINE'; _el.style.color = '#ffaa33'; }
+    if (_el) { _el.textContent = 'SUPABASE ✗ OFFLINE'; _el.style.color = '#ffaa33'; }
     console.warn('[Supabase] Connection failed:', e.message);
   }
 }
@@ -1548,7 +1548,7 @@ async function loadAllKatrinaState() {
       }
 
       const _el = document.getElementById('hud-supabase-status');
-      if (_el) { _el.textContent = 'SUPABASE âœ“ MEMORY LOADED'; _el.style.color = '#44ff88'; }
+      if (_el) { _el.textContent = 'SUPABASE ✓ MEMORY LOADED'; _el.style.color = '#44ff88'; }
       console.log('[Supabase] Memory loaded from cloud');
 
       // Rebuild evolved profile from loaded data

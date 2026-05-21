@@ -1577,7 +1577,7 @@ function updateHUD(){
     if (typeof SUPABASE_URL === 'undefined' || !SUPABASE_URL) {
       // Not configured â€” show muted but readable
       if (_sbEl.textContent === 'SUPABASE --') {
-        _sbEl.textContent = 'SUPABASE Â· NO KEY';
+        _sbEl.textContent = 'SUPABASE · NO KEY';
         _sbEl.style.color = '#667';
       }
     }

@@ -68,7 +68,7 @@ async function processUserInput(text) {
 
   // Trigger cognitive + emotional reaction while thinking
   interact('focus');
-  setStatus('thinking', 'THINKINGâ€¦');
+  setStatus('thinking', 'THINKING...');
   document.getElementById('send-btn').disabled = true;
   document.getElementById('mic-btn').disabled  = true;
 
@@ -383,7 +383,7 @@ async function _playElevenLabs(text) {
   const style      = Math.max(0.0,  Math.min(0.60, (dopLevel - 0.30) * 0.70));
 
   try {
-    setStatus('speaking', 'SPEAKINGâ€¦');
+    setStatus('speaking', 'SPEAKING...');
     interact('social');
     if (typeof _weIsSpeaking !== 'undefined') _weIsSpeaking = true;
     if (typeof _weInstinct   !== 'undefined' && _weStartupDone && !_weInstinct.engaged)
@@ -632,7 +632,7 @@ async function _playNext() {
   currentUtterance.volume = _ttsVoiceProfile.volume;
 
   currentUtterance.onstart = () => {
-    setStatus('speaking', 'SPEAKINGâ€¦');
+    setStatus('speaking', 'SPEAKING...');
     interact('social');
     if(typeof _weIsSpeaking!=='undefined') _weIsSpeaking=true;
     if(typeof _weInstinct!=='undefined'&&_weStartupDone&&!_weInstinct.engaged) _weSetState('engage_speak');
@@ -688,7 +688,7 @@ function toggleMic() {
     isRecording = true;
     document.getElementById('mic-btn').classList.add('recording');
     (function(b){b.innerHTML='<i data-lucide="square"></i>';if(window.lucide)lucide.createIcons({el:b});})(document.getElementById('mic-btn'));
-    setStatus('listening', 'LISTENINGâ€¦');
+    setStatus('listening', 'LISTENING...');
     interact('focus');
   };
 
@@ -1227,7 +1227,7 @@ async function sendBennyLiveGreeting(trigger) {
     return;
   }
 
-  setStatus('thinking', 'THINKINGâ€¦');
+  setStatus('thinking', 'THINKING...');
   try {
     const reply = await callLLMWithBrainLoop(currentProvider, apiKey, prompt);
     if (reply && reply.length > 2) {
