@@ -9,6 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <!-- EmailJS â€" browser-side email for Katrina reach-out system -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- Lucide icons — SVG icon library, reliable on all platforms -->
+<script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
 
@@ -413,6 +415,10 @@
 .dock-icon:hover{background:rgba(255,255,255,0.08);transform:translateY(-6px) scale(1.15);}
 .dock-icon.active .dock-dot{background:#ff69b4;}
 .dock-icon.minimized .dock-dot{background:#ffd700;}
+.dock-icon svg{width:20px;height:20px;stroke:currentColor;display:block;}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor;display:block;}
+.tc-btn svg{width:12px;height:12px;stroke:currentColor;display:inline-block;vertical-align:-2px;margin-right:2px;}
+#iq-send-btn svg,#iq-mute-btn svg{width:16px;height:16px;stroke:currentColor;display:block;}
 .dock-dot{
   width:5px;height:5px;border-radius:50%;
   background:rgba(255,255,255,0.2);
@@ -1517,12 +1523,12 @@ body.synoptics-hidden::before {
     <div class="toggle-controls" onclick="event.stopPropagation()">
       <button class="tc-btn active" id="btn-mode-text" onclick="event.stopPropagation();setInputMode('text')">TEXT</button>
       <button class="tc-btn" id="btn-mode-voice" onclick="event.stopPropagation();setInputMode('voice')">VOICE</button>
-      <button class="tc-btn" id="btn-tts-toggle" onclick="event.stopPropagation();toggleTTS()">ðŸ”Š TTS ON</button>
+      <button class="tc-btn" id="btn-tts-toggle" onclick="event.stopPropagation();toggleTTS()"><i data-lucide="volume-2"></i> TTS ON</button>
       <!-- âš  DO NOT DELETE â€” 1000% IQ mode toggle. Bypasses full brain pipeline,
            sends messages directly to raw LLM with no memory, no persona, no chemical state.
            Exit button restores the previous brain/persona state. -->
-      <button class=”tc-btn iq-btn” id=”btn-iq-mode” onclick=”event.stopPropagation();toggleIQMode()” title=”Pure LLM â€” infinite knowledge, no brain”>â¬¡ 1000% IQ</button>
-      <button class=”tc-btn” onclick=”event.stopPropagation();toggleWorldConfig()” title=”Configure Katrina's world — home, nearby places” style=”border-color:rgba(0,200,100,0.3);color:#00c864;”>🏠 WORLD</button>
+      <button class=”tc-btn iq-btn” id=”btn-iq-mode” onclick=”event.stopPropagation();toggleIQMode()” title=”Pure LLM â€” infinite knowledge, no brain”><i data-lucide="zap"></i> 1000% IQ</button>
+      <button class=”tc-btn” onclick=”event.stopPropagation();toggleWorldConfig()” title=”Configure Katrina's world — home, nearby places” style=”border-color:rgba(0,200,100,0.3);color:#00c864;”><i data-lucide="home"></i> WORLD</button>
     </div>
     <span id="toggle-arrow" class="up">â–²</span>
   </div>
@@ -1718,9 +1724,9 @@ body.synoptics-hidden::before {
     <!-- Input Row -->
     <div id="input-row">
       <input id="chat-input" type="text" placeholder="Speak to Katrinaâ€¦" onkeydown="if(event.key==='Enter')sendMessage()"/>
-      <button class="icon-btn" id="send-btn" onclick="sendMessage()" title="Send">âž¤</button>
-      <button class="icon-btn" id="mic-btn" onclick="toggleMic()" title="Voice input">ðŸŽ™</button>
-      <button class="icon-btn" id="stop-btn" onclick="stopSpeech()" title="Stop speech" style="font-size:12px">â¹</button>
+      <button class="icon-btn" id="send-btn" onclick="sendMessage()" title="Send"><i data-lucide="send"></i></button>
+      <button class="icon-btn" id="mic-btn" onclick="toggleMic()" title="Voice input"><i data-lucide="mic"></i></button>
+      <button class="icon-btn" id="stop-btn" onclick="stopSpeech()" title="Stop speech" style="font-size:12px"><i data-lucide="square"></i></button>
     </div>
 
     <!-- âš  DO NOT DELETE â€” Out-of-reach bar and pager panel.
@@ -1857,34 +1863,34 @@ body.synoptics-hidden::before {
      Shows all windows. Click icon to open/restore. Pink dot = open, gold = minimized. -->
 <div id="wm-dock">
   <div class="dock-icon" id="dock-brain"    onclick="wmRestore('win-brain')"    title="Brain HUD">
-    <span>ðŸ§ </span><div class="dock-dot"></div><div class="dock-label">BRAIN</div>
+    <i data-lucide="brain"></i><div class="dock-dot"></div><div class="dock-label">BRAIN</div>
   </div>
   <div class="dock-icon" id="dock-emotions" onclick="wmRestore('win-emotions')"  title="Emotions">
-    <span>ðŸ’—</span><div class="dock-dot"></div><div class="dock-label">EMOTIONS</div>
+    <i data-lucide="heart"></i><div class="dock-dot"></div><div class="dock-label">EMOTIONS</div>
   </div>
   <div class="dock-icon" id="dock-regions"  onclick="wmRestore('win-regions')"   title="Region Activity">
-    <span>âš¡</span><div class="dock-dot"></div><div class="dock-label">REGIONS</div>
+    <i data-lucide="activity"></i><div class="dock-dot"></div><div class="dock-label">REGIONS</div>
   </div>
   <div class="dock-icon" id="dock-persona"  onclick="wmRestore('win-persona')"   title="Personality">
-    <span>â¬¡</span><div class="dock-dot"></div><div class="dock-label">PERSONA</div>
+    <i data-lucide="user"></i><div class="dock-dot"></div><div class="dock-label">PERSONA</div>
   </div>
   <div class="dock-icon" id="dock-chat"     onclick="wmRestore('win-chat')"      title="Chat">
-    <span>ðŸ’¬</span><div class="dock-dot"></div><div class="dock-label">CHAT</div>
+    <i data-lucide="message-circle"></i><div class="dock-dot"></div><div class="dock-label">CHAT</div>
   </div>
   <div class="dock-icon" id="dock-identity" onclick="wmRestore('win-identity')"  title="Identity">
-    <span>ðŸ‘</span><div class="dock-dot"></div><div class="dock-label">IDENTITY</div>
+    <i data-lucide="scan-face"></i><div class="dock-dot"></div><div class="dock-label">IDENTITY</div>
   </div>
   <div class="dock-icon" id="dock-learn"    onclick="wmRestore('win-learn')"     title="Experiential Learning">
-    <span>ðŸŽ“</span><div class="dock-dot"></div><div class="dock-label">LEARN</div>
+    <i data-lucide="book-open"></i><div class="dock-dot"></div><div class="dock-label">LEARN</div>
   </div>
   <div class="dock-icon" id="dock-synoptics" onclick="wmRestore('win-synoptics')" title="Brain Synoptics">
-    <span>ðŸ”®</span><div class="dock-dot"></div><div class="dock-label">SYNOPTICS</div>
+    <i data-lucide="eye"></i><div class="dock-dot"></div><div class="dock-label">SYNOPTICS</div>
   </div>
   <!-- âš  DO NOT DELETE â€” world engine toggle button in dock.
        Directly switches renderer to world scene without depending on
        synoptics window state. Click again to return to brain. -->
   <div class="dock-icon" id="dock-world" onclick="_toggleWorldEngine()" title="World Engine">
-    <span>ðŸŒ</span><div class="dock-dot"></div><div class="dock-label">WORLD</div>
+    <i data-lucide="globe"></i><div class="dock-dot"></div><div class="dock-label">WORLD</div>
   </div>
 </div>
 
@@ -2119,7 +2125,7 @@ body.synoptics-hidden::before {
           <button onclick="_weSendChat()" style="
             background:rgba(255,105,180,0.15);border:1px solid rgba(255,105,180,0.4);
             color:#ff69b4;border-radius:50%;width:30px;height:30px;
-            cursor:pointer;font-size:13px;flex-shrink:0;">âž¤</button>
+            cursor:pointer;font-size:13px;flex-shrink:0;"><i data-lucide="send"></i></button>
         </div>
       </div>
 
@@ -2153,8 +2159,8 @@ body.synoptics-hidden::before {
   <div id="iq-bottom-bar">
     <input id="iq-input" type="text" placeholder="Ask anything â€” full knowledge depthâ€¦"
       onkeydown="if(event.key==='Enter')_iqSend()"/>
-    <button id="iq-send-btn" onclick="_iqSend()" title="Send">âž¤</button>
-    <button id="iq-mute-btn" onclick="_iqToggleTTS()" title="Toggle audio">ðŸ”Š</button>
+    <button id="iq-send-btn" onclick="_iqSend()" title="Send"><i data-lucide="send"></i></button>
+    <button id="iq-mute-btn" onclick="_iqToggleTTS()" title="Toggle audio"><i data-lucide="volume-2"></i></button>
     <button id="iq-share-btn" onclick="_iqShare()">âœ‰ SHARE</button>
   </div>
 
@@ -2186,6 +2192,7 @@ body.synoptics-hidden::before {
 <script src="js/biometric.js"></script>
 <script src="js/text-emotion.js"></script>
 <script src="js/main.js"></script>
+<script>lucide.createIcons();</script>
   <div id="z-name-taken-flash">â›” NAME IS ALREADY TAKEN<br>CHOOSE ANOTHER</div>
 
 <!-- ══ WORLD CONFIG PANEL ══════════════════════════════════════════════════ -->
