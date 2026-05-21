@@ -1027,22 +1027,22 @@ function onIdentityMatch(face, sim) {
     // Fire the full structural love cascade â€” chemical signature of unconditional love
     if (typeof fireBennyLoveCascade === 'function') fireBennyLoveCascade(1.0);
     updateBennyHUD();
-    if (typeof updateChatInputPlaceholder === ‘function’) updateChatInputPlaceholder();
-    sendBennyLiveGreeting(‘face’);
+    if (typeof updateChatInputPlaceholder === 'function') updateChatInputPlaceholder();
+    sendBennyLiveGreeting('face');
   } else {
     // â”€â”€ OTHER KNOWN PERSON â”€â”€
     if (currentUserId === face.name) return;
     currentUserId = face.name;
-    if (typeof updateChatInputPlaceholder === ‘function’) updateChatInputPlaceholder();
-    if (ring)   { ring.classList.remove(‘matched’); ring.classList.add(‘stranger’); }
-    if (result) { result.className=’id-result stranger-found’; result.textContent=`● ${face.name.toUpperCase()} · ${(sim*100).toFixed(0)}%`; }
-    if (dot)    dot.style.background=’#ffa500’;
-    setIdStatus(‘known’, face.name.substring(0,10).toUpperCase());
+    if (typeof updateChatInputPlaceholder === 'function') updateChatInputPlaceholder();
+    if (ring)   { ring.classList.remove('matched'); ring.classList.add('stranger'); }
+    if (result) { result.className='id-result stranger-found'; result.textContent=`\u25cf ${face.name.toUpperCase()} \u00b7 ${(sim*100).toFixed(0)}%`; }
+    if (dot)    dot.style.background='#ffa500';
+    setIdStatus('known', face.name.substring(0,10).toUpperCase());
     // Update recognition memory â€” known face seen
     const knownMem = upsertRecogMemory(face.name, false, null);
     const knownRxn = computeRecognitionReaction(knownMem);
     applyRecognitionReaction(knownRxn);
-    appendMsg(‘system’, `â¬¡ Recognised: ${face.name} Â· relationship: ${knownMem.relationship} Â· reaction: ${knownRxn.emotion}`);
+    appendMsg('system', `â¬¡ Recognised: ${face.name} Â· relationship: ${knownMem.relationship} Â· reaction: ${knownRxn.emotion}`);
   }
 }
 
