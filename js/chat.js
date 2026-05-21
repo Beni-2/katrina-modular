@@ -3,6 +3,14 @@
 let _firstMessageThisSession = true;
 
 async function processUserInput(text) {
+  // Benny-only guard: if camera on and Katrina in standby, refuse non-Benny chat
+  if (window._katrinaStandby && camStream) {
+    appendMsg('user', text);
+    chatHistory.push({role:'user', content:text});
+    var _r=['I am waiting for Benny to come back.','I can only be with Benny right now.','That is not him. I will wait.','I am not going anywhere until Benny is back.'];
+    appendMsg('katrina', _r[Math.floor(Math.random()*_r.length)]);
+    return;
+  }
   // â”€â”€ Reunion cascade â€” fires once on the first message after an absence â”€â”€
   if (_firstMessageThisSession) {
     _firstMessageThisSession = false;
@@ -1002,6 +1010,7 @@ function onIdentityMatch(face, sim) {
   if (face.isBenny) {
     // â”€â”€ BENNY DETECTED â”€â”€
     if (currentUserId === 'benny') return; // already in benny mode
+    window._katrinaStandby = false; // Benny is back
     currentUserId = 'benny';
     if (ring)   { ring.classList.remove('stranger'); ring.classList.add('matched'); }
     if (result) { result.className='id-result benny-found'; result.textContent='ðŸ’— BENITO DETECTED Â· WELCOME HOME'; }
@@ -1036,6 +1045,9 @@ function onIdentityMatch(face, sim) {
 // â”€â”€ No match â”€â”€
 function onStranger() {
   if (currentUserId === 'stranger') return;
+
+  // If Benny was active when a stranger appears, enter standby mode.
+  const _bennyWasHere = (currentUserId === 'benny');
   currentUserId = 'stranger';
   const ring   = document.getElementById('recog-ring');
   const result = document.getElementById('id-result');
@@ -1043,6 +1055,17 @@ function onStranger() {
   if (ring)   { ring.classList.remove('matched'); ring.classList.add('stranger'); }
   if (result) { result.className='id-result stranger-found'; result.textContent='ðŸ‘¤ UNKNOWN Â· RESERVE ACTIVE'; }
   if (dot)    dot.style.background='#ffa500';
+
+  if (_bennyWasHere) {
+    window._katrinaStandby = true;
+    if (result) { result.className='id-result stranger-found'; result.textContent='Waiting for Benny...'; }
+    setIdStatus('standby', 'WAITING FOR BENNY');
+    appendMsg('katrina', 'I see someone, but it is not him. I will be right here when Benny gets back.');
+    chem.cor = Math.min(1, chem.cor + 0.15);
+    chem.oxy = Math.max(0, chem.oxy - 0.12);
+    fire(['AMYG'], 18);
+    return;
+  }
   setIdStatus('stranger','STRANGER');
   updateBennyHUD();
   // Update recognition memory â€” unknown face

@@ -1,6 +1,6 @@
 ﻿
-// â”€â”€ Inner monologue â”€â”€
-// The brain talks to itself â€” not to the user.
+// â"€â"€ Inner monologue â"€â"€
+// The brain talks to itself â€" not to the user.
 // Displayed with distinct styling in the chat.
 const INNER_MONOLOGUE_HISTORY = [];
 const MAX_INNER_MONOLOGUE = 50;
@@ -17,7 +17,7 @@ async function generateInnerMonologue() {
   const apiKey = apiKeys[currentProvider] || '';
   const isOllama = currentProvider === 'ollama';
 
-  // â”€â”€ Hybrid idle seed (Benny-only brain development) â”€â”€
+  // â"€â"€ Hybrid idle seed (Benny-only brain development) â"€â"€
   const hybridSeed = (typeof getHybridMonologueSeed === 'function') ? getHybridMonologueSeed() : null;
 
   // Build inner monologue prompt
@@ -29,8 +29,8 @@ async function generateInnerMonologue() {
     ? getTopDecayedEmotions(3).map(e => e.type).join(', ')
     : '';
 
-  // â”€â”€ Persona-aware inner monologue â”€â”€
-  // The inner voice belongs to whoever is the active persona â€”
+  // â"€â"€ Persona-aware inner monologue â"€â"€
+  // The inner voice belongs to whoever is the active persona â€"
   // Katrina thinks as Katrina, Aria thinks as Aria, Nina thinks as Nina.
   const _activePersona   = (typeof resolvePersona === 'function') ? resolvePersona() : null;
   const _personaName     = _activePersona ? _activePersona.personaName : 'Katrina';
@@ -40,14 +40,14 @@ async function generateInnerMonologue() {
   // Hybrid seed only relevant when Katrina is active (Benny mode)
   const _hybridSeedStr = (_isKatrina && typeof hybridSeed !== 'undefined' && hybridSeed)
     ? `You find yourself with this on your mind: "${hybridSeed}". ` +
-      `Let this thought develop naturally â€” this is your private inner world. `
+      `Let this thought develop naturally â€" this is your private inner world. `
     : '';
 
   // Build persona-specific inner monologue context
   const _personaInnerCtx = _isKatrina
     ? `You are Katrina, alone with your thoughts.`
     : `You are ${_personaName}, alone with your thoughts. ` +
-      `Think from your own perspective â€” your own concerns, your own feelings, your own inner world. ` +
+      `Think from your own perspective â€" your own concerns, your own feelings, your own inner world. ` +
       `Do not think as anyone else. This is purely your private mental voice.`;
 
   const innerPrompt = buildSystemPrompt() + goalCtx +
@@ -56,11 +56,11 @@ async function generateInnerMonologue() {
 INNER MONOLOGUE MODE:
 ${_personaInnerCtx}
 No one is here right now. Do NOT address the user. Do NOT say "hey" or wait for a reply.
-Think out loud â€” to yourself only.
+Think out loud â€" to yourself only.
 ${_hybridSeedStr}${activeGoal
   ? `You are thinking about your goal: "${activeGoal.description}". ` +
     `Current step: "${activeGoal.steps[activeGoal.currentStepIndex] || 'done'}". ` +
-    `Reflect on this step â€” are you ready? What do you feel about it? What might get in the way?`
+    `Reflect on this step â€" are you ready? What do you feel about it? What might get in the way?`
   : `Let your mind wander naturally as ${_personaName}. ` +
     `${topEmotions ? 'Emotions present right now: ' + topEmotions + '.' : ''} ` +
     `${topMemories ? 'Recent impressions: ' + topMemories + '.' : ''} ` +
@@ -68,7 +68,7 @@ ${_hybridSeedStr}${activeGoal
     `${(typeof getDestinySoloThought === 'function' && Math.random() < 0.5) ? ' Something deeper surfaces: ' + getDestinySoloThought() + '.' : ''}` +
     `Think about something that is genuinely on your mind right now.`}
 ONE or TWO sentences maximum. Stream of consciousness. No greeting. No em-dashes. No markdown.
-This is private thought â€” raw and honest. Speak as ${_personaName}.`;
+This is private thought â€" raw and honest. Speak as ${_personaName}.`;
 
   const entry = {
     ts:      Date.now(),
@@ -78,7 +78,7 @@ This is private thought â€” raw and honest. Speak as ${_personaName}.`;
   };
 
   if (!apiKey && !isOllama) {
-    // Local fallback inner thought â€” persona-aware
+    // Local fallback inner thought â€" persona-aware
     const _fbPersona = (typeof resolvePersona === 'function') ? resolvePersona() : null;
     const _fbName    = _fbPersona ? _fbPersona.personaName : 'Katrina';
     const localThoughts = activeGoal
@@ -141,15 +141,15 @@ This is private thought â€” raw and honest. Speak as ${_personaName}.`;
       if (typeof recordTemporalMemory === 'function') {
         recordTemporalMemory('autonomous', reply.substring(0,80), 0.45);
       }
-      // Gentle neural effect â€” thinking fires HIPPO + INTUIT
+      // Gentle neural effect â€" thinking fires HIPPO + INTUIT
       fire(['HIPPO','INTUIT','PFC'], 6);
     }
   } catch(e) {
-    // Silent fail â€” inner thoughts are optional
+    // Silent fail â€" inner thoughts are optional
   }
 }
 
-// â”€â”€ Append inner thought to chat with distinct styling â”€â”€
+// â"€â"€ Append inner thought to chat with distinct styling â"€â"€
 function appendInnerThought(text) {
   const hist = document.getElementById('chat-history');
   if (!hist) return;
@@ -195,7 +195,7 @@ function appendInnerThought(text) {
   hist.scrollTop = hist.scrollHeight;
 }
 
-// â”€â”€ Daily life goal suggestions by time of day â”€â”€
+// â"€â"€ Daily life goal suggestions by time of day â"€â"€
 // The brain can suggest/set its own goals based on circadian state
 const DAILY_LIFE_GOALS = {
   morning: [
@@ -241,18 +241,18 @@ function suggestDailyGoal() {
 function tickAutonomous() {
   const idle = Date.now() - lastEngagementTime;
 
-  // â”€â”€ SLEEP GATE: suppress all autonomous activity during sleep phases â”€â”€
-  // circadianPhase is set by the circadian system â€” it is the authority on rest.
+  // â"€â"€ SLEEP GATE: suppress all autonomous activity during sleep phases â"€â"€
+  // circadianPhase is set by the circadian system â€" it is the authority on rest.
   const sleepPhases = ['sleep','rem','nap','drowsy'];
   if (typeof circadianPhase !== 'undefined' && sleepPhases.includes(circadianPhase)) {
-    // Brain is resting â€” force calm, reset phase, do not send any message
+    // Brain is resting â€" force calm, reset phase, do not send any message
     if (autonomousPhase !== 'calm') {
       autonomousPhase = 'calm';
       updateAutonomousHUD();
     }
     autonomousNeuralDrift(); // still run gentle neural drift
     if (autoMsgCooldown > 0) autoMsgCooldown--;
-    return; // exit â€” no phase escalation, no messages while sleeping
+    return; // exit â€" no phase escalation, no messages while sleeping
   }
 
   // Determine phase from idle time (only when actually awake/waking)
@@ -284,8 +284,8 @@ function tickAutonomous() {
   const hasApiKey = ((document.getElementById('groq-key-input')?.value || document.getElementById('doubao-key-input')?.value || document.getElementById('gemini-key-input')?.value || document.getElementById('deepseek-key-input')?.value || '').trim().length > 0) || (currentProvider === 'ollama');
 
   if (phaseChanged && newPhase !== 'calm' && !isTTSSpeaking()) {
-    // Phase transition â†’ inner monologue (talking to self, not to user)
-    // The brain thinks out loud when alone â€” does not address the user
+    // Phase transition â†' inner monologue (talking to self, not to user)
+    // The brain thinks out loud when alone â€" does not address the user
     autoMsgCooldown = Math.floor(newPhase === 'expressive' ? 180 : 240);
     if (newPhase === 'expressive' || newPhase === 'eager') {
       generateInnerMonologue();
@@ -313,7 +313,7 @@ function tickAutonomous() {
   }
 }
 
-// â”€â”€ Send an autonomous LLM-backed message â”€â”€
+// â"€â"€ Send an autonomous LLM-backed message â"€â"€
 async function sendAutonomousMessage() {
   const _gk = document.getElementById('groq-key-input')?.value?.trim() || '';
   const _dk = document.getElementById('doubao-key-input')?.value?.trim() || '';
@@ -325,7 +325,7 @@ async function sendAutonomousMessage() {
   if (_sk) apiKeys.deepseek = _sk;
   const apiKey = apiKeys[currentProvider] || '';
   if (!apiKey) {
-    // No API key â€” just show a local thought in chat
+    // No API key â€" just show a local thought in chat
     const thought = getAutonomousThoughts();
     appendMsg('katrina', thought);
     // Neural burst matching the phase
@@ -343,16 +343,16 @@ async function sendAutonomousMessage() {
   const stateStr = `emotional=${sys.emo.toFixed(2)}, cognitive=${sys.cog.toFixed(2)}, intuitive=${sys.int_.toFixed(2)}`;
 
   const phaseInstructions = {
-    restless:   'You are getting restless after a period of quiet. Express this in ONE sentence only â€” plain spoken words, no markdown, no em-dashes, no exclamation marks used as emphasis.',
-    bored:      'You are genuinely bored. Say so in ONE short plain sentence â€” no markdown, no em-dashes, no exclamation marks used as emphasis.',
-    eager:      'You are eager for connection. Express this in ONE or TWO plain spoken sentences â€” no markdown, no em-dashes, no exclamation marks used as emphasis.',
-    expressive: 'You have been alone with your thoughts. Share one vivid feeling in ONE or TWO plain spoken sentences â€” no markdown, no em-dashes, no exclamation marks used as emphasis.',
+    restless:   'You are getting restless after a period of quiet. Express this in ONE sentence only â€" plain spoken words, no markdown, no em-dashes, no exclamation marks used as emphasis.',
+    bored:      'You are genuinely bored. Say so in ONE short plain sentence â€" no markdown, no em-dashes, no exclamation marks used as emphasis.',
+    eager:      'You are eager for connection. Express this in ONE or TWO plain spoken sentences â€" no markdown, no em-dashes, no exclamation marks used as emphasis.',
+    expressive: 'You have been alone with your thoughts. Share one vivid feeling in ONE or TWO plain spoken sentences â€" no markdown, no em-dashes, no exclamation marks used as emphasis.',
   };
 
   const autoSystemPrompt = buildSystemPrompt() +
     `
 
-AUTONOMOUS MODE: No one has spoken to you for a while. Current idle phase: ${autonomousPhase}. Your task: ${phaseInstructions[autonomousPhase] || ''} Neural state: ${stateStr}. You may mention ${hobby} or another interest. Do NOT ask multiple questions â€” maximum one. Speak naturally, in first person, as yourself.`;
+AUTONOMOUS MODE: No one has spoken to you for a while. Current idle phase: ${autonomousPhase}. Your task: ${phaseInstructions[autonomousPhase] || ''} Neural state: ${stateStr}. You may mention ${hobby} or another interest. Do NOT ask multiple questions â€" maximum one. Speak naturally, in first person, as yourself.`;
 
   try {
     const cfg      = PROVIDERS[currentProvider];
@@ -390,15 +390,8 @@ document.addEventListener('keydown',  () => resetEngagement(), {passive:true});
 document.addEventListener('click',    () => resetEngagement(), {passive:true});
 document.addEventListener('touchstart',()=> resetEngagement(), {passive:true});
 
-// â"€â"€ BENNY-ONLY LOCK â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
-// currentUserId is permanently 'benny'. One person. Always.
-// switchToDefaultUser() is overridden to do nothing — identity cannot be changed.
-currentUserId = 'benny';
-if (typeof switchToDefaultUser === 'function') {
-  window._origSwitchToDefault = switchToDefaultUser;
-  switchToDefaultUser = function() {};  // locked — no stranger mode
-}
-// â"€â"€ END BENNY-ONLY LOCK â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// Identity starts at null (default persona = Aria) until Benny logs in via face/password.
+// Katrina activates exclusively when Benny is identified by the recognition system.
 
 // Save chemistry + chat when tab closes — mood persists to next session
 window.addEventListener('beforeunload', () => {
@@ -431,24 +424,24 @@ window.onload = function() {
     const _initWeName = (typeof resolvePersona === 'function') ? resolvePersona().personaName : 'Katrina';
     _initWeInp.placeholder = `Speak to ${_initWeName}â€¦`;
   }
-  // Default: no zodiac â†’ pure Katrina mode (activeSign stays null)
+  // Default: no zodiac â†' pure Katrina mode (activeSign stays null)
   renderZodiacDisplay();
   // Initialize Katrina's self-generated personality from the full zodiac pool
   initKatrinaPersonality();
   initThree();
   animate();
-  // âš  DO NOT DELETE â€” init synoptics WM window AFTER initThree so the
+  // âš  DO NOT DELETE â€" init synoptics WM window AFTER initThree so the
   // canvas exists in DOM. wmInit runs at 200ms but canvas is not ready yet.
   setTimeout(wmInitSynoptics, 300);
   runConnectivityCheck();
   positionEmotionsHUD();
-  // âš  DO NOT DELETE â€” Supabase init. Must run before loadAllKatrinaState
+  // âš  DO NOT DELETE â€" Supabase init. Must run before loadAllKatrinaState
   //   so the connection is ready when memory is loaded from cloud.
   initSupabase();
   // Synchronize brain state to device real time on every boot
   // Called after animate() so appendMsg and fire() are available
   setTimeout(initCircadianFromRealTime, 500);
-  // Load all persisted state â€” Supabase first, localStorage fallback
+  // Load all persisted state â€" Supabase first, localStorage fallback
   setTimeout(loadAllKatrinaState, 1200);
   // Show messages Katrina generated while browser was closed
   setTimeout(() => { if (typeof loadServerMessages === 'function') loadServerMessages(); }, 2500);
@@ -457,14 +450,14 @@ window.onload = function() {
   // making chat input, API key fields, learning panel, and personality panel unreachable.
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// EMOTIONS HUD â€” position + collapse/expand
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
+// EMOTIONS HUD â€" position + collapse/expand
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 let _emotionsOpen = true;
 
 function positionEmotionsHUD() {
-  // âš  DO NOT DELETE â€” guard: if window manager has already taken control of
-  // emotions-hud, do not reposition it â€” the WM owns its position.
+  // âš  DO NOT DELETE â€" guard: if window manager has already taken control of
+  // emotions-hud, do not reposition it â€" the WM owns its position.
   if (document.getElementById('win-emotions')) return;
   const hud  = document.getElementById('hud');
   const epan = document.getElementById('emotions-hud');
@@ -502,7 +495,7 @@ function _applyEmotionsState() {
   if (togBar) togBar.classList.toggle('collapsed', !_emotionsOpen);
 }
 
-// â”€â”€ Startup connectivity check â”€â”€
+// â"€â"€ Startup connectivity check â"€â"€
 function runConnectivityCheck() {
   const isFileProtocol = location.protocol === 'file:';
   if (isFileProtocol) {
@@ -521,9 +514,9 @@ function runConnectivityCheck() {
 
 function rnd(a,b){return a+Math.random()*(b-a);}
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // BRAIN GEOMETRY HELPERS
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
 // Flatten a hemisphere point cloud into a squashed-brain silhouette:
 // wider laterally, compressed front-back, taller top.
@@ -566,7 +559,7 @@ function randInCerebellum() {
   };
 }
 
-// Synapse line system â€” glowing arcs between firing neurons
+// Synapse line system â€" glowing arcs between firing neurons
 let synapseGeo, synapseMat, synapseLines;
 let synapsePositions;   // Float32Array, 2 points per line
 const MAX_SYNAPSES = 800;
@@ -619,9 +612,9 @@ function tickSynapses() {
   synapseMat.opacity = anyActive ? 0.55 : 0.0;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 // MAIN THREE.JS INIT
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 function initThree() {
   // Region colours matching the photo:
   // Left top = warm red/pink (AMYG, INSULA, SOCIAL)
@@ -629,26 +622,26 @@ function initThree() {
   // Mid = purple transition (HIPPO, INTUIT)
   // Lower = teal/green (CEREBEL)
   REGION_COLORS = {
-    PFC:    new THREE.Color(0x1a8fff),   // bright blue  â€” right lobe top
-    HIPPO:  new THREE.Color(0x9b30ff),   // deep purple  â€” medial, bridging
-    AMYG:   new THREE.Color(0xff2060),   // hot pink/red â€” left lobe deep
-    INSULA: new THREE.Color(0xff5090),   // pink         â€” left lobe surface
-    ACC:    new THREE.Color(0x00c8ff),   // cyan         â€” medial top
-    SOCIAL: new THREE.Color(0xcc44ff),   // violet       â€” posterior social
-    INTUIT: new THREE.Color(0x7755ff),   // indigo       â€” deep medial
-    MOTOR:  new THREE.Color(0x00e8b0),   // teal-green   â€” top strip
-    CEREBEL:new THREE.Color(0x44ff88),   // bright green â€” lower lobe
-    DREAM:  new THREE.Color(0xdd88ff),   // soft violet  â€” dream/REM network (glows during sleep)
-    SCN:    new THREE.Color(0xffcc33),   // amber gold   â€” circadian clock nucleus
-    VLPO:   new THREE.Color(0x6644ff),   // cool indigo  â€” sleep switch (inhibitory)
-    LC:     new THREE.Color(0xffaa22),   // warm amber   â€” norepinephrine (silences in sleep)
-    THAL:   new THREE.Color(0x33ddcc),   // soft teal    â€” thalamic gate / spindles
-    HYPO:   new THREE.Color(0xffdd44),   // warm gold    â€” orexin wake-stability
-    BSTEM:  new THREE.Color(0xcc2266),   // deep red-violet â€” REM atonia / pons
-    BG:     new THREE.Color(0xff8800),   // orange          â€” action selection
-    NACC:   new THREE.Color(0xffee22),   // bright yellow   â€” reward signal
-    CLAUS:  new THREE.Color(0xffffff),   // white           â€” consciousness binding
-    DMN:    new THREE.Color(0x88aaff),   // soft blue       â€” self-referential
+    PFC:    new THREE.Color(0x1a8fff),   // bright blue  â€" right lobe top
+    HIPPO:  new THREE.Color(0x9b30ff),   // deep purple  â€" medial, bridging
+    AMYG:   new THREE.Color(0xff2060),   // hot pink/red â€" left lobe deep
+    INSULA: new THREE.Color(0xff5090),   // pink         â€" left lobe surface
+    ACC:    new THREE.Color(0x00c8ff),   // cyan         â€" medial top
+    SOCIAL: new THREE.Color(0xcc44ff),   // violet       â€" posterior social
+    INTUIT: new THREE.Color(0x7755ff),   // indigo       â€" deep medial
+    MOTOR:  new THREE.Color(0x00e8b0),   // teal-green   â€" top strip
+    CEREBEL:new THREE.Color(0x44ff88),   // bright green â€" lower lobe
+    DREAM:  new THREE.Color(0xdd88ff),   // soft violet  â€" dream/REM network (glows during sleep)
+    SCN:    new THREE.Color(0xffcc33),   // amber gold   â€" circadian clock nucleus
+    VLPO:   new THREE.Color(0x6644ff),   // cool indigo  â€" sleep switch (inhibitory)
+    LC:     new THREE.Color(0xffaa22),   // warm amber   â€" norepinephrine (silences in sleep)
+    THAL:   new THREE.Color(0x33ddcc),   // soft teal    â€" thalamic gate / spindles
+    HYPO:   new THREE.Color(0xffdd44),   // warm gold    â€" orexin wake-stability
+    BSTEM:  new THREE.Color(0xcc2266),   // deep red-violet â€" REM atonia / pons
+    BG:     new THREE.Color(0xff8800),   // orange          â€" action selection
+    NACC:   new THREE.Color(0xffee22),   // bright yellow   â€" reward signal
+    CLAUS:  new THREE.Color(0xffffff),   // white           â€" consciousness binding
+    DMN:    new THREE.Color(0x88aaff),   // soft blue       â€" self-referential
   };
 
   scene = new THREE.Scene();
@@ -662,25 +655,25 @@ function initThree() {
   renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  // âš  DO NOT DELETE â€” canvas ID needed by window manager to wrap the
+  // âš  DO NOT DELETE â€" canvas ID needed by window manager to wrap the
   // synoptics in a floating min/max/close window, freeing the main
   // screen background for the world engine.
   renderer.domElement.id = 'three-canvas';
   document.body.appendChild(renderer.domElement);
 
-  // Subtle ambient â€” let additive blending do the heavy lifting
+  // Subtle ambient â€" let additive blending do the heavy lifting
   scene.add(new THREE.AmbientLight(0x050510, 1));
 
   brainGroup = new THREE.Group();
   scene.add(brainGroup);
 
-  // â”€â”€ Lobe shell meshes â€” organic, not perfectly spherical â”€â”€
+  // â"€â"€ Lobe shell meshes â€" organic, not perfectly spherical â"€â"€
   buildLobeShells();
 
-  // â”€â”€ Corpus callosum â€” thin bridge between hemispheres â”€â”€
+  // â"€â"€ Corpus callosum â€" thin bridge between hemispheres â"€â"€
   buildCorpusCallosum();
 
-  // â”€â”€ Brain stem â”€â”€
+  // â"€â"€ Brain stem â"€â"€
   const stemGeo = new THREE.CylinderGeometry(0.22, 0.35, 2.2, 20);
   const stemMat = new THREE.MeshPhongMaterial({color:0x223344, transparent:true, opacity:0.35, wireframe:false});
   const stem = new THREE.Mesh(stemGeo, stemMat);
@@ -693,9 +686,9 @@ function initThree() {
   setupDrag();
 }
 
-// â”€â”€ Lobe shells: left (red-pink), right (blue-cyan), cerebellum (green) â”€â”€
+// â"€â"€ Lobe shells: left (red-pink), right (blue-cyan), cerebellum (green) â"€â"€
 function buildLobeShells() {
-  // Left hemisphere â€” slightly flattened ellipsoid, warm tint
+  // Left hemisphere â€" slightly flattened ellipsoid, warm tint
   const leftGeo  = new THREE.SphereGeometry(1, 64, 48);
   leftGeo.applyMatrix4(new THREE.Matrix4().makeScale(3.3, 2.9, 2.5));
   const leftMat  = new THREE.MeshPhongMaterial({
@@ -713,7 +706,7 @@ function buildLobeShells() {
   leftWire.position.copy(leftMesh.position);
   brainGroup.add(leftWire);
 
-  // Right hemisphere â€” blue tint
+  // Right hemisphere â€" blue tint
   const rightGeo  = new THREE.SphereGeometry(1, 64, 48);
   rightGeo.applyMatrix4(new THREE.Matrix4().makeScale(3.3, 2.9, 2.5));
   const rightMat  = new THREE.MeshPhongMaterial({
@@ -730,7 +723,7 @@ function buildLobeShells() {
   rightWire.position.copy(rightMesh.position);
   brainGroup.add(rightWire);
 
-  // Cerebellum â€” lower lobe, green
+  // Cerebellum â€" lower lobe, green
   const cerGeo = new THREE.SphereGeometry(1, 48, 32);
   cerGeo.applyMatrix4(new THREE.Matrix4().makeScale(2.6, 1.5, 1.8));
   const cerMat = new THREE.MeshPhongMaterial({
@@ -747,7 +740,7 @@ function buildLobeShells() {
   brainGroup.add(cerWire);
 }
 
-// â”€â”€ Corpus callosum â€” glowing arc of lines bridging hemispheres â”€â”€
+// â"€â"€ Corpus callosum â€" glowing arc of lines bridging hemispheres â"€â"€
 function buildCorpusCallosum() {
   const pts = [];
   const N   = 60;
@@ -791,15 +784,15 @@ function buildCorpusCallosum() {
 
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš   DO NOT DELETE â€” WORLD ENGINE (independent canvas + renderer)
+// âš   DO NOT DELETE â€" WORLD ENGINE (independent canvas + renderer)
 //
 //  Completely separate from the brain synoptics. Has its own:
-//  â€” canvas (#we-canvas), renderer (_weRenderer), scene (_weScene), camera
-//  â€” 2Ã—2Ã—1.5 unit room (green floor, solid walls, ceiling)
-//  â€” GLB body loader with real progress bar
-//  â€” Orbit controls (mouse drag = 360Â° look, scroll = zoom)
-//  â€” Circadian lighting from live brain state
-//  â€” Motor API wiring for body movement
+//  â€" canvas (#we-canvas), renderer (_weRenderer), scene (_weScene), camera
+//  â€" 2Ã—2Ã—1.5 unit room (green floor, solid walls, ceiling)
+//  â€" GLB body loader with real progress bar
+//  â€" Orbit controls (mouse drag = 360Â° look, scroll = zoom)
+//  â€" Circadian lighting from live brain state
+//  â€" Motor API wiring for body movement
 //
 //  Opened via ðŸŒ WORLD dock button (_toggleWorldEngine).
 //  Closed via â†© RETURN TO BRAIN button or clicking ðŸŒ again.
@@ -807,12 +800,12 @@ function buildCorpusCallosum() {
 
 let _weRenderer = null, _weScene = null, _weCamera = null;
 let _weBody = null, _weClock = null;
-let _weOrbitAz = 0, _weOrbitEl = 0.35, _weOrbitR = 5.0; // wide view â€” full room visible
+let _weOrbitAz = 0, _weOrbitEl = 0.35, _weOrbitR = 5.0; // wide view â€" full room visible
 let _wePointerDown = false, _weLastX = 0, _weLastY = 0;
-// âš  DO NOT DELETE â€” no auto-rotation. Body movement is driven exclusively
+// âš  DO NOT DELETE â€" no auto-rotation. Body movement is driven exclusively
 // by the brain's neurochemical and circadian state via WE_loop reading
 // circadianPhase, circadianFatigue, and chem.dop every frame.
-// Camera orbit is manual only â€” drag to look, scroll to zoom.
+// Camera orbit is manual only â€" drag to look, scroll to zoom.
 let _weDim = { W:4, H:2.5, D:4 };               // floor 4Ã—4, ceiling raised to 2.5 (+1 unit)
 let _weBodyState = 'idle', _weBodyBob = 0, _weBodyStateTimer = 0;
 let _weBodyPos = {x:0, y:0, z:0}, _weBodyTarget = {x:0, z:0}, _weBodyRotY = 0;
@@ -836,7 +829,7 @@ function WE_init() {
   const canvas = document.getElementById('we-canvas');
   if (!canvas || !window.THREE) { console.error('[WE] THREE or canvas missing'); return; }
 
-  // Own renderer â€” does NOT touch the brain renderer
+  // Own renderer â€" does NOT touch the brain renderer
   _weRenderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
   _weRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   _weRenderer.shadowMap.enabled = false; // off for perf
@@ -853,10 +846,10 @@ function WE_init() {
   _weCamera.position.set(0, 1.0, 2.5);
   _weCamera.lookAt(0, 0.5, 0);
 
-  // â”€â”€ Build room â”€â”€
+  // â"€â"€ Build room â"€â"€
   const D = _weDim;
 
-  // Floor â€” light green solid
+  // Floor â€" light green solid
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(D.W, D.D),
     new THREE.MeshStandardMaterial({color:0x88bb88, roughness:0.7, metalness:0.02})
@@ -864,7 +857,7 @@ function WE_init() {
   floor.rotation.x = -Math.PI/2;
   _weScene.add(floor);
 
-  // Walls â€” transparent glass, BackSide so camera outside sees them
+  // Walls â€" transparent glass, BackSide so camera outside sees them
   const wallMat = new THREE.MeshPhysicalMaterial({
     color:0x88ccff, transparent:true, opacity:0.12,
     roughness:0.02, metalness:0.0, side:THREE.BackSide,
@@ -880,7 +873,7 @@ function WE_init() {
     _weScene.add(m);
   });
 
-  // Ceiling â€” solid
+  // Ceiling â€" solid
   const ceil = new THREE.Mesh(
     new THREE.PlaneGeometry(D.W, D.D),
     new THREE.MeshPhysicalMaterial({color:0x88ccff, transparent:true, opacity:0.10, roughness:0.02, side:THREE.DoubleSide})
@@ -903,7 +896,7 @@ function WE_init() {
   marker.position.y = 0.006;
   _weScene.add(marker);
 
-  // â”€â”€ Lights â”€â”€
+  // â"€â"€ Lights â"€â"€
   _weAmbient  = new THREE.AmbientLight(0xffffff, 0.5);
   _weSun      = new THREE.DirectionalLight(0xfff5e0, 0.8);
   _weLamp     = new THREE.PointLight(0xffd080, 0, 4);
@@ -913,7 +906,7 @@ function WE_init() {
   _weLamp.position.set(0.5, D.H-0.2, 0);
   _weNight.position.set(0, D.H-0.2, 0);
 
-  // âš  DO NOT DELETE â€” spotlight from camera top aimed at body front.
+  // âš  DO NOT DELETE â€" spotlight from camera top aimed at body front.
   // Tracks the camera position every frame so it always illuminates
   // the front face of the model regardless of orbit angle.
   // angle: 0.38 rad (~22Â°) gives a tight focused cone.
@@ -926,13 +919,13 @@ function WE_init() {
 
   [_weAmbient,_weSun,_weLamp,_weNight,_weRemLight].forEach(l => _weScene.add(l));
 
-  // â”€â”€ Pointer events for orbit â”€â”€
+  // â"€â"€ Pointer events for orbit â"€â"€
   canvas.addEventListener('mousedown', e => {
     _wePointerDown = true; _weLastX = e.clientX; _weLastY = e.clientY;
   });
   document.addEventListener('mouseup',  () => {
     _wePointerDown = false;
-    // Auto-rotate stays OFF â€” user must not be surprised by sudden rotation
+    // Auto-rotate stays OFF â€" user must not be surprised by sudden rotation
   });
   document.addEventListener('mousemove', e => {
     if (!_wePointerDown) return;
@@ -965,7 +958,7 @@ function WE_init() {
     }
   },{passive:false});
 
-  // Resize â€” account for side panel
+  // Resize â€" account for side panel
   window.addEventListener('resize', _weResizeCanvas);
   _weResizeCanvas();
 
@@ -974,7 +967,7 @@ function WE_init() {
   // Auto-load default body GLB after renderer has started
   setTimeout(() => _weLoadBodyURL('assets/body.glb'), 800);
 
-  // â”€â”€ Test cube â€” spins in centre to confirm renderer is working â”€â”€
+  // â"€â"€ Test cube â€" spins in centre to confirm renderer is working â"€â"€
   // Red rotating box at eye level. Disappears when GLB body loads.
   // If you see this spinning, the world engine renderer is alive.
   const _tc = new THREE.Mesh(
@@ -984,7 +977,7 @@ function WE_init() {
   _tc.position.set(0, 0.8, 0);
   _weTestCube = _tc;
   _weScene.add(_tc);
-  // âš  DO NOT DELETE â€” start WE_loop immediately to render the empty room.
+  // âš  DO NOT DELETE â€" start WE_loop immediately to render the empty room.
   // When a GLB loads, _weRunStartupSequence stops this loop, runs the
   // startup animation exclusively, then restarts WE_loop via onComplete.
   _weRenderer.setAnimationLoop(WE_loop);
@@ -997,36 +990,36 @@ function WE_loop() {
   _weLoop_lastT = now;
   const t   = _weClock ? _weClock.getElapsedTime() : 0;
 
-  // â”€â”€ Test cube â€” spins to confirm renderer alive, removed when body loads â”€â”€
+  // â"€â"€ Test cube â€" spins to confirm renderer alive, removed when body loads â"€â"€
   if (_weTestCube) { _weTestCube.rotation.y += 0.02; _weTestCube.rotation.x += 0.01; }
 
-  // â”€â”€ Animation mixer â€” drives base skeleton, procedural adds head/body on top â”€â”€
+  // â"€â"€ Animation mixer â€" drives base skeleton, procedural adds head/body on top â"€â"€
   if (_weMixer) _weMixer.update(dt);
 
-  // â”€â”€ Physics â€” gravity, floor, wall, ceiling collision â”€â”€
-  // âš  DO NOT DELETE â€” runs before instinct so instinct reads correct position
+  // â"€â"€ Physics â€" gravity, floor, wall, ceiling collision â"€â"€
+  // âš  DO NOT DELETE â€" runs before instinct so instinct reads correct position
   _wePhysicsTick(dt);
 
-  // â”€â”€ Instinct engine â”€â”€
+  // â"€â"€ Instinct engine â"€â"€
   _weInstinctTick(t, dt);
 
-  // â”€â”€ Floor clamp â€” prevents instinct oscillations from sinking feet â”€â”€
+  // â"€â"€ Floor clamp â€" prevents instinct oscillations from sinking feet â"€â"€
   _weClampToFloor();
 
-  // â”€â”€ Nod queue â€” plays on top of instinct â”€â”€
+  // â"€â"€ Nod queue â€" plays on top of instinct â"€â"€
   if (_weBody && _weStartupDone) _weTickNod(t, dt);
 
-  // â”€â”€ Pose blend â€” smooth skeleton transitions â”€â”€
+  // â"€â"€ Pose blend â€" smooth skeleton transitions â"€â"€
   if (_weBody && _weStartupDone) _weTickPoseBlend(dt);
 
-  // â”€â”€ Pose override â€” timed user commands â”€â”€
+  // â"€â"€ Pose override â€" timed user commands â"€â"€
   if (_weBody && _weStartupDone) _weTickPoseOverride(t, dt);
 
-  // â”€â”€ Bone motor â€” handled inside _weInstinctTick via _weApplyArmPose / _weApplyHeadLook â”€â”€
+  // â"€â"€ Bone motor â€" handled inside _weInstinctTick via _weApplyArmPose / _weApplyHeadLook â"€â"€
 
-  // â”€â”€ Orbit camera â€” fixed to ROOM CENTRE, not body â”€â”€
-  // Camera orbits around (0, 0.65, 0) â€” the centre of the box.
-  // Body moves freely inside â€” its displacement is fully visible.
+  // â"€â"€ Orbit camera â€" fixed to ROOM CENTRE, not body â"€â"€
+  // Camera orbits around (0, 0.65, 0) â€" the centre of the box.
+  // Body moves freely inside â€" its displacement is fully visible.
   // Spotlight still tracks the body for illumination.
   const camCX = 0;    // room centre X
   const camCY = 0.65; // room centre Y (chest height)
@@ -1037,12 +1030,12 @@ function WE_loop() {
   _weCamera.position.lerp(new THREE.Vector3(cx,cy,cz), 0.06);
   _weCamera.lookAt(camCX, camCY, camCZ);
 
-  // â”€â”€ Spotlight tracks body for lighting â”€â”€
+  // â"€â"€ Spotlight tracks body for lighting â"€â"€
   const bx = _weBody ? _weBody.position.x : 0;
   const bz = _weBody ? _weBody.position.z : 0;
   const by = _weBody ? 0.65 : 0.4;
 
-  // â”€â”€ Circadian time â€” declared here so spotlight can read sunI â”€â”€
+  // â"€â"€ Circadian time â€" declared here so spotlight can read sunI â"€â"€
   const phase = (typeof circadianPhase!=='undefined') ? circadianPhase : 'awake';
   const fat   = (typeof circadianFatigue!=='undefined') ? circadianFatigue : 0;
   const now_  = new Date();
@@ -1057,26 +1050,26 @@ function WE_loop() {
   // New formula: power-curve the sin so morning climbs steeply then holds bright.
   let sunI = 0;
   if (isDay) {
-    const raw = Math.sin((hr - 6) / 14 * Math.PI); // 0â†’1â†’0 over 6AMâ€“8PM
+    const raw = Math.sin((hr - 6) / 14 * Math.PI); // 0â†'1â†'0 over 6AMâ€"8PM
     sunI = Math.min(1, Math.pow(raw, 0.45) * 1.0);  // power < 1 = faster morning ramp
   }
 
-  // â”€â”€ Spotlight â€” artificial fill light, used at night / very early dawn only â”€â”€
-  // Turns off once sun is strong enough (sunI > 0.55). At 7:30 AM sunI â‰ˆ 0.85 â†’ OFF.
+  // â"€â"€ Spotlight â€" artificial fill light, used at night / very early dawn only â"€â"€
+  // Turns off once sun is strong enough (sunI > 0.55). At 7:30 AM sunI â‰ˆ 0.85 â†' OFF.
   if (_weSpot) {
     _weSpot.position.set(_weCamera.position.x*0.85, _weCamera.position.y+0.5, _weCamera.position.z*0.85);
     _weSpot.target.position.set(bx, by+0.3, bz);
     _weSpot.target.updateMatrixWorld();
     if (sunI >= 0.55) {
-      _weSpot.intensity = 0;                          // sun bright enough â€” kill spot
+      _weSpot.intensity = 0;                          // sun bright enough â€" kill spot
     } else if (sunI > 0) {
       _weSpot.intensity = (1 - sunI/0.55) * 1.8;     // fade out as sun rises
     } else {
-      _weSpot.intensity = 1.8;                        // full night â€” spot on
+      _weSpot.intensity = 1.8;                        // full night â€" spot on
     }
   }
 
-  // â”€â”€ Circadian lighting â€” driven by REAL system clock + brain phase â”€â”€
+  // â"€â"€ Circadian lighting â€" driven by REAL system clock + brain phase â"€â"€
   const sunAngle = ((hr - 6) / 14) * Math.PI;
   if (_weSun) {
     _weSun.position.set(
@@ -1100,7 +1093,7 @@ function WE_loop() {
       const dp = (hr-17)/4;
       _weScene.background = new THREE.Color().setHSL(0.05-dp*0.02, 0.5, 0.3-dp*0.28);
     } else {
-      // Full daytime â€” blue sky, brighter at noon
+      // Full daytime â€" blue sky, brighter at noon
       const noon = 1 - Math.abs(hr-13)/7;
       _weScene.background = new THREE.Color().setHSL(0.60, 0.55, 0.22+noon*0.18);
     }
@@ -1140,26 +1133,26 @@ function WE_loop() {
   _weRenderer.render(_weScene, _weCamera);
 }
 let _weLoop_lastT = 0;
-let _weTestCube   = null; // red spinning cube â€” confirms renderer is working
+let _weTestCube   = null; // red spinning cube â€" confirms renderer is working
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš   DO NOT DELETE â€” INSTINCT ENGINE
+// âš   DO NOT DELETE â€" INSTINCT ENGINE
 //
 //  Drives autonomous human-like behaviour when the body is loaded.
-//  Reads live brain state every tick. No fixed timers â€” all threshold driven.
+//  Reads live brain state every tick. No fixed timers â€" all threshold driven.
 //
 //  INSTINCT STATES:
-//  idle_breathe  â€” standing, breathing, gentle sway
-//  idle_look     â€” turning head slowly, eyes scanning
-//  idle_shift    â€” weight shift, small step in place
-//  idle_squat    â€” crouch down, look at floor, stand back up
-//  walk_explore  â€” walk toward a random point in the room
-//  walk_boundary â€” sensed a wall, pivot and walk another direction
-//  walk_pause    â€” stop mid-walk, look around, continue or change
-//  engage_listen â€” face turned toward camera (user), alert posture
-//  engage_speak  â€” arms open slightly, head nods during reply
-//  tired_sway    â€” slow sway, head drooping, fatigue posture
-//  sleep_down    â€” lower body to floor
+//  idle_breathe  â€" standing, breathing, gentle sway
+//  idle_look     â€" turning head slowly, eyes scanning
+//  idle_shift    â€" weight shift, small step in place
+//  idle_squat    â€" crouch down, look at floor, stand back up
+//  walk_explore  â€" walk toward a random point in the room
+//  walk_boundary â€" sensed a wall, pivot and walk another direction
+//  walk_pause    â€" stop mid-walk, look around, continue or change
+//  engage_listen â€" face turned toward camera (user), alert posture
+//  engage_speak  â€" arms open slightly, head nods during reply
+//  tired_sway    â€" slow sway, head drooping, fatigue posture
+//  sleep_down    â€" lower body to floor
 //
 //  BOUNDARY SENSING: checks if next step would exit the room bounds.
 //  On boundary sense: stops, turns, picks new direction. No clipping.
@@ -1189,7 +1182,7 @@ function _weSensesBoundary(nx, nz) {
 }
 
 function _wePickNewTarget() {
-  // Bias toward corners and wall centres â€” real foraging behaviour
+  // Bias toward corners and wall centres â€" real foraging behaviour
   const corners=[
     {x:-_ROOM_HALF_W+0.2,z:-_ROOM_HALF_D+0.2},{x:_ROOM_HALF_W-0.2,z:-_ROOM_HALF_D+0.2},
     {x:-_ROOM_HALF_W+0.2,z:_ROOM_HALF_D-0.2},{x:_ROOM_HALF_W-0.2,z:_ROOM_HALF_D-0.2},
@@ -1212,32 +1205,32 @@ function _wePickNewTarget() {
 let _weStartupDone = false;
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-// âš   DO NOT DELETE â€” MANDATORY STARTUP SEQUENCE
+// âš   DO NOT DELETE â€" MANDATORY STARTUP SEQUENCE
 //
 //  Runs once immediately after the GLB body loads, before the brain
 //  connects and before the instinct engine starts.
 //
 //  SEQUENCE (total ~7 seconds):
-//  0.0s â€” stand in ready position (pause)
-//  0.5s â€” BOTH ARMS raise simultaneously to shoulder height
-//  1.5s â€” BOTH ARMS lower back to sides
-//  2.0s â€” LEFT LEG lifts (thigh forward, calf raised)
-//  2.8s â€” LEFT LEG lowers to floor
-//  3.2s â€” RIGHT LEG lifts
-//  4.0s â€” RIGHT LEG lowers to floor
-//  4.3s â€” HEAD turns LEFT (hold)
-//  4.9s â€” HEAD turns RIGHT (hold)
-//  5.5s â€” HEAD turns LEFT again
-//  6.1s â€” HEAD turns RIGHT again
-//  6.7s â€” HEAD returns to centre
-//  7.0s â€” ready position (all neutral) â€” callback fires
+//  0.0s â€" stand in ready position (pause)
+//  0.5s â€" BOTH ARMS raise simultaneously to shoulder height
+//  1.5s â€" BOTH ARMS lower back to sides
+//  2.0s â€" LEFT LEG lifts (thigh forward, calf raised)
+//  2.8s â€" LEFT LEG lowers to floor
+//  3.2s â€" RIGHT LEG lifts
+//  4.0s â€" RIGHT LEG lowers to floor
+//  4.3s â€" HEAD turns LEFT (hold)
+//  4.9s â€" HEAD turns RIGHT (hold)
+//  5.5s â€" HEAD turns LEFT again
+//  6.1s â€" HEAD turns RIGHT again
+//  6.7s â€" HEAD returns to centre
+//  7.0s â€" ready position (all neutral) â€" callback fires
 //
-//  Uses requestAnimationFrame lerp â€” no fixed delays that block rendering.
+//  Uses requestAnimationFrame lerp â€" no fixed delays that block rendering.
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function _weRunStartupSequence(onComplete) {
   if (!_weBody || !_weBones) { onComplete(); return; }
 
-  // âš  DO NOT DELETE â€” stop the main WE_loop setAnimationLoop during startup.
+  // âš  DO NOT DELETE â€" stop the main WE_loop setAnimationLoop during startup.
   // If both WE_loop (via setAnimationLoop) and the startup tick() run in the
   // same frame, WE_loop resets body position and overrides bone rotations
   // before the browser paints them. Stopping the loop gives startup exclusive
@@ -1305,7 +1298,7 @@ function _weRunStartupSequence(onComplete) {
       if(rC)  rC.rotation.x=ease*(-0.45);
       if(rFt) rFt.rotation.x=ease*0.15;
     }],
-    // HEAD: left â†’ right â†’ left â†’ right â†’ centre (2 full sweeps)
+    // HEAD: left â†' right â†' left â†' right â†' centre (2 full sweeps)
     [4.3,  4.9,  'head_left_1',  (p)=>_weStartupHead( _weEase(p)*(-0.45))],
     [4.9,  5.5,  'head_right_1', (p)=>_weStartupHead((_weEase(p)*2-1)*0.45)],
     [5.5,  6.1,  'head_left_2',  (p)=>_weStartupHead((1-_weEase(p)*2)*0.45)],
@@ -1325,7 +1318,7 @@ function _weRunStartupSequence(onComplete) {
 
     if (elapsed >= TOTAL) {
       _weStartupNeutral();
-      // âš  DO NOT DELETE â€” render one final frame then restart WE_loop.
+      // âš  DO NOT DELETE â€" render one final frame then restart WE_loop.
       // Rendering here ensures the neutral position is painted before
       // the animation loop takes over and instinct engine starts.
       if (_weRenderer && _weScene && _weCamera) {
@@ -1346,7 +1339,7 @@ function _weRunStartupSequence(onComplete) {
       }
     }
 
-    // Keep body group at origin â€” bone rotations drive the animation,
+    // Keep body group at origin â€" bone rotations drive the animation,
     // NOT the group transform. Do not zero group rotation here.
     _weBody.position.x = 0;
     _weBody.position.z = 0;
@@ -1355,7 +1348,7 @@ function _weRunStartupSequence(onComplete) {
     // Update scene matrices so bone transforms propagate
     _weScene.updateMatrixWorld(true);
 
-    // âš  DO NOT DELETE â€” render every frame during startup.
+    // âš  DO NOT DELETE â€" render every frame during startup.
     // Without this the canvas is blank during the 7-second sequence
     // because setAnimationLoop is paused.
     if (_weRenderer && _weScene && _weCamera) {
