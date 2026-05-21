@@ -327,18 +327,18 @@ async function callLLMWithBrainLoop(provider, apiKey, userText) {
       const _reaction = ((_d.choices||[])[0]||{}).message?.content?.trim();
       if (_reaction && _reaction.length > 4) {
         preThought.prethought = _reaction;
-        appendMsg('system', '⬡ ' + _reaction);
+        appendMsg('system', '\u2b21 ' + _reaction);
       } else {
         preThought = generatePreThought(userText);
-        appendMsg('system', '⬡ ' + preThought.prethought);
+        appendMsg('system', '\u2b21 ' + preThought.prethought);
       }
     } else {
       preThought = generatePreThought(userText);
-      appendMsg('system', '⬡ ' + preThought.prethought);
+      appendMsg('system', '\u2b21 ' + preThought.prethought);
     }
   } catch(e) {
     preThought = generatePreThought(userText);
-    appendMsg('system', '⬡ ' + preThought.prethought);
+    appendMsg('system', '\u2b21 ' + preThought.prethought);
   }
 
   const targetSig  = computeTargetSignature();
