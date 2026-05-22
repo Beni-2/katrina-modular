@@ -630,26 +630,35 @@ function initThree() {
   // Mid = purple transition (HIPPO, INTUIT)
   // Lower = teal/green (CEREBEL)
   REGION_COLORS = {
-    PFC:    new THREE.Color(0x1a8fff),   // bright blue  â€" right lobe top
-    HIPPO:  new THREE.Color(0x9b30ff),   // deep purple  â€" medial, bridging
-    AMYG:   new THREE.Color(0xff2060),   // hot pink/red â€" left lobe deep
-    INSULA: new THREE.Color(0xff5090),   // pink         â€" left lobe surface
-    ACC:    new THREE.Color(0x00c8ff),   // cyan         â€" medial top
-    SOCIAL: new THREE.Color(0xcc44ff),   // violet       â€" posterior social
-    INTUIT: new THREE.Color(0x7755ff),   // indigo       â€" deep medial
-    MOTOR:  new THREE.Color(0x00e8b0),   // teal-green   â€" top strip
-    CEREBEL:new THREE.Color(0x44ff88),   // bright green â€" lower lobe
-    DREAM:  new THREE.Color(0xdd88ff),   // soft violet  â€" dream/REM network (glows during sleep)
-    SCN:    new THREE.Color(0xffcc33),   // amber gold   â€" circadian clock nucleus
-    VLPO:   new THREE.Color(0x6644ff),   // cool indigo  â€" sleep switch (inhibitory)
-    LC:     new THREE.Color(0xffaa22),   // warm amber   â€" norepinephrine (silences in sleep)
-    THAL:   new THREE.Color(0x33ddcc),   // soft teal    â€" thalamic gate / spindles
-    HYPO:   new THREE.Color(0xffdd44),   // warm gold    â€" orexin wake-stability
-    BSTEM:  new THREE.Color(0xcc2266),   // deep red-violet â€" REM atonia / pons
-    BG:     new THREE.Color(0xff8800),   // orange          â€" action selection
-    NACC:   new THREE.Color(0xffee22),   // bright yellow   â€" reward signal
-    CLAUS:  new THREE.Color(0xffffff),   // white           â€" consciousness binding
-    DMN:    new THREE.Color(0x88aaff),   // soft blue       â€" self-referential
+    // LEFT FRONTAL — pink / blue
+    PFC:    new THREE.Color(0x4488ff),   // blue         — prefrontal cortex
+    ACC:    new THREE.Color(0xff69b4),   // pink         — anterior cingulate
+    MOTOR:  new THREE.Color(0x8866ff),   // purple-blue  — primary motor strip
+    // LEFT PARIETAL — violet
+    SOCIAL: new THREE.Color(0xcc44ff),   // violet       — temporoparietal junction
+    INSULA: new THREE.Color(0x9933cc),   // deep violet  — insular cortex
+    // LEFT TEMPORAL — warm orange / red
+    HIPPO:  new THREE.Color(0xff8030),   // warm orange  — hippocampus
+    AMYG:   new THREE.Color(0xff3344),   // warm red     — amygdala
+    // LEFT OCCIPITAL — deep indigo / purple
+    INTUIT: new THREE.Color(0x5544ff),   // deep indigo  — visual association
+    DREAM:  new THREE.Color(0xaa66ff),   // soft purple  — primary visual / REM
+    // RIGHT FRONTAL — orange / yellow
+    BG:     new THREE.Color(0xff8800),   // orange       — basal ganglia
+    NACC:   new THREE.Color(0xffee00),   // bright yellow — nucleus accumbens
+    CLAUS:  new THREE.Color(0xffcc00),   // gold         — claustrum
+    // RIGHT PARIETAL — teal
+    THAL:   new THREE.Color(0x33ddcc),   // teal         — thalamic relay
+    DMN:    new THREE.Color(0x44aadd),   // teal-blue    — default mode network
+    // RIGHT TEMPORAL — amber
+    SCN:    new THREE.Color(0xffcc33),   // amber        — circadian clock
+    VLPO:   new THREE.Color(0xffaa22),   // amber-orange — sleep switch
+    HYPO:   new THREE.Color(0xffbb11),   // gold         — hypothalamus
+    // RIGHT OCCIPITAL — deep amber
+    LC:     new THREE.Color(0xff6622),   // deep amber   — locus coeruleus
+    // BILATERAL
+    CEREBEL:new THREE.Color(0x44ff88),   // bright green — cerebellum
+    BSTEM:  new THREE.Color(0x880033),   // dark crimson — brainstem
   };
 
   scene = new THREE.Scene();
@@ -681,71 +690,92 @@ function initThree() {
   // â"€â"€ Corpus callosum â€" thin bridge between hemispheres â"€â"€
   buildCorpusCallosum();
 
-  // â"€â"€ Brain stem â"€â"€
-  const stemGeo = new THREE.CylinderGeometry(0.22, 0.35, 2.2, 20);
-  const stemMat = new THREE.MeshPhongMaterial({color:0x223344, transparent:true, opacity:0.35, wireframe:false});
-  const stem = new THREE.Mesh(stemGeo, stemMat);
-  stem.position.set(0, -4.2, 0.3);
-  brainGroup.add(stem);
-
   clock = new THREE.Clock();
   buildParticleSystems();
   buildSynapseLines();
   setupDrag();
 }
 
-// â"€â"€ Lobe shells: left (red-pink), right (blue-cyan), cerebellum (green) â"€â"€
+// ── Brain shell helpers ──────────────────────────────────────────────────────
+function _hemiShell(sx, sy, sz, px, py, pz, color, emissive) {
+  const geo = new THREE.SphereGeometry(1, 64, 48);
+  geo.applyMatrix4(new THREE.Matrix4().makeScale(sx, sy, sz));
+  const solid = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+    color, transparent:true, opacity:0.07, side:THREE.FrontSide,
+    wireframe:false, emissive, emissiveIntensity:0.35
+  }));
+  solid.position.set(px, py, pz);
+  brainGroup.add(solid);
+  const wire = new THREE.Mesh(geo.clone(), new THREE.MeshPhongMaterial({
+    color, transparent:true, opacity:0.055, wireframe:true
+  }));
+  wire.position.set(px, py, pz);
+  brainGroup.add(wire);
+}
+
+// Lobe sub-shell: thin colored wireframe enclosing one lobe's particle cluster
+function _lobeShell(sx, sy, sz, px, py, pz, color) {
+  const geo = new THREE.SphereGeometry(1, 28, 20);
+  geo.applyMatrix4(new THREE.Matrix4().makeScale(sx, sy, sz));
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+    color, transparent:true, opacity:0.10, wireframe:true,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  }));
+  m.position.set(px, py, pz);
+  brainGroup.add(m);
+}
+
+// ── Complete 4-lobe bilateral brain rebuild ──────────────────────────────────
 function buildLobeShells() {
-  // Left hemisphere â€" slightly flattened ellipsoid, warm tint
-  const leftGeo  = new THREE.SphereGeometry(1, 64, 48);
-  leftGeo.applyMatrix4(new THREE.Matrix4().makeScale(3.3, 2.9, 2.5));
-  const leftMat  = new THREE.MeshPhongMaterial({
-    color: 0x88112a, transparent:true, opacity:0.07,
-    side: THREE.FrontSide, wireframe:false,
-    emissive: 0x330010, emissiveIntensity:0.4
-  });
-  const leftMesh = new THREE.Mesh(leftGeo, leftMat);
-  leftMesh.position.set(-1.8, 0.3, 0);
-  brainGroup.add(leftMesh);
+  // ── OUTER HEMISPHERE SHELLS (oblique egg-shape, brain-like) ──
+  // Left hemisphere: warm tint, positioned at x=-1.8
+  _hemiShell(3.3, 3.1, 2.8, -1.8, 0.4, 0.1, 0x881122, 0x330010);
+  // Right hemisphere: cool tint, positioned at x=+1.8
+  _hemiShell(3.3, 3.1, 2.8,  1.8, 0.4, 0.1, 0x0a2266, 0x001133);
 
-  // Left wireframe overlay for sulci feel
-  const leftWire = new THREE.Mesh(leftGeo.clone(),
-    new THREE.MeshPhongMaterial({color:0xff3366, transparent:true, opacity:0.06, wireframe:true}));
-  leftWire.position.copy(leftMesh.position);
-  brainGroup.add(leftWire);
+  // ── LEFT HEMISPHERE LOBE SUB-SHELLS ──
+  // L Frontal  — pink/blue  — anterior, superior
+  _lobeShell(2.2, 1.9, 2.0, -1.8,  2.0,  1.5, 0x7799ff);
+  // L Parietal — violet     — posterior-superior
+  _lobeShell(2.2, 1.6, 1.4, -1.8,  1.5, -1.3, 0xaa44ff);
+  // L Temporal — warm       — lateral, inferior
+  _lobeShell(2.0, 1.5, 1.7, -1.8, -1.2,  0.8, 0xff7733);
+  // L Occipital— deep indigo— most posterior
+  _lobeShell(1.8, 1.6, 1.2, -1.8,  0.8, -3.5, 0x4422cc);
 
-  // Right hemisphere â€" blue tint
-  const rightGeo  = new THREE.SphereGeometry(1, 64, 48);
-  rightGeo.applyMatrix4(new THREE.Matrix4().makeScale(3.3, 2.9, 2.5));
-  const rightMat  = new THREE.MeshPhongMaterial({
-    color: 0x0a2266, transparent:true, opacity:0.07,
-    side: THREE.FrontSide, wireframe:false,
-    emissive: 0x001133, emissiveIntensity:0.4
-  });
-  const rightMesh = new THREE.Mesh(rightGeo, rightMat);
-  rightMesh.position.set(1.8, 0.3, 0);
-  brainGroup.add(rightMesh);
+  // ── RIGHT HEMISPHERE LOBE SUB-SHELLS ──
+  // R Frontal  — orange/yellow — anterior, superior
+  _lobeShell(2.2, 1.9, 2.0,  1.8,  2.0,  1.5, 0xffaa00);
+  // R Parietal — teal         — posterior-superior
+  _lobeShell(2.2, 1.6, 1.4,  1.8,  1.5, -1.3, 0x00ddcc);
+  // R Temporal — amber        — lateral, inferior
+  _lobeShell(2.0, 1.5, 1.7,  1.8, -1.2,  0.8, 0xffcc44);
+  // R Occipital— deep amber   — most posterior
+  _lobeShell(1.8, 1.6, 1.2,  1.8,  0.8, -3.5, 0xff6622);
 
-  const rightWire = new THREE.Mesh(rightGeo.clone(),
-    new THREE.MeshPhongMaterial({color:0x3399ff, transparent:true, opacity:0.06, wireframe:true}));
-  rightWire.position.copy(rightMesh.position);
-  brainGroup.add(rightWire);
-
-  // Cerebellum â€" lower lobe, green
+  // ── CEREBELLUM (bilateral, posterior-inferior, green) ──
   const cerGeo = new THREE.SphereGeometry(1, 48, 32);
-  cerGeo.applyMatrix4(new THREE.Matrix4().makeScale(2.6, 1.5, 1.8));
-  const cerMat = new THREE.MeshPhongMaterial({
-    color: 0x003322, transparent:true, opacity:0.08,
+  cerGeo.applyMatrix4(new THREE.Matrix4().makeScale(2.8, 1.6, 2.0));
+  const cerShell = new THREE.Mesh(cerGeo, new THREE.MeshPhongMaterial({
+    color:0x003322, transparent:true, opacity:0.08,
     wireframe:false, emissive:0x002211, emissiveIntensity:0.5
-  });
-  const cerMesh = new THREE.Mesh(cerGeo, cerMat);
-  cerMesh.position.set(0, -3.9, -1.0);
-  brainGroup.add(cerMesh);
-
-  const cerWire = new THREE.Mesh(cerGeo.clone(),
-    new THREE.MeshPhongMaterial({color:0x00ff88, transparent:true, opacity:0.07, wireframe:true}));
-  cerWire.position.copy(cerMesh.position);
+  }));
+  cerShell.position.set(0, -3.8, -1.0);
+  brainGroup.add(cerShell);
+  const cerWire = new THREE.Mesh(cerGeo.clone(), new THREE.MeshPhongMaterial({
+    color:0x00ff88, transparent:true, opacity:0.08, wireframe:true
+  }));
+  cerWire.position.copy(cerShell.position);
   brainGroup.add(cerWire);
+
+  // ── BRAINSTEM cylinder (midline, below hemispheres) ──
+  const stemGeo = new THREE.CylinderGeometry(0.28, 0.40, 2.5, 20);
+  const stemMat = new THREE.MeshPhongMaterial({
+    color:0x220011, transparent:true, opacity:0.40, wireframe:false
+  });
+  const stemMesh = new THREE.Mesh(stemGeo, stemMat);
+  stemMesh.position.set(0, -4.5, -0.5);
+  brainGroup.add(stemMesh);
 }
 
 // â"€â"€ Corpus callosum â€" glowing arc of lines bridging hemispheres â"€â"€
