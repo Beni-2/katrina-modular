@@ -728,30 +728,30 @@ function _lobeShell(sx, sy, sz, px, py, pz, color) {
 // ── Complete 4-lobe bilateral brain rebuild ──────────────────────────────────
 function buildLobeShells() {
   // ── OUTER HEMISPHERE SHELLS (oblique egg-shape, brain-like) ──
-  // Left hemisphere: warm tint, positioned at x=-1.8
-  _hemiShell(3.3, 3.1, 2.8, -1.8, 0.4, 0.1, 0x881122, 0x330010);
-  // Right hemisphere: cool tint, positioned at x=+1.8
-  _hemiShell(3.3, 3.1, 2.8,  1.8, 0.4, 0.1, 0x0a2266, 0x001133);
+  // Left hemisphere: warm tint — x offset reduced to -1.5 so hemispheres sit closer
+  _hemiShell(3.2, 3.0, 2.6, -1.5, 0.3, 0.0, 0x881122, 0x330010);
+  // Right hemisphere: cool tint — mirrored
+  _hemiShell(3.2, 3.0, 2.6,  1.5, 0.3, 0.0, 0x0a2266, 0x001133);
 
-  // ── LEFT HEMISPHERE LOBE SUB-SHELLS ──
-  // L Frontal  — pink/blue  — anterior, superior
-  _lobeShell(2.2, 1.9, 2.0, -1.8,  2.0,  1.5, 0x7799ff);
-  // L Parietal — violet     — posterior-superior
-  _lobeShell(2.2, 1.6, 1.4, -1.8,  1.5, -1.3, 0xaa44ff);
-  // L Temporal — warm       — lateral, inferior
-  _lobeShell(2.0, 1.5, 1.7, -1.8, -1.2,  0.8, 0xff7733);
-  // L Occipital— deep indigo— most posterior
-  _lobeShell(1.8, 1.6, 1.2, -1.8,  0.8, -3.5, 0x4422cc);
+  // ── LEFT HEMISPHERE LOBE SUB-SHELLS (kept within outer shell bounds) ──
+  // L Frontal  — blue/pink — anterior-superior  (z: +0.5→+2.5, y: +1→+3.5)
+  _lobeShell(2.0, 1.7, 1.5, -1.8,  2.0,  1.5, 0x7799ff);
+  // L Parietal — violet   — posterior-superior  (z: -2.5→0,    y: +0.5→+3)
+  _lobeShell(1.9, 1.4, 1.3, -1.8,  1.5, -1.2, 0xaa44ff);
+  // L Temporal — warm     — inferior-anterior   (z: -0.5→+2,   y: -2.5→0)
+  _lobeShell(1.8, 1.3, 1.5, -1.8, -1.2,  0.8, 0xff7733);
+  // L Occipital— indigo   — posterior           (z: -2.5→-4,   y: -0.5→+2.5) — pulled in
+  _lobeShell(1.6, 1.4, 1.0, -1.8,  0.8, -2.5, 0x4422cc);
 
-  // ── RIGHT HEMISPHERE LOBE SUB-SHELLS ──
-  // R Frontal  — orange/yellow — anterior, superior
-  _lobeShell(2.2, 1.9, 2.0,  1.8,  2.0,  1.5, 0xffaa00);
-  // R Parietal — teal         — posterior-superior
-  _lobeShell(2.2, 1.6, 1.4,  1.8,  1.5, -1.3, 0x00ddcc);
-  // R Temporal — amber        — lateral, inferior
-  _lobeShell(2.0, 1.5, 1.7,  1.8, -1.2,  0.8, 0xffcc44);
-  // R Occipital— deep amber   — most posterior
-  _lobeShell(1.8, 1.6, 1.2,  1.8,  0.8, -3.5, 0xff6622);
+  // ── RIGHT HEMISPHERE LOBE SUB-SHELLS (mirrored, same bounds) ──
+  // R Frontal  — orange/yellow
+  _lobeShell(2.0, 1.7, 1.5,  1.8,  2.0,  1.5, 0xffaa00);
+  // R Parietal — teal
+  _lobeShell(1.9, 1.4, 1.3,  1.8,  1.5, -1.2, 0x00ddcc);
+  // R Temporal — amber
+  _lobeShell(1.8, 1.3, 1.5,  1.8, -1.2,  0.8, 0xffcc44);
+  // R Occipital— deep amber — pulled in to match REGION_POS z:[-4,-2.5]
+  _lobeShell(1.6, 1.4, 1.0,  1.8,  0.8, -2.5, 0xff6622);
 
   // ── CEREBELLUM (bilateral, posterior-inferior, green) ──
   const cerGeo = new THREE.SphereGeometry(1, 48, 32);
