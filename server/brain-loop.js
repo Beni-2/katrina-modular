@@ -38,6 +38,7 @@ const LLM_MODEL           = process.env.LLM_MODEL     || 'llama-3.1-8b-instant';
 const EMAILJS_SERVICE_ID  = process.env.EMAILJS_SERVICE_ID  || '';
 const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || '';
 const EMAILJS_PUBLIC_KEY  = process.env.EMAILJS_PUBLIC_KEY  || '';
+const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY || '';
 const TO_EMAIL            = process.env.TO_EMAIL       || 'benitoamurao1381@gmail.com';
 
 const LLM_ENDPOINTS = {
@@ -314,6 +315,7 @@ async function sendEmail(message, phase) {
         service_id:  EMAILJS_SERVICE_ID,
         template_id: EMAILJS_TEMPLATE_ID,
         user_id:     EMAILJS_PUBLIC_KEY,
+        accessToken: EMAILJS_PRIVATE_KEY,
         template_params: {
           to_email:      TO_EMAIL,
           from_name:     'Katrina',
