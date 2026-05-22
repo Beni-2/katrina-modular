@@ -682,6 +682,9 @@ function initThree() {
   scene.add(new THREE.AmbientLight(0x050510, 1));
 
   brainGroup = new THREE.Group();
+  // Initial 3/4 view — breaks the dead-on telescope effect so lobe depth is visible
+  brainGroup.rotation.y = -0.28;   // tilt right: left lobe faces camera, right shows depth
+  brainGroup.rotation.x =  0.08;   // slight downward tilt reveals temporal lobes
   scene.add(brainGroup);
 
   // â"€â"€ Lobe shell meshes â€" organic, not perfectly spherical â"€â"€
