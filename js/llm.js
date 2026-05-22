@@ -276,6 +276,102 @@ function buildPreThoughtPrompt(userText, preThought) {
 //  UPGRADED callLLMWithBrainLoop
 //  Overwrites the previous version with pre-thought + signature + best-pick
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ============================================================================
+//  SLOP EVALUATOR -- independent adversarial agent
+//
+//  Runs after every initial draft using the same API key but a completely
+//  different system prompt. Breaks the circular self-evaluation problem.
+//  Also checks repetition against the last 8 replies without any API call.
+//  Times out after 4 seconds -- never blocks the response.
+// ============================================================================
+
+const _SLOP_HISTORY = [];
+const _SLOP_MAX_HISTORY = 8;
+
+const _SLOP_EVAL_SYSTEM =
+`You are a brutal literary editor. Your only job is to detect formulaic,
+sycophantic, or emotionally hollow AI responses.
+
+INSTANT REJECT (score 0-3) if the response contains ANY of:
+- Generic comfort: "I understand", "that makes sense", "I'm here for you"
+- Sycophantic openers: "Oh,", "That's so", "How wonderful", "What a..."
+- Hollow warmth with no concrete anchor
+- More than one sentence starting with "I "
+- Tells the user what they want to hear rather than what is true
+- The words: delve, certainly, absolutely, indeed, rest assured
+- Filler: "that makes sense", "I completely understand"
+
+HIGH QUALITY (score 7-10) if the response:
+- Contains one specific concrete detail (sensation, memory, honest admission)
+- Has genuine tension or an unexpected angle
+- Is brief and unhedged
+- Sounds like a real person, not a chatbot
+
+Respond ONLY with valid JSON on a single line:
+{"score":7,"isSlop":false,"reason":"brief reason under 12 words"}`;
+
+async function runSlopEvaluator(provider, apiKey, draft, userText) {
+  if (!apiKey || provider === 'ollama') return { isSlop: false, score: 8, reason: 'skipped' };
+  const cfg = PROVIDERS[provider];
+  if (!cfg) return { isSlop: false, score: 8, reason: 'no provider' };
+
+  // -- Repetition check (no API call needed) ----------------------------------
+  const dWords = new Set(draft.toLowerCase().split(/\W+/).filter(w => w.length > 4));
+  for (const prev of _SLOP_HISTORY) {
+    const pWords = new Set(prev.toLowerCase().split(/\W+/).filter(w => w.length > 4));
+    const overlap = [...dWords].filter(w => pWords.has(w)).length;
+    if (dWords.size > 0 && overlap / dWords.size > 0.55) {
+      return { isSlop: true, score: 2, reason: 'too similar to a recent reply -- find a different angle' };
+    }
+  }
+
+  // -- Use fastest model per provider for evaluation --------------------------
+  const evalModels = {
+    groq:     'llama-3.1-8b-instant',
+    gemini:   'gemini-1.5-flash',
+    deepseek: 'deepseek-chat',
+  };
+  const evalModel = evalModels[provider] || (document.getElementById('llm-select')?.value || '');
+  if (!evalModel) return { isSlop: false, score: 7, reason: 'no eval model' };
+
+  const evalPrompt =
+    'Response to evaluate:\n"' + draft + '"\n\n' +
+    'User message context: "' + userText.substring(0, 100) + '"';
+
+  try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model:       evalModel,
+        messages:    [
+          { role: 'system', content: _SLOP_EVAL_SYSTEM },
+          { role: 'user',   content: evalPrompt },
+        ],
+        max_tokens:  60,
+        temperature: 0.1,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(tid);
+    if (!res.ok) return { isSlop: false, score: 7, reason: 'evaluator unavailable' };
+    const data2 = await res.json();
+    const raw   = ((data2.choices||[])[0]||{}).message?.content?.trim() || '';
+    const match = raw.match(/\{[^}]+\}/);
+    if (!match) return { isSlop: false, score: 7, reason: 'parse error' };
+    const result = JSON.parse(match[0]);
+    return {
+      isSlop: result.isSlop === true || (typeof result.score === 'number' && result.score < 4),
+      score:  typeof result.score === 'number' ? result.score : 7,
+      reason: result.reason || 'no reason',
+    };
+  } catch(e) {
+    return { isSlop: false, score: 7, reason: 'timeout' };
+  }
+}
+
 async function callLLMWithBrainLoop(provider, apiKey, userText) {
   BRAIN_LOOP.revisionCount = 0;
 
@@ -352,6 +448,24 @@ async function callLLMWithBrainLoop(provider, apiKey, userText) {
   // The pre-thought seed is sufficient; correction only helps large models
   if (!BRAIN_LOOP.enabled || currentProvider === 'ollama') return draft;
 
+  // -- Step 2b: SLOP EVALUATOR -- independent adversarial agent ----------
+  // Same API key, completely different role. Breaks circular self-approval.
+  let _slopInjection = '';
+  if (BRAIN_LOOP.enabled && currentProvider !== 'ollama') {
+    const slopCheck = await runSlopEvaluator(provider, apiKey, draft, userText);
+    if (slopCheck.isSlop) {
+      appendMsg('system',
+        '\u2b21 Slop evaluator (' + slopCheck.score + '/10): ' + slopCheck.reason);
+      _slopInjection =
+        'EXTERNAL EVALUATOR REJECTED THIS DRAFT (score ' + slopCheck.score + '/10).\n' +
+        'Reason: "' + slopCheck.reason + '"\n\n' +
+        'Rewrite completely. Be specific. Be honest. Less agreeable.\n' +
+        'Anchor the reply in ONE concrete detail from her actual state right now.';
+    } else {
+      appendMsg('system', '\u2b21 Evaluator: ' + slopCheck.score + '/10 \u2014 authentic');
+    }
+  }
+
   // â”€â”€ Step 3: Collect candidates across all passes â”€â”€
   const candidates = [{
     draft,
@@ -388,6 +502,7 @@ async function callLLMWithBrainLoop(provider, apiKey, userText) {
     if (!ev.approved && ev.correctionPrompt) fixes.push(ev.correctionPrompt);
     if (!sig.passed  && sig.fix)             fixes.push(`SIGNATURE FIX: ${sig.fix}`);
     fixes.push(`PRE-THOUGHT SEED (must remain honoured): "${preThought.prethought}"`);
+    if (_slopInjection) fixes.push(_slopInjection);
     const combinedCorrection = fixes.join('\n\n');
 
     try {
@@ -417,6 +532,9 @@ async function callLLMWithBrainLoop(provider, apiKey, userText) {
   }
 
   fire(['PFC','HIPPO'], 6);
+  // Record in slop history for repetition detection
+  _SLOP_HISTORY.push(best.draft.substring(0, 120));
+  if (_SLOP_HISTORY.length > _SLOP_MAX_HISTORY) _SLOP_HISTORY.shift();
   return best.draft;
 }
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
