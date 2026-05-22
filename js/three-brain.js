@@ -62,14 +62,13 @@ function buildParticleSystems() {
         const p = randInCerebellum();
         px = p.x; py = p.y; pz = p.z;
       } else {
-        // Cortical regions: use organic lobe shaping
-        // Determine which side based on region
-        const leftRegions  = ['AMYG','INSULA','SOCIAL'];
-        const rightRegions = ['PFC','ACC','MOTOR'];
+        // Side bias matches new bilateral REGION_POS layout
+        const leftRegions  = ['PFC','ACC','MOTOR','SOCIAL','INSULA','HIPPO','AMYG','INTUIT','DREAM'];
+        const rightRegions = ['BG','NACC','CLAUS','THAL','DMN','SCN','VLPO','HYPO','LC'];
         let side;
-        if (leftRegions.includes(name))       side = Math.random()<0.65 ? 'L':'R';
-        else if (rightRegions.includes(name)) side = Math.random()<0.65 ? 'R':'L';
-        else                                   side = Math.random()<0.5  ? 'L':'R';
+        if (leftRegions.includes(name))       side = 'L';
+        else if (rightRegions.includes(name)) side = 'R';
+        else                                   side = Math.random()<0.5 ? 'L':'R';
 
         // Base position from REGION_POS bounds
         const rx = rnd(b.x[0], b.x[1]);

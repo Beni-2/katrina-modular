@@ -36,26 +36,45 @@ let regionIdx = {}, particleSystems = {};
 let scene, camera, renderer, clock, brainGroup;
 let REGION_COLORS = {};
 const REGION_POS = {
-  PFC:    {x:[-2,2],   y:[1,3],      z:[1,3.5]},
-  HIPPO:  {x:[-3,3],   y:[-1,1],     z:[-1,1]},
-  AMYG:   {x:[-2.5,2.5],y:[-1,1],   z:[0,2]},
-  INSULA: {x:[-3,3],   y:[0,2],      z:[-1,1]},
-  ACC:    {x:[-1.5,1.5],y:[1,3],     z:[0,2]},
-  SOCIAL: {x:[-3,3],   y:[0,2.5],    z:[-2,0]},
-  INTUIT: {x:[-2,2],   y:[-2,0],     z:[-2,0]},
-  MOTOR:  {x:[-3,3],   y:[1.5,3.5],  z:[-1,1]},
-  CEREBEL:{x:[-2.5,2.5],y:[-3.5,-1.5],z:[-4,-1.5]},
-  DREAM:  {x:[-1.5,1.5],y:[-1.5,0.5],z:[-3,-1]},   // thalamic midline, behind HIPPO
-  SCN:    {x:[-0.8,0.8],y:[-0.6,0.4],z:[ 1, 2.5]}, // hypothalamus anterior, near center
-  VLPO:   {x:[-0.6,0.6],y:[-0.8,0.0],z:[ 0.5,1.8]}, // anterior hypothalamus, ventral
-  LC:     {x:[-0.5,0.5],y:[-2.5,-1.5],z:[-3.5,-2.5]}, // pons, posterior brainstem
-  THAL:   {x:[-1.2,1.2],y:[-1.0,0.8],z:[-1.5, 0.5]}, // thalamic core, midline
-  HYPO:   {x:[-0.8,0.8],y:[-1.2,-0.2],z:[ 0.5,1.5]}, // hypothalamus, near SCN
-  BSTEM:  {x:[-0.8,0.8],y:[-3.5,-2.5],z:[-2.5,-1.5]}, // pons/brainstem, inferior
-  BG:     {x:[-1.5,1.5],y:[-0.5,0.8], z:[ 0.2,1.5]},  // basal ganglia â€” subcortical loop
-  NACC:   {x:[-0.6,0.6],y:[-0.3,0.5], z:[ 1.0,2.0]},  // nucleus accumbens â€” ventral striatum
-  CLAUS:  {x:[-1.8,1.8],y:[ 0.0,1.5], z:[-0.5,1.0]},  // claustrum â€” thin sheet, lateral
-  DMN:    {x:[-2.0,2.0],y:[-0.5,1.5], z:[-2.5,-0.5]},  // default mode â€” medial cortex
+  // ── LEFT FRONTAL LOBE (anterior, superior) — language, executive, motor ──
+  PFC:    {x:[-3.8,-0.3], y:[1.0, 3.5], z:[0.5, 3.5]},
+  ACC:    {x:[-1.8,-0.2], y:[0.5, 3.0], z:[0.5, 2.5]},
+  MOTOR:  {x:[-3.8,-0.3], y:[1.5, 3.5], z:[-0.5, 0.8]},
+
+  // ── LEFT PARIETAL LOBE (posterior-superior) — social, interoception ──
+  SOCIAL: {x:[-3.8,-0.3], y:[0.5, 3.0], z:[-2.5,-0.3]},
+  INSULA: {x:[-3.5,-0.5], y:[0.0, 2.0], z:[-0.8, 1.5]},
+
+  // ── LEFT TEMPORAL LOBE (lateral, inferior) — memory, emotion ──
+  HIPPO:  {x:[-3.5,-0.3], y:[-2.5, 0.0], z:[-0.5, 2.0]},
+  AMYG:   {x:[-3.2,-0.3], y:[-2.0, 0.2], z:[ 0.5, 2.5]},
+
+  // ── LEFT OCCIPITAL LOBE (posterior) — intuition, visual, dream ──
+  INTUIT: {x:[-3.5,-0.3], y:[-0.5, 2.5], z:[-4.0,-2.0]},
+  DREAM:  {x:[-2.5,-0.3], y:[-0.5, 2.0], z:[-4.5,-3.0]},
+
+  // ── RIGHT FRONTAL LOBE (anterior, superior) — action selection, reward ──
+  BG:     {x:[ 0.3, 3.8], y:[0.5, 2.5], z:[0.5, 2.8]},
+  NACC:   {x:[ 0.3, 2.8], y:[0.0, 1.8], z:[1.0, 3.0]},
+  CLAUS:  {x:[ 0.5, 3.2], y:[0.0, 2.0], z:[-0.8, 1.5]},
+
+  // ── RIGHT PARIETAL LOBE (posterior-superior) — thalamic relay, self-model ──
+  THAL:   {x:[ 0.3, 2.8], y:[-0.5, 2.5], z:[-2.5, 0.5]},
+  DMN:    {x:[ 0.5, 3.5], y:[ 0.0, 2.5], z:[-3.0,-0.5]},
+
+  // ── RIGHT TEMPORAL LOBE (lateral, inferior) — circadian, sleep regulation ──
+  SCN:    {x:[ 0.3, 2.0], y:[-2.0, 0.0], z:[0.5, 2.8]},
+  VLPO:   {x:[ 0.3, 1.8], y:[-2.0, 0.0], z:[0.5, 2.5]},
+  HYPO:   {x:[ 0.3, 2.5], y:[-2.2,-0.2], z:[0.5, 2.5]},
+
+  // ── RIGHT OCCIPITAL LOBE (posterior) — norepinephrine, arousal modulation ──
+  LC:     {x:[ 0.3, 1.8], y:[-1.0, 1.5], z:[-4.0,-2.5]},
+
+  // ── BILATERAL: CEREBELLUM (posterior-inferior) ──
+  CEREBEL:{x:[-2.5, 2.5], y:[-4.5,-2.0], z:[-4.5,-2.0]},
+
+  // ── BILATERAL: BRAINSTEM (midline, inferior) ──
+  BSTEM:  {x:[-0.8, 0.8], y:[-4.5,-3.0], z:[-2.5,-0.8]},
 };
 let chem = {
   // â”€â”€ Core 4 (existing) â”€â”€
