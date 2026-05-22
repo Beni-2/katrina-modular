@@ -311,11 +311,7 @@ Respond ONLY with valid JSON on a single line:
 {"score":7,"isSlop":false,"reason":"brief reason under 12 words"}`;
 
 async function runSlopEvaluator(provider, apiKey, draft, userText) {
-  if (!apiKey || provider === 'ollama') return { isSlop: false, score: 8, reason: 'skipped' };
-  const cfg = PROVIDERS[provider];
-  if (!cfg) return { isSlop: false, score: 8, reason: 'no provider' };
-
-  // -- Repetition check (no API call needed) ----------------------------------
+  // -- Repetition check always runs first (no API key needed) -----------------
   const dWords = new Set(draft.toLowerCase().split(/\W+/).filter(w => w.length > 4));
   for (const prev of _SLOP_HISTORY) {
     const pWords = new Set(prev.toLowerCase().split(/\W+/).filter(w => w.length > 4));
@@ -324,6 +320,11 @@ async function runSlopEvaluator(provider, apiKey, draft, userText) {
       return { isSlop: true, score: 2, reason: 'too similar to a recent reply -- find a different angle' };
     }
   }
+
+  // -- LLM evaluation requires API key ----------------------------------------
+  if (!apiKey || provider === 'ollama') return { isSlop: false, score: 8, reason: 'skipped' };
+  const cfg = PROVIDERS[provider];
+  if (!cfg) return { isSlop: false, score: 8, reason: 'no provider' };
 
   // -- Use fastest model per provider for evaluation --------------------------
   const evalModels = {
