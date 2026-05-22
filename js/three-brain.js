@@ -94,14 +94,17 @@ function buildParticleSystems() {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3));
 
-    // Size: CEREBEL bigger (denser look), others standard
-    const baseSize = isCer ? 0.16 : (name==='MOTOR'?0.15:0.11);
+    // Right-hemisphere regions have fewer neurons — boost their size so they're visible
+    const rightHemiRegions = ['BG','NACC','CLAUS','THAL','DMN','SCN','VLPO','HYPO','LC'];
+    const isRight = rightHemiRegions.includes(name);
+    const baseSize = isCer ? 0.16 : (name==='MOTOR'?0.15 : isRight ? 0.16 : 0.11);
+    const opacity  = isRight ? 0.75 : 0.55;
 
     const mat = new THREE.PointsMaterial({
       color: REGION_COLORS[name],
       size:  baseSize,
       transparent: true,
-      opacity: 0.55,
+      opacity,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       sizeAttenuation: true,

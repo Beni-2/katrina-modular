@@ -713,12 +713,12 @@ function _hemiShell(sx, sy, sz, px, py, pz, color, emissive) {
   brainGroup.add(wire);
 }
 
-// Lobe sub-shell: thin colored wireframe enclosing one lobe's particle cluster
+// Lobe sub-shell: very faint colored wireframe — guides, not dominant
 function _lobeShell(sx, sy, sz, px, py, pz, color) {
-  const geo = new THREE.SphereGeometry(1, 28, 20);
+  const geo = new THREE.SphereGeometry(1, 16, 12);
   geo.applyMatrix4(new THREE.Matrix4().makeScale(sx, sy, sz));
   const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
-    color, transparent:true, opacity:0.10, wireframe:true,
+    color, transparent:true, opacity:0.07, wireframe:true,
     blending:THREE.AdditiveBlending, depthWrite:false
   }));
   m.position.set(px, py, pz);
