@@ -284,8 +284,8 @@ function tickAutonomous() {
   const hasApiKey = ((document.getElementById('groq-key-input')?.value || document.getElementById('doubao-key-input')?.value || document.getElementById('gemini-key-input')?.value || document.getElementById('deepseek-key-input')?.value || '').trim().length > 0) || (currentProvider === 'ollama');
 
   if (phaseChanged && newPhase !== 'calm' && !isTTSSpeaking()) {
-    // Phase transition â†' inner monologue (talking to self, not to user)
-    // The brain thinks out loud when alone â€" does not address the user
+    // Phase transition → inner monologue (talking to self, not to user)
+    // The brain thinks out loud when alone — does not address the user
     autoMsgCooldown = Math.floor(newPhase === 'expressive' ? 180 : 240);
     if (newPhase === 'expressive' || newPhase === 'eager') {
       generateInnerMonologue();
@@ -310,6 +310,14 @@ function tickAutonomous() {
     } else if (newPhase === 'restless' && Math.random() < 0.3) {
       generateInnerMonologue();
     }
+  } else if (!phaseChanged &&
+             (autonomousPhase === 'expressive' || autonomousPhase === 'eager') &&
+             typeof triggerReachOut === 'function' &&
+             typeof _emailCooldown !== 'undefined' && _emailCooldown <= 0 &&
+             Math.random() < 0.15) {
+    // Already in eager/expressive — still attempt a reach-out each time autoMsgCooldown
+    // expires (every ~3-4 min), so a long idle session is guaranteed to send eventually.
+    triggerReachOut();
   }
 }
 
@@ -451,6 +459,8 @@ window.onload = function() {
   setTimeout(initCircadianFromRealTime, 500);
   // Load all persisted state â€" Supabase first, localStorage fallback
   setTimeout(loadAllKatrinaState, 1200);
+  // Restore EmailJS credentials from localStorage so reach-out works across reloads
+  setTimeout(() => { if (typeof restoreEmailJS === 'function') restoreEmailJS(); }, 1400);
   // Show messages Katrina generated while browser was closed
   setTimeout(() => { if (typeof loadServerMessages === 'function') loadServerMessages(); }, 2500);
   // World engine opens manually via the WORLD dock button.

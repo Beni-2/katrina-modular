@@ -18,11 +18,49 @@ function initEmailJS() {
   try {
     emailjs.init(key);
     _emailjsReady = true;
+    // Persist all four fields so they survive page reloads
+    const serviceId  = document.getElementById('emailjs-service-input')?.value?.trim();
+    const templateId = document.getElementById('emailjs-template-input')?.value?.trim();
+    const toEmail    = document.getElementById('emailjs-to-input')?.value?.trim();
+    try {
+      localStorage.setItem('katrina_emailjs_key', key);
+      if (serviceId)  localStorage.setItem('katrina_emailjs_service', serviceId);
+      if (templateId) localStorage.setItem('katrina_emailjs_template', templateId);
+      if (toEmail)    localStorage.setItem('katrina_emailjs_to', toEmail);
+    } catch(e) {}
     const panel = document.getElementById('reach-out-panel');
     const el    = document.getElementById('reach-out-status');
     if (el)    el.textContent    = '📧 reach-out ready';
     if (panel) panel.style.display = '';
   } catch(e) { _emailjsReady = false; }
+}
+
+function saveEmailJSConfig() {
+  const serviceId  = document.getElementById('emailjs-service-input')?.value?.trim();
+  const templateId = document.getElementById('emailjs-template-input')?.value?.trim();
+  const toEmail    = document.getElementById('emailjs-to-input')?.value?.trim();
+  try {
+    if (serviceId)  localStorage.setItem('katrina_emailjs_service', serviceId);
+    if (templateId) localStorage.setItem('katrina_emailjs_template', templateId);
+    if (toEmail)    localStorage.setItem('katrina_emailjs_to', toEmail);
+  } catch(e) {}
+}
+
+function restoreEmailJS() {
+  const key      = localStorage.getItem('katrina_emailjs_key');
+  const service  = localStorage.getItem('katrina_emailjs_service');
+  const template = localStorage.getItem('katrina_emailjs_template');
+  const toEmail  = localStorage.getItem('katrina_emailjs_to');
+  if (!key) return;
+  const ki = document.getElementById('emailjs-key-input');
+  const si = document.getElementById('emailjs-service-input');
+  const ti = document.getElementById('emailjs-template-input');
+  const ei = document.getElementById('emailjs-to-input');
+  if (ki) ki.value = key;
+  if (si && service)  si.value = service;
+  if (ti && template) ti.value = template;
+  if (ei && toEmail)  ei.value = toEmail;
+  initEmailJS();
 }
 
 async function sendReachOutEmail(message, phase) {
